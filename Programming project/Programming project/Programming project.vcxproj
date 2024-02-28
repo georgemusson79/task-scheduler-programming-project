@@ -130,7 +130,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Main_Functions.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="Main_Functions.h" />
     <ClCompile Include="Vector2.cpp" />
   </ItemGroup>
   <ItemGroup>

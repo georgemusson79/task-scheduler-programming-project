@@ -2,10 +2,12 @@
 #include <iostream>
 #include <SDL.h>
 
+#include "Main_Functions.h"
 #include "Vector2.h"
 
 int main() {
 	SDL_Init(SDL_INIT_EVERYTHING);
-	SDL_Window* w = SDL_CreateWindow("Task Scheduler", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 500, 500, SDL_WINDOW_SHOWN);
+	Vector2 scrDims=Main::getDisplayDims();
+	SDL_Window* w = SDL_CreateWindow("Task Scheduler", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, scrDims.X/2, scrDims.Y/2, SDL_WINDOW_SHOWN);
 	while (1);
 }
