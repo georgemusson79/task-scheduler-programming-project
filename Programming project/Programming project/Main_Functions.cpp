@@ -7,3 +7,10 @@ Vector2 Main::getDisplayDims() {
 	SDL_GetDisplayBounds(0, &r);
 	return {r.w, r.h};
 }
+
+Vector2 Main::getCursorPos() {
+	int x;
+	int y;
+	SDL_GetMouseState(&x, &y);
+	return { x,y };
+}

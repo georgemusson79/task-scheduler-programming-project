@@ -7,4 +7,5 @@ namespace Main {
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 	Vector2 getDisplayDims();
+	Vector2 getCursorPos();
 }
