@@ -1,3 +1,4 @@
+#pragma once
 #include <SDL.h>
 #include <iostream>
 #include <SDL_image.h>
@@ -17,11 +18,11 @@ protected:
 	std::string pathToImg;
 
 public:
-	bool flipHorizontal;
-	bool flipVertical;
-	SDL_Rect RenderImgDims;
-	Sprite(int x, int y, int w, int h, std::string pathToImg, bool flipHorizontal=false, bool flipVertical=false);
+	SDL_RendererFlip flip;
+	SDL_Rect renderImgDims;
+	Sprite(int x, int y, int w, int h, std::string pathToImg, SDL_RendererFlip flip=SDL_FLIP_NONE);
 	~Sprite();
+	SDL_Texture* getTexture();
 	void render() override;
 	void setImg(std::string pathToImg);
 	std::string getPathToImg();

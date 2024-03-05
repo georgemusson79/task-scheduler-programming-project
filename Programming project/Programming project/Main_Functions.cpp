@@ -1,4 +1,5 @@
 //main_functions.cpp
+
 #include "Main_Functions.h"
 #include "Vector2.h"
 #include <SDL.h>
@@ -13,4 +14,10 @@ Vector2 Main::getCursorPos() {
 	int y;
 	SDL_GetMouseState(&x, &y);
 	return { x,y };
+}
+
+void Main::renderRenderables() {
+	SDL_RenderClear(Main::renderer);
+	for (Renderable* r : Main::renderables) r->render();
+	SDL_RenderPresent(Main::renderer);
 }
