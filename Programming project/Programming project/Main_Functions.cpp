@@ -16,8 +16,11 @@ Vector2 Main::getCursorPos() {
 	return { x,y };
 }
 
-void Main::renderRenderables() {
+void Main::updateRenderables() {
 	SDL_RenderClear(Main::renderer);
-	for (Renderable* r : Main::renderables) r->render();
+	for (Renderable* r : Main::renderables) {
+		r->render();
+		r->update();
+	}
 	SDL_RenderPresent(Main::renderer);
 }
