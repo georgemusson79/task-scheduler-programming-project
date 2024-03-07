@@ -11,6 +11,5 @@ namespace Main {
 	inline SDL_Window* window;
 	inline SDL_Renderer* renderer;
 	Vector2 getDisplayDims();
-	Vector2 getCursorPos();
 	void updateRenderables();
 }

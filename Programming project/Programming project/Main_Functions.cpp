@@ -9,12 +9,7 @@ Vector2 Main::getDisplayDims() {
 	return {r.w, r.h};
 }
 
-Vector2 Main::getCursorPos() {
-	int x;
-	int y;
-	SDL_GetMouseState(&x, &y);
-	return { x,y };
-}
+
 
 void Main::updateRenderables() {
 	SDL_RenderClear(Main::renderer);

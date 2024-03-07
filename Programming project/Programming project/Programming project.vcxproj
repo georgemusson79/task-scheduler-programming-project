@@ -132,6 +132,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Button.cpp" />
+    <ClCompile Include="cursor.cpp" />
     <ClCompile Include="Main_Functions.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Main_Functions.h" />
@@ -139,6 +140,8 @@
     <ClCompile Include="Vector2.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Cursor.h" />
+    <ClInclude Include="Debug.h" />
     <ClInclude Include="renderable.h" />
     <ClInclude Include="Vector2.h" />
   </ItemGroup>

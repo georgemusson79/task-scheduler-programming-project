@@ -1,0 +1,13 @@
+#pragma once
+#include "Vector2.h"
+#include <SDL.h>
+
+
+namespace Cursor {
+	inline bool hasCursorChanged = false; //to be reset at start of every frame, used to check if cursor has been updated once in a frame already, if so dont update again
+	inline SDL_SystemCursor currentCursorType = SDL_SYSTEM_CURSOR_ARROW;
+	inline SDL_Cursor* currentCursor= nullptr;
+
+	Vector2 getPos();
+	void setCursor(SDL_SystemCursor cursorType);
+}
