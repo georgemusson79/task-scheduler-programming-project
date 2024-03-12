@@ -1,15 +1,21 @@
 #pragma once
 #include "renderable.h"
 #include <vector>
+#include <iostream>
+#include <fstream>
 //Main_functions.h
 class Vector2;
 class SDL_Renderer;
 class SDL_Window;
 
+enum class FileExMode {LOAD,SAVE};
+
 namespace Main {
 	inline std::vector<Renderable*> renderables;
 	inline SDL_Window* window;
 	inline SDL_Renderer* renderer;
-	Vector2 getDisplayDims();
+	Vector2 getDisplayDims(); //get width and height of the screen
 	void updateRenderables();
+	std::vector<std::wstring> openFileExplorerLoad(std::vector<std::pair<std::wstring, std::wstring>> allowedFiles = { {L"All files",L"*.*"} }, bool multiselect=false); //creates a file explorer window for loading files
+	std::fstream loadFileWithFileExp(FileExMode mode);
 }
