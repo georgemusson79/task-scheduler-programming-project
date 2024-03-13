@@ -14,6 +14,7 @@ int temp(std::string str) {
 }
 
 int main(int argc, char** argv) {
+
 	bool running = true;
 	SDL_Init(SDL_INIT_EVERYTHING);
 	IMG_Init(IMG_INIT_PNG);
@@ -25,7 +26,9 @@ int main(int argc, char** argv) {
 	SDL_Event e;
 	Button b(0, 0, 400, 400, "C:/Users/george/Pictures/Screenshots/Screenshot (52).png", SDL_FLIP_NONE, temp,std::string("ahh"));
 	Main::renderables.push_back(&b);
-	for (auto item : Main::openFileExplorerLoad({ {L"document",L"*.docx; *.txt"} })) std::wcout << item;
+	//for (auto i : Main::openFileExplorerLoad()) std::wcout << i << "\n";
+	std::wcout << Main::openFileExplorerSave();
+	//for (auto item : Main::openFileExplorerLoad({ {L"document",L"*.docx; *.txt"} })) std::wcout << item;
 	while (running) {
 		Cursor::hasCursorChanged = false;
 		Main::updateRenderables();

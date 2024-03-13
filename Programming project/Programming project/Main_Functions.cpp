@@ -32,7 +32,7 @@ std::vector<std::wstring> Main::openFileExplorerLoad(std::vector<std::pair<std::
 	IFileDialogEvents* e = nullptr;
 	DWORD cookie;
 	PWSTR f = NULL;
-	fileEx->Advise(e, &cookie);
+	//fileEx->Advise(NULL, &cookie);
 	
 	//set allowed file types
 	int numOfFileTypes = allowedFiles.size();
@@ -67,6 +67,23 @@ std::vector<std::wstring> Main::openFileExplorerLoad(std::vector<std::pair<std::
 
 }
 
-std::fstream Main::loadFileWithFileExp(FileExMode mode) {
-	return std::fstream();
+
+std::wstring Main::openFileExplorerSave(std::vector<std::pair<std::wstring, std::wstring>> allowedFiles) {
+	IFileSaveDialog* fileEx;
+	wchar_t empty[] = L"";
+	CoCreateInstance(CLSID_FileSaveDialog, NULL, CLSCTX_INPROC, IID_PPV_ARGS(&fileEx));
+
+	int numOfFileTypes = allowedFiles.size();
+	COMDLG_FILTERSPEC* COMAllowedFiles = new COMDLG_FILTERSPEC[numOfFileTypes];
+	for (int i = 0; i < numOfFileTypes; i++) COMAllowedFiles[i] = { allowedFiles[i].first.c_str(),allowedFiles[i].second.c_str() };
+	fileEx->SetFileTypes(numOfFileTypes, COMAllowedFiles);
+	delete COMAllowedFiles;
+
+	fileEx->Show(NULL);
+	IShellItem* fileName;
+	fileEx->GetResult(&fileName);
+	PWSTR fileNameBuf = empty;
+	fileName->GetDisplayName(SIGDN_FILESYSPATH, &fileNameBuf);
+	return fileNameBuf;
 }
+
