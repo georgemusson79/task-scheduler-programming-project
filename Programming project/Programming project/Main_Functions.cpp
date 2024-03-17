@@ -13,7 +13,6 @@ Vector2 Main::getDisplayDims() {
 }
 
 
-
 void Main::updateRenderables() {
 	SDL_RenderClear(Main::renderer);
 	for (Renderable* r : Main::renderables) {
@@ -22,6 +21,7 @@ void Main::updateRenderables() {
 	}
 	SDL_RenderPresent(Main::renderer);
 }
+
 
 
 std::vector<std::wstring> Main::openFileExplorerLoad(std::vector<std::pair<std::wstring,std::wstring>> allowedFiles, bool multiselect) {
@@ -87,3 +87,12 @@ std::wstring Main::openFileExplorerSave(std::vector<std::pair<std::wstring, std:
 	return fileNameBuf;
 }
 
+void Main::handleEvents(SDL_Event& e) {
+	while (SDL_PollEvent(&e)) {
+		switch (e.type) {
+		case SDL_QUIT:
+			SDL_Quit();
+			Main::running = false;
+		}
+	}
+}

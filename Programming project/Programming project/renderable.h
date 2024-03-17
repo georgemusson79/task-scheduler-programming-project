@@ -57,6 +57,18 @@ public:
 	void onClick() {
 		this->fn();
 	}
+};
 
+class Draggable : public Sprite {
+public:
+	Draggable(int x, int y, int w, int h, std::string pathToImg, SDL_RendererFlip flip = SDL_FLIP_NONE);
+	void update() override;
+};
 
+class Rectangle : public Renderable {
+public:
+	bool fill = false;
+	SDL_Color colour;
+	void render();
+	Rectangle(int x, int y, int w, int h, SDL_Color colour = { 255,255,255,255 });
 };
