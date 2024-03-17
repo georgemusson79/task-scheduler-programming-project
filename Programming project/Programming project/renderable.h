@@ -9,6 +9,10 @@ public:
 	SDL_Rect renderScrDims; //dimensions for rendering the object to the screen
 	virtual void update() {}
 	virtual void render() = 0;
+	void create();
+	virtual ~Renderable() {
+		std::cout << "renderable destroyed\n";
+	}
 };
 
 class Sprite : public Renderable {
@@ -21,12 +25,13 @@ protected:
 public:
 	SDL_RendererFlip flip;
 	SDL_Rect renderImgDims;
+
 	Sprite(int x, int y, int w, int h, std::string pathToImg, SDL_RendererFlip flip=SDL_FLIP_NONE);
-	~Sprite();
 	SDL_Texture* getTexture();
 	void render() override;
 	void setImg(std::string pathToImg);
 	std::string getPathToImg();
+	~Sprite();
 };
 
 

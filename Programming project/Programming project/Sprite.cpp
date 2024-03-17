@@ -22,6 +22,7 @@ std::string Sprite::getPathToImg() {
 
 Sprite::~Sprite() {
 	SDL_DestroyTexture(this->img);
+	std::cout<<"sprite destroyed";
 }
 
 SDL_Texture* Sprite::getTexture() {
