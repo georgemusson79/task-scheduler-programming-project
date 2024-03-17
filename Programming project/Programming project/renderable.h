@@ -1,15 +1,24 @@
 #pragma once
-#include <SDL.h>
 #include <iostream>
 #include <SDL_image.h>
-#include "Vector2.h"
 #include <functional>
+
+#include "Main_Functions.h"
+#include "Vector2.h"
+
+
 class Renderable {
 public:
 	SDL_Rect renderScrDims; //dimensions for rendering the object to the screen
 	virtual void update() {}
 	virtual void render() = 0;
-	void create();
+	template <typename RenderableObj,typename... Args>
+	static void create(Args...args) {
+		//static_assert(std::is_constructible_v<RenderableObj,Args...>, "Unable to construct class with set arguments output types are"+RenderableObj::arguments);
+		static_assert(std::is_base_of_v<Renderable, RenderableObj>, "RenderableObj is not of type Renderable");
+		RenderableObj* obj = new RenderableObj(args...);
+		Main::renderables.push_back(obj);
+	}
 	virtual ~Renderable() {
 		std::cout << "renderable destroyed\n";
 	}

@@ -24,7 +24,8 @@ int main(int argc, char** argv) {
 	Main::window = SDL_CreateWindow("Task Scheduler", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, scrDims.X/2, scrDims.Y/2, SDL_WINDOW_SHOWN|SDL_WINDOW_RESIZABLE);
 	Main::renderer = SDL_CreateRenderer(Main::window, -1, SDL_RENDERER_ACCELERATED|SDL_RENDERER_PRESENTVSYNC);
 	SDL_Event e;
-	//Main::renderables.push_back(button);
+	Renderable::create<Button>(40, 40, 300, 300, "C:/Screenshot (51).png", SDL_FLIP_NONE, temp, "bruh");
+	std::cout << Main::renderables.size() << "\n";
 	while (Main::running) {
 		Cursor::hasCursorChanged = false;
 		Main::updateRenderables();

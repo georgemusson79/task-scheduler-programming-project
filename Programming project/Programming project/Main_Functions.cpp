@@ -1,11 +1,14 @@
 //main_functions.cpp
-
-#include "Main_Functions.h"
-#include "Vector2.h"
 #include <SDL.h>
 #include <Windows.h>
 #include <vector>
 #include <Shobjidl.h>
+
+#include "renderable.h"
+#include "Main_Functions.h"
+#include "Vector2.h"
+
+
 Vector2 Main::getDisplayDims() {
 	SDL_Rect r;
 	SDL_GetDisplayBounds(0, &r);

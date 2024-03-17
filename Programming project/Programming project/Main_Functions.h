@@ -1,12 +1,11 @@
 #pragma once
-#include "renderable.h"
+#include <SDL.h>
 #include <vector>
 #include <iostream>
 #include <fstream>
 //Main_functions.h
-class Vector2;
-class SDL_Renderer;
-class SDL_Window;
+struct Vector2;
+class Renderable;
 
 
 namespace Main {
