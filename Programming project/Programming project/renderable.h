@@ -10,13 +10,16 @@
 class Renderable {
 public:
 	SDL_Rect renderScrDims; //dimensions for rendering the object to the screen
+	//Update object, called every frame
 	virtual void update() {}
+	//Render object to screen
 	virtual void render() = 0;
+	//Create an object that inherits Renderable and push it to Main::renderables
 	template <typename RenderableObj,typename... Args>
 	static void create(Args...args) {
-		//static_assert(std::is_constructible_v<RenderableObj,Args...>, "Unable to construct class with set arguments output types are"+RenderableObj::arguments);
-		static_assert(std::is_base_of_v<Renderable, RenderableObj>, "RenderableObj is not of type Renderable");
-		RenderableObj* obj = new RenderableObj(args...);
+		static_assert(std::is_constructible_v<RenderableObj, Args...>, "Unable to construct class with current arguments"); //assert that class can be created with args
+		static_assert(std::is_base_of_v<Renderable, RenderableObj>, "RenderableObj is not of type Renderable"); //assert that class base is Renderable
+		RenderableObj* obj = new RenderableObj(args...); //dynamically allocate object then append to Main::renderables
 		Main::renderables.push_back(obj);
 	}
 	virtual ~Renderable() {
