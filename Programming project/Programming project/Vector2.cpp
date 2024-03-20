@@ -1,63 +1,64 @@
 //vector2.cpp
 #include "Vector2.h"
 #include <cmath>
+#include <SDL.h>
 double Vector2::distance(Vector2 location) {
-	double distsqrd = pow((location.X - this->X), 2) + pow((location.Y - this->Y), 2);
+	double distsqrd = pow((location.x - this->x), 2) + pow((location.y - this->y), 2);
 	return sqrt(distsqrd);
 }
 
-Vector2 iVector2::convertToVector2() {
-	return { (double)X,(double)Y };
-}
 
 
 Vector2 Vector2::operator+(Vector2 vector) {
-	return { this->X + vector.X,this->Y + vector.Y };
+	return { this->x + vector.x,this->y + vector.y };
 }
 Vector2 Vector2::operator-(Vector2 vector) {
-	return { this->X - vector.X,this->Y - vector.Y };
+	return { this->x - vector.x,this->y - vector.y };
 }
 Vector2 Vector2::operator/(Vector2 vector) {
-	return { this->X / vector.X,this->Y / vector.Y };
+	return { this->x / vector.x,this->y / vector.y };
 }
 Vector2 Vector2::operator*(Vector2 vector) {
-	return { this->X * vector.X,this->Y * vector.Y };
+	return { this->x * vector.x,this->y * vector.y };
 }
 void Vector2::operator+=(Vector2 vector) {
-	this->X += vector.X;
-	this->Y += vector.Y;
+	this->x += vector.x;
+	this->y += vector.y;
 }
 void Vector2::operator-=(Vector2 vector) {
-	this->X -= vector.X;
-	this->Y -= vector.Y;
+	this->x -= vector.x;
+	this->y -= vector.y;
 }
 void Vector2::operator*=(Vector2 vector) {
-	this->X *= vector.X;
-	this->Y *= vector.Y;
+	this->x *= vector.x;
+	this->y *= vector.y;
 }
 void Vector2::operator/=(Vector2 vector) {
-	this->X /= vector.X;
-	this->Y /= vector.Y;
+	this->x /= vector.x;
+	this->y /= vector.y;
 }
 
 bool Vector2::operator<=(Vector2 vector) {
-	return (this->X <= vector.X && this->Y <= vector.Y);
+	return (this->x <= vector.x && this->y <= vector.y);
 }
 bool Vector2::operator>=(Vector2 vector) {
-	return (this->X >= vector.X && this->Y >= vector.Y);
+	return (this->x >= vector.x && this->y >= vector.y);
 }
 bool Vector2::operator>(Vector2 vector) {
-	return (this->X > vector.X && this->Y > vector.Y);
+	return (this->x > vector.x && this->y > vector.y);
 }
 bool Vector2::operator<(Vector2 vector) {
-	return (this->X < vector.X && this->Y < vector.Y);
+	return (this->x < vector.x && this->y < vector.y);
 }
 bool Vector2::operator==(Vector2 vector) {
-	return (this->X == vector.X && this->Y == vector.Y);
+	return (this->x == vector.x && this->y == vector.y);
 }
 bool Vector2::operator!=(Vector2 vector) {
-	return (this->X != vector.X || this->Y != vector.Y);
+	return (this->x != vector.x || this->y != vector.y);
 }
 void Vector2::out() {
-	std::cout << "(" << this->X << " , " << this->Y << ")\n";
+	std::cout << "(" << this->x << " , " << this->y << ")\n";
+}
+ Vector2::operator SDL_Point() {
+	 return { (int)x,(int)y };
 }

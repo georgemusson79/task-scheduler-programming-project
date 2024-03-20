@@ -5,7 +5,9 @@
 
 #include "Main_Functions.h"
 #include "Vector2.h"
-
+enum MovementLimitations {
+	ANYWHERE,ONLY_X,ONLY_Y
+};
 
 class Renderable {
 public:
@@ -25,6 +27,26 @@ public:
 	virtual ~Renderable() {
 		std::cout << "renderable destroyed\n";
 	}
+
+	Vector2 getPosition() {
+		return { this->renderScrDims.x,this->renderScrDims.y };
+	}
+
+	void setPos(Vector2 pos) {
+		this->renderScrDims.x = pos.x;
+		this->renderScrDims.y = pos.y;
+	}
+
+	void setDims(Vector2 dims) {
+		this->renderScrDims.w = dims.x;
+		this->renderScrDims.h = dims.y;
+	}
+
+	Vector2 getDims() {
+		return { this->renderScrDims.w,this->renderScrDims.h };
+	}
+
+
 };
 
 class Sprite : public Renderable {
@@ -35,8 +57,9 @@ protected:
 	std::string pathToImg;
 
 public:
-	SDL_RendererFlip flip;
 	SDL_Rect renderImgDims;
+	SDL_RendererFlip flip;
+	
 
 	Sprite(int x, int y, int w, int h, std::string pathToImg, SDL_RendererFlip flip=SDL_FLIP_NONE);
 	SDL_Texture* getTexture();
@@ -55,10 +78,9 @@ private:
 	
 public:
 	template <typename Fn, typename... Args>
-	Button(int x, int y, int w, int h, std::string pathToImg, SDL_RendererFlip flip = SDL_FLIP_NONE, Fn function = NULL, Args... arguments) : Sprite(x,y,w,h,pathToImg,flip) {
+	Button(int x, int y, int w, int h, std::string pathToImg, Fn function = NULL, SDL_RendererFlip flip = SDL_FLIP_NONE,Args... arguments) : Sprite(x,y,w,h,pathToImg,flip) {
 		this->setFunction(function, arguments...);
 	}
-	//void update() override;
 
 	template <typename Fn, typename... Args>
 	void setFunction(Fn function, Args... arguments) {
@@ -77,8 +99,13 @@ public:
 };
 
 class Draggable : public Sprite {
+protected:
+	Vector2 dragPosition = { 0,0 }; //position where the cursor picked up the object
+	bool clicked = false;
+	bool selected = false;
 public:
-	Draggable(int x, int y, int w, int h, std::string pathToImg, SDL_RendererFlip flip = SDL_FLIP_NONE);
+	MovementLimitations movementLimits;
+	Draggable(int x, int y, int w, int h, std::string pathToImg, MovementLimitations movementLimits = ANYWHERE, SDL_RendererFlip flip = SDL_FLIP_NONE);
 	void update() override;
 };
 

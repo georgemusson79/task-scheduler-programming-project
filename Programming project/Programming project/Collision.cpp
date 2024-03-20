@@ -3,10 +3,10 @@
 #include "Vector2.h"
 
 bool Collision::collidesWith(SDL_Rect rect, Vector2 pos) {
-	if (pos.X >= rect.x &&
-		pos.X <= rect.x + rect.w && 
-		pos.Y >= rect.y &&
-		pos.Y <= rect.y + rect.h) return true;
+	if (pos.x >= rect.x &&
+		pos.x <= rect.x + rect.w && 
+		pos.y >= rect.y &&
+		pos.y <= rect.y + rect.h) return true;
 	return false;
 }
 bool Collision::collidesWith(SDL_Rect a, SDL_Rect b) {

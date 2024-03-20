@@ -62,9 +62,13 @@ std::vector<std::wstring> Main::openFileExplorerLoad(std::vector<std::pair<std::
 			pItems->GetItemAt(i, &item);
 			item->GetDisplayName(SIGDN_FILESYSPATH, &str);
 			items.push_back(str);
+			item->Release();
 		}
 	}
 
+	//free file dialog and items
+	pItems->Release();
+	fileEx->Release();
 	return items;
 
 
@@ -87,6 +91,10 @@ std::wstring Main::openFileExplorerSave(std::vector<std::pair<std::wstring, std:
 	fileEx->GetResult(&fileName);
 	PWSTR fileNameBuf = empty;
 	fileName->GetDisplayName(SIGDN_FILESYSPATH, &fileNameBuf);
+
+	//free file dialog and items
+	fileName->Release();
+	fileEx->Release();
 	return fileNameBuf;
 }
 

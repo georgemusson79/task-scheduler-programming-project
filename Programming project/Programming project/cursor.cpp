@@ -15,3 +15,14 @@ void Cursor::setCursor(SDL_SystemCursor cursorType) {
 	Cursor::currentCursorType = cursorType;
 	Cursor::hasCursorChanged = true;
 }
+
+bool Cursor::isLeftClicked() {
+	return SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT);
+}
+bool Cursor::isRightClicked() {
+	return SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT);
+}
+bool Cursor::isMiddleClicked() {
+	return SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_MIDDLE);
+
+}

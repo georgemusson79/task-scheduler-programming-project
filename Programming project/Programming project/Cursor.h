@@ -9,5 +9,8 @@ namespace Cursor {
 	inline SDL_Cursor* currentCursor= nullptr;
 
 	Vector2 getPos();
+	bool isLeftClicked();
+	bool isRightClicked();
+	bool isMiddleClicked();
 	void setCursor(SDL_SystemCursor cursorType);
 }
