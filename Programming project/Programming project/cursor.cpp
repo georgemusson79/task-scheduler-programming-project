@@ -1,4 +1,6 @@
+#include "renderable.h"
 #include "Cursor.h"
+
 Vector2 Cursor::getPos() {
 	int x;
 	int y;
@@ -24,5 +26,12 @@ bool Cursor::isRightClicked() {
 }
 bool Cursor::isMiddleClicked() {
 	return SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_MIDDLE);
+
+}
+
+void Cursor::focusOn(Renderable* obj,SDL_SystemCursor cursor) {
+	if (obj != nullptr) return;
+	Cursor::setCursor(SDL_SYSTEM_CURSOR_HAND);
+	Cursor::focusedItem = obj;
 
 }

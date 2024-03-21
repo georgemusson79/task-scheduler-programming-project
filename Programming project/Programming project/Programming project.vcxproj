@@ -138,11 +138,14 @@
     <ClCompile Include="cursor.cpp" />
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="Draggable.cpp" />
+    <ClCompile Include="Label.cpp" />
     <ClCompile Include="Main_Functions.cpp" />
     <ClCompile Include="Rectangle.cpp" />
+    <ClCompile Include="renderable.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Main_Functions.h" />
     <ClCompile Include="Sprite.cpp" />
+    <ClCompile Include="textbox.cpp" />
     <ClCompile Include="Vector2.cpp" />
   </ItemGroup>
   <ItemGroup>

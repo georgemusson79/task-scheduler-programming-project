@@ -13,7 +13,8 @@ void Rectangle::render() {
 	SDL_SetRenderDrawColor(Main::renderer, r, g, b, a); //set renderer colours back to before
 }
 
-Rectangle::Rectangle(int x, int y, int w, int h, SDL_Color colour) {
+Rectangle::Rectangle(int x, int y, int w, int h, bool fill,SDL_Color colour) {
 	this->colour = colour;
 	this->renderScrDims = { x,y,w,h };
+	this->fill = fill;
 }

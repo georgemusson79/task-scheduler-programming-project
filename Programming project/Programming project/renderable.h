@@ -2,6 +2,7 @@
 #include <iostream>
 #include <SDL_image.h>
 #include <functional>
+#include <algorithm>
 
 #include "Main_Functions.h"
 #include "Vector2.h"
@@ -10,8 +11,18 @@ enum MovementLimitations {
 };
 
 class Renderable {
-public:
+protected:
+	bool focused = false;
+	int renderPriority = 0;
 	SDL_Rect renderScrDims; //dimensions for rendering the object to the screen
+
+public:
+
+	bool moveForwardWhenFocused = true;
+
+
+	virtual void setRenderingDims(int x, int y, int w, int h);
+	SDL_Rect getRenderingDims();
 	//Update object, called every frame
 	virtual void update() {}
 	//Render object to screen
@@ -22,30 +33,32 @@ public:
 		static_assert(std::is_constructible_v<RenderableObj, Args...>, "Unable to construct class with current arguments"); //assert that class can be created with args
 		static_assert(std::is_base_of_v<Renderable, RenderableObj>, "RenderableObj is not of type Renderable"); //assert that class base is Renderable
 		RenderableObj* obj = new RenderableObj(args...); //dynamically allocate object then append to Main::renderables
+		
 		Main::renderables.push_back(obj);
+		
+		//sort list by render priority, higher means it will render towards the top of the screen
+		std::sort(Main::renderables.begin(), Main::renderables.end(), [](Renderable* a, Renderable* b) {
+			return a->getRenderPriority() < b->getRenderPriority();
+			});
 	}
+
+	int getRenderPriority() {
+		return renderPriority;
+	}
+
 	virtual ~Renderable() {
+		tryRemoveFocus();
 		std::cout << "renderable destroyed\n";
 	}
 
-	Vector2 getPosition() {
-		return { this->renderScrDims.x,this->renderScrDims.y };
-	}
+	Vector2 getPosition();
+	void setPos(Vector2 pos);
 
-	void setPos(Vector2 pos) {
-		this->renderScrDims.x = pos.x;
-		this->renderScrDims.y = pos.y;
-	}
+	void setDims(Vector2 dims);
+	Vector2 getDims();
 
-	void setDims(Vector2 dims) {
-		this->renderScrDims.w = dims.x;
-		this->renderScrDims.h = dims.y;
-	}
-
-	Vector2 getDims() {
-		return { this->renderScrDims.w,this->renderScrDims.h };
-	}
-
+	bool trySetFocus();
+	bool tryRemoveFocus();
 
 };
 
@@ -75,11 +88,13 @@ class Button : public Sprite {
 private:
 	SDL_Texture* img;
 	std::function<void()> fn;
+	bool alreadyClicked = false;
 	
 public:
 	template <typename Fn, typename... Args>
 	Button(int x, int y, int w, int h, std::string pathToImg, Fn function = NULL, SDL_RendererFlip flip = SDL_FLIP_NONE,Args... arguments) : Sprite(x,y,w,h,pathToImg,flip) {
 		this->setFunction(function, arguments...);
+		this->renderPriority = 100;
 	}
 
 	template <typename Fn, typename... Args>
@@ -102,7 +117,7 @@ class Draggable : public Sprite {
 protected:
 	Vector2 dragPosition = { 0,0 }; //position where the cursor picked up the object
 	bool clicked = false;
-	bool selected = false;
+
 public:
 	MovementLimitations movementLimits;
 	Draggable(int x, int y, int w, int h, std::string pathToImg, MovementLimitations movementLimits = ANYWHERE, SDL_RendererFlip flip = SDL_FLIP_NONE);
@@ -114,5 +129,25 @@ public:
 	bool fill = false;
 	SDL_Color colour;
 	void render();
-	Rectangle(int x, int y, int w, int h, SDL_Color colour = { 255,255,255,255 });
+	Rectangle(int x, int y, int w, int h, bool fill, SDL_Color colour = { 255,255,255,255 });
+};
+
+
+class Label : Renderable {
+protected:
+	SDL_Color textColor;
+	SDL_Texture* textTexture = nullptr;
+	std::wstring rawText = L"";
+	Renderable* bg = nullptr;
+public:
+	void setRenderingDims(int x, int y, int w, int h) override;
+	void setText(std::wstring text);
+	Label(int x, int y, int w, int h, SDL_Color textColor,std::string pathToBg);
+	Label(int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor);
+	Label(int x, int y, int w, int h, SDL_Color textColor);
+	~Label();
+	void render() override;
+	void setTextColor(SDL_Color color);
+	void setBgColor(SDL_Color color);
+	void updateBgImage(std::string pathToBg);
 };

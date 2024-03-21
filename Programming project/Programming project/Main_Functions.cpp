@@ -7,7 +7,7 @@
 #include "renderable.h"
 #include "Main_Functions.h"
 #include "Vector2.h"
-
+#include "Cursor.h"
 
 Vector2 Main::getDisplayDims() {
 	SDL_Rect r;
@@ -17,12 +17,20 @@ Vector2 Main::getDisplayDims() {
 
 
 void Main::updateRenderables() {
+	Cursor::hasCursorChanged = false;
+
 	SDL_RenderClear(Main::renderer);
+	//update and render objects to screen
 	for (Renderable* r : Main::renderables) {
-		r->render();
 		r->update();
+		if (Cursor::focusedItem!=r) r->render();
 	}
+	if (Cursor::focusedItem != nullptr && Cursor::focusedItem->moveForwardWhenFocused) Cursor::focusedItem->render(); //render the item held by the cursor to the top of the screen if required
+
+
 	SDL_RenderPresent(Main::renderer);
+	//set cursor to normal if it isnt interacting with anything
+	if (!Cursor::hasCursorChanged) Cursor::setCursor(SDL_SYSTEM_CURSOR_ARROW);
 }
 
 
@@ -107,3 +115,5 @@ void Main::handleEvents(SDL_Event& e) {
 		}
 	}
 }
+
+
