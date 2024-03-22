@@ -3,6 +3,7 @@
 #include <SDL_image.h>
 #include <functional>
 #include <algorithm>
+#include <SDL_ttf.h>
 
 #include "Main_Functions.h"
 #include "Vector2.h"
@@ -27,9 +28,9 @@ public:
 	virtual void update() {}
 	//Render object to screen
 	virtual void render() = 0;
-	//Create an object that inherits Renderable and push it to Main::renderables
+	//Create an object that inherits Renderable and push it to Main::renderables, returning a pointer to the created object
 	template <typename RenderableObj,typename... Args>
-	static void create(Args...args) {
+	static RenderableObj* create(Args...args) {
 		static_assert(std::is_constructible_v<RenderableObj, Args...>, "Unable to construct class with current arguments"); //assert that class can be created with args
 		static_assert(std::is_base_of_v<Renderable, RenderableObj>, "RenderableObj is not of type Renderable"); //assert that class base is Renderable
 		RenderableObj* obj = new RenderableObj(args...); //dynamically allocate object then append to Main::renderables
@@ -40,6 +41,8 @@ public:
 		std::sort(Main::renderables.begin(), Main::renderables.end(), [](Renderable* a, Renderable* b) {
 			return a->getRenderPriority() < b->getRenderPriority();
 			});
+
+		return obj;
 	}
 
 	int getRenderPriority() {
@@ -133,21 +136,39 @@ public:
 };
 
 
-class Label : Renderable {
+class Label : public Renderable {
 protected:
 	SDL_Color textColor;
 	SDL_Texture* textTexture = nullptr;
-	std::wstring rawText = L"";
+	std::string rawText = "";
 	Renderable* bg = nullptr;
+	TTF_Font* font = NULL;
+	int charsPerLine;
 public:
 	void setRenderingDims(int x, int y, int w, int h) override;
-	void setText(std::wstring text);
-	Label(int x, int y, int w, int h, SDL_Color textColor,std::string pathToBg);
-	Label(int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor);
-	Label(int x, int y, int w, int h, SDL_Color textColor);
+	virtual void setText(std::string text);
+	virtual void setFont(std::string fontPath);
+	Label(int x, int y, int w, int h, SDL_Color textColor,std::string pathToBg, int charsPerLine=0 ,std::string pathToFont = "");
+	Label(int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, int charsPerLine=0, std::string pathToFont = "");
+	Label(int x, int y, int w, int h, SDL_Color textColor, int charsPerLine=0 ,std::string pathToFont = "");
 	~Label();
-	void render() override;
-	void setTextColor(SDL_Color color);
+	virtual void render() override;
+	virtual void setTextColor(SDL_Color color);
 	void setBgColor(SDL_Color color);
 	void updateBgImage(std::string pathToBg);
+	virtual void setCharactersPerLine(int chars);
+};
+
+class TextField : public Renderable {
+protected:
+	SDL_Color textColor;
+	SDL_Texture* textTexture = nullptr;
+	std::string rawText = "";
+	Renderable* bg = nullptr;
+
+public:
+	TextField(int x, int y, int w, int h, SDL_Color textColor, std::string pathToBg);
+	TextField(int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor);
+	TextField(int x, int y, int w, int h, SDL_Color textColor);
+	~TextField();
 };

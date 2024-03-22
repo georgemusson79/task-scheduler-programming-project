@@ -85,7 +85,7 @@ std::vector<std::wstring> Main::openFileExplorerLoad(std::vector<std::pair<std::
 
 std::wstring Main::openFileExplorerSave(std::vector<std::pair<std::wstring, std::wstring>> allowedFiles) {
 	IFileSaveDialog* fileEx;
-	wchar_t empty[] = L"";
+	wchar_t empty[] =L"";
 	CoCreateInstance(CLSID_FileSaveDialog, NULL, CLSCTX_INPROC, IID_PPV_ARGS(&fileEx));
 
 	int numOfFileTypes = allowedFiles.size();

@@ -145,13 +145,14 @@
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Main_Functions.h" />
     <ClCompile Include="Sprite.cpp" />
-    <ClCompile Include="textbox.cpp" />
+    <ClCompile Include="TextField.cpp" />
     <ClCompile Include="Vector2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h" />
     <ClInclude Include="Cursor.h" />
     <ClInclude Include="Debug.h" />
+    <ClInclude Include="font.h" />
     <ClInclude Include="renderable.h" />
     <ClInclude Include="Vector2.h" />
   </ItemGroup>
