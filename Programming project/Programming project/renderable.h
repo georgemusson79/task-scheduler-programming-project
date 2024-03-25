@@ -157,18 +157,28 @@ public:
 	void setBgColor(SDL_Color color);
 	void updateBgImage(std::string pathToBg);
 	virtual void setCharactersPerLine(int chars);
+	
 };
 
-class TextField : public Renderable {
+class TextField : public Label {
 protected:
-	SDL_Color textColor;
-	SDL_Texture* textTexture = nullptr;
-	std::string rawText = "";
-	Renderable* bg = nullptr;
-
+	SDL_Color cursorColor = { 0,0,0,255 };
+	int numCharsToDisplay = 7;
+	int posFirstCharToRender = 0;
+	std::vector<Uint8> keysPressedBefore = {};
+	std::vector<Uint8> keysPressed = {};
+	void updateKeysPressed();
 public:
-	TextField(int x, int y, int w, int h, SDL_Color textColor, std::string pathToBg);
-	TextField(int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor);
-	TextField(int x, int y, int w, int h, SDL_Color textColor);
+	TextField(int x, int y, int w, int h, SDL_Color textColor, std::string pathToBg, std::string pathToFont="");
+	TextField(int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, std::string pathToFont = "");
+	TextField(int x, int y, int w, int h, SDL_Color textColor, std::string pathToFont = "");
 	~TextField();
+	void render() override;
+	void update() override;
+
+	//amount of characters that can be shown in the text field at a time
+	void setCharactersPerLine(int chars) override;
+
+	//set the position of the first character in rawText to begin rendering from
+	void setPosFirstCharToRender(int first);
 };

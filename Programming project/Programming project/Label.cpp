@@ -1,4 +1,4 @@
-#include "renderable.h"
+﻿#include "renderable.h"
 #include "font.h"
 #include <SDL_ttf.h>
 
@@ -55,7 +55,7 @@ Label::Label(int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor,
 Label::Label(int x, int y, int w, int h, SDL_Color textColor, int charsPerLine, std::string pathToFont) {
 	this->renderScrDims = { x, y, w, h };
 	this->textColor = textColor;
-	this->setCharactersPerLine(charsPerLine);
+	this->charsPerLine = 0;
 	this->setFont(pathToFont);
 }
 

@@ -13,6 +13,7 @@ namespace Main {
 	inline std::vector<Renderable*> renderables;
 	inline SDL_Window* window;
 	inline SDL_Renderer* renderer;
+	
 
 	//Get width and height of the screen
 	Vector2 getDisplayDims();
