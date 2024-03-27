@@ -30,9 +30,10 @@ void Label::setFont(std::string fontPath) {
 		if (this->font == NULL) std::cout << TTF_GetError() << "\n";
 	}
 	else {
-		this->font = TTF_OpenFont(fontPath.c_str(), 72);
-		if (this->font == nullptr) throw "Unable to Load font";
+		this->font = TTF_OpenFont(fontPath.c_str(), 90);
 	}
+	if (this->font == NULL) std::cerr << TTF_GetError() << "\n";
+
 }
 
 Label::Label(int x, int y, int w, int h, SDL_Color textColor, std::string pathToBg, int charsPerLine, std::string pathToFont) {

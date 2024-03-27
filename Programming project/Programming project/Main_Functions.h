@@ -8,6 +8,7 @@ struct Vector2;
 class Renderable;
 
 
+
 namespace Main {
 	inline bool running = true; //if false close the program
 	inline std::vector<Renderable*> renderables;

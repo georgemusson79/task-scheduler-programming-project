@@ -18,10 +18,10 @@ protected:
 	SDL_Rect renderScrDims; //dimensions for rendering the object to the screen
 
 public:
-
+	std::string name;
 	bool moveForwardWhenFocused = true;
 
-
+	//return true if cursor is within the bounds and isnt clicking anything else
 	virtual void setRenderingDims(int x, int y, int w, int h);
 	SDL_Rect getRenderingDims();
 	//Update object, called every frame
@@ -162,21 +162,24 @@ public:
 
 class TextField : public Label {
 protected:
+	int typingCursorPos = 0;
 	SDL_Color cursorColor = { 0,0,0,255 };
-	int numCharsToDisplay = 7;
+	int numCharsToDisplay = 9;
 	int posFirstCharToRender = 0;
 	std::vector<Uint8> keysPressedBefore = {};
 	std::vector<Uint8> keysPressed = {};
+	float pxPerCharacter; //the pixel width of each character (all characters will be the same width)
 	void updateKeysPressed();
+	void _generateTypingCursor();
 public:
-	TextField(int x, int y, int w, int h, SDL_Color textColor, std::string pathToBg, std::string pathToFont="");
-	TextField(int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, std::string pathToFont = "");
-	TextField(int x, int y, int w, int h, SDL_Color textColor, std::string pathToFont = "");
+	TextField(int x, int y, int w, int h, SDL_Color textColor, std::string pathToBg,int maxCharsToDisplay,std::string pathToFont="");
+	TextField(int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, int maxCharsToDisplay, std::string pathToFont = "");
+	TextField(int x, int y, int w, int h, SDL_Color textColor, int maxCharsToDisplay,std::string pathToFont = "");
 	~TextField();
 	void render() override;
 	void update() override;
 
-	//amount of characters that can be shown in the text field at a time
+	//max amount of characters that can be shown in the text field at a time
 	void setCharactersPerLine(int chars) override;
 
 	//set the position of the first character in rawText to begin rendering from

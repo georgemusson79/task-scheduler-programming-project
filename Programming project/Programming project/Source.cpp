@@ -27,16 +27,24 @@ int main(int argc, char** argv) {
 	Main::window = SDL_CreateWindow("Task Scheduler", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, scrDims.x/2, scrDims.y/2, SDL_WINDOW_SHOWN|SDL_WINDOW_RESIZABLE);
 	Main::renderer = (Debug::vsync) ? SDL_CreateRenderer(Main::window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC) : SDL_CreateRenderer(Main::window, -1, SDL_RENDERER_ACCELERATED);
 	//for (int i = 0; i < 4; i++) Renderable::create<Button>(10, i*50, 50, 50, "C:/Screenshot (24).png", temp);
-	//for (int i=0; i<4; i++) Renderable::create<Draggable>(10, 10, 50, 50, "C:/Screenshot (51).png",ONLY_X);
+	Renderable::create<Draggable>(50, 50, 400, 100, "C:/Screenshot (51).png",ONLY_X);
 	
-	TextField* l=Renderable::create<TextField>(50, 50, 400, 100, SDL_Color(255, 255, 255), SDL_Color(255, 0, 0));
-	l->setText("123456789");
+	TextField* l=Renderable::create<TextField>(50, 50, 400, 100, SDL_Color(255, 255, 255), SDL_Color(255, 0, 0),7);
+	l->setText("12345");
+	//TextField* r = Renderable::create<TextField>(100, 100, 400, 100, SDL_Color(255, 255, 255), SDL_Color(255, 0, 0));
+	//r->setText("489");
 	//l->setText("abc123")
 	SDL_Event e;
+	for (auto* i : Main::renderables) {
+		std::cout << i->name<<", ";
+	}
+	std::cout << "\n";
 	while (Main::running) {
-		Main::updateRenderables();
 		Main::handleEvents(e);
-		Debug::handleFPS();
+		Main::updateRenderables();
+		Debug::handleKBInput();
+		//Debug::handleFPS();
+		//std::cout << "frame end\n";
 	}
 	return 0;
 }

@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <vector>
 #include <Shobjidl.h>
+#include <algorithm>
 
 #include "renderable.h"
 #include "Main_Functions.h"
@@ -18,19 +19,24 @@ Vector2 Main::getDisplayDims() {
 
 void Main::updateRenderables() {
 	Cursor::hasCursorChanged = false;
-
 	SDL_RenderClear(Main::renderer);
-	//update and render objects to screen
-	for (Renderable* r : Main::renderables) {
+
+
+	//objects are rendered in reverse order to ensure objects with higher priority are updated first but also rendered more forward 
+
+	for (int i = Main::renderables.size() - 1; i >= 0; i--) {
+		Renderable* r = Main::renderables[i];
 		r->update();
-		if (Cursor::focusedItem!=r) r->render();
 	}
+	for (Renderable* r : Main::renderables) if (!r->moveForwardWhenFocused || r != Cursor::focusedItem) r->render();
+
+
 	if (Cursor::focusedItem != nullptr && Cursor::focusedItem->moveForwardWhenFocused) Cursor::focusedItem->render(); //render the item held by the cursor to the top of the screen if required
 
 
 	SDL_RenderPresent(Main::renderer);
 	//set cursor to normal if it isnt interacting with anything
-	if (!Cursor::hasCursorChanged) Cursor::setCursor(SDL_SYSTEM_CURSOR_ARROW);
+	if (!Cursor::hasCursorChanged && Cursor::currentCursorType!=SDL_SYSTEM_CURSOR_ARROW) Cursor::setCursor(SDL_SYSTEM_CURSOR_ARROW);
 }
 
 

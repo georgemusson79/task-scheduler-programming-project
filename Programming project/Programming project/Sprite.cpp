@@ -3,6 +3,7 @@
 Sprite::Sprite(int x, int y, int w, int h, std::string pathToImg,SDL_RendererFlip flip) : flip(flip) {
 	this->renderScrDims = { x,y,w,h };
 	this->setImg(pathToImg);
+	this->name = "sprite";
 }
 
 void Sprite::setImg(std::string pathToImg) {

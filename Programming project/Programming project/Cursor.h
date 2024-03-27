@@ -16,6 +16,5 @@ namespace Cursor {
 	bool isLeftClicked();
 	bool isRightClicked();
 	bool isMiddleClicked();
-	void setCursor(SDL_SystemCursor cursorType);
-	void focusOn(Renderable* obj, SDL_SystemCursor);
+	bool setCursor(SDL_SystemCursor cursorType);
 }

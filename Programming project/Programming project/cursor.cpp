@@ -8,14 +8,25 @@ Vector2 Cursor::getPos() {
 	return { x,y };
 }
 
-void Cursor::setCursor(SDL_SystemCursor cursorType) {
-	if ((Cursor::currentCursorType == cursorType && Cursor::currentCursor!=nullptr) || Cursor::hasCursorChanged) return; //return immediately if cursor has already been updated this frame, also return if cursor to update to is the same as current cursor
+bool Cursor::setCursor(SDL_SystemCursor cursorType) {
+	//return immediately if cursor has already been updated this frame
+	if (Cursor::hasCursorChanged) return false;
+
+
+	//return if cursor to update to is the same as current cursor, behaves exactly as if cursor has been updated
+	if (Cursor::currentCursorType == cursorType && Cursor::currentCursor != nullptr) {
+		Cursor::hasCursorChanged = true;
+		return true;
+	}
+
 	SDL_Cursor* cursor = SDL_CreateSystemCursor(cursorType);
 	SDL_SetCursor(cursor);
 	SDL_FreeCursor(currentCursor);
 	currentCursor = cursor;
 	Cursor::currentCursorType = cursorType;
 	Cursor::hasCursorChanged = true;
+	std::cout << "cursor chabge\n";
+	return true;
 }
 
 bool Cursor::isLeftClicked() {
@@ -29,9 +40,3 @@ bool Cursor::isMiddleClicked() {
 
 }
 
-void Cursor::focusOn(Renderable* obj,SDL_SystemCursor cursor) {
-	if (obj != nullptr) return;
-	Cursor::setCursor(SDL_SYSTEM_CURSOR_HAND);
-	Cursor::focusedItem = obj;
-
-}
