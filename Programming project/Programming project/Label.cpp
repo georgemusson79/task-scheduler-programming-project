@@ -15,7 +15,7 @@ bool Label::setText(std::string text) {
 	TTF_SizeText(font, text.c_str(), &w, &h);
 	int pixelsPerLine = (w / text.size()) * this->charsPerLine;
 
-	SDL_Surface* s = TTF_RenderUTF8_Blended_Wrapped(font, text.c_str(), this->textColor, pixelsPerLine);
+	SDL_Surface* s = TTF_RenderText_Blended_Wrapped(font, text.c_str(), this->textColor, pixelsPerLine);
 	if (s == nullptr) throw "Unable to load texture";
 	this->textTexture = SDL_CreateTextureFromSurface(Main::renderer, s);
 	SDL_FreeSurface(s);
@@ -27,7 +27,7 @@ void Label::setFont(std::string fontPath) {
 	if (fontPath == "") {
 		SDL_RWops* data=SDL_RWFromConstMem(defaultFont, sizeof(defaultFont));
 		//std::cout << sizeof(defaultFont) << "\n";
-		this->font = TTF_OpenFontRW(data, 1, 90);
+		this->font = TTF_OpenFontRW(data, 1, 1);
 		if (this->font == NULL) std::cout << TTF_GetError() << "\n";
 	}
 	else {
