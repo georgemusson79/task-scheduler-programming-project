@@ -2,12 +2,12 @@
 #include "font.h"
 #include <SDL_ttf.h>
 
-void Label::setText(std::string text) {
+bool Label::setText(std::string text) {
 	SDL_DestroyTexture(textTexture);
 	rawText = text;
 	if (text == "") {
 		textTexture = nullptr;
-		return;
+		return true;
 	}
 	
 	int w;
@@ -19,6 +19,7 @@ void Label::setText(std::string text) {
 	if (s == nullptr) throw "Unable to load texture";
 	this->textTexture = SDL_CreateTextureFromSurface(Main::renderer, s);
 	SDL_FreeSurface(s);
+	return true;
 }
 
 void Label::setFont(std::string fontPath) {

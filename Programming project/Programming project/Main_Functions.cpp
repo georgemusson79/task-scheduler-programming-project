@@ -42,12 +42,10 @@ void Main::updateRenderables() {
 
 
 std::vector<std::wstring> Main::openFileExplorerLoad(std::vector<std::pair<std::wstring,std::wstring>> allowedFiles, bool multiselect) {
-	
 
 	IFileOpenDialog* fileEx;
 	CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_INPROC, IID_PPV_ARGS(&fileEx));
 	IFileDialogEvents* e = nullptr;
-	DWORD cookie;
 	PWSTR f = NULL;
 	//fileEx->Advise(NULL, &cookie);
 	
@@ -113,12 +111,18 @@ std::wstring Main::openFileExplorerSave(std::vector<std::pair<std::wstring, std:
 }
 
 void Main::handleEvents(SDL_Event& e) {
+	Main::textInputThisFrame = "";
 	while (SDL_PollEvent(&e)) {
 		switch (e.type) {
 		case SDL_QUIT:
 			SDL_Quit();
 			Main::running = false;
+			break;
+
+		case (SDL_TEXTINPUT):
+			Main::textInputThisFrame += e.text.text;
 		}
+
 	}
 }
 

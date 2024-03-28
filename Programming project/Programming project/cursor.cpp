@@ -25,7 +25,6 @@ bool Cursor::setCursor(SDL_SystemCursor cursorType) {
 	currentCursor = cursor;
 	Cursor::currentCursorType = cursorType;
 	Cursor::hasCursorChanged = true;
-	std::cout << "cursor chabge\n";
 	return true;
 }
 

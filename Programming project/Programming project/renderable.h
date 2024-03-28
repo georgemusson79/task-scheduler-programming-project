@@ -3,6 +3,7 @@
 #include <SDL_image.h>
 #include <functional>
 #include <algorithm>
+#include <limits>
 #include <SDL_ttf.h>
 
 #include "Main_Functions.h"
@@ -146,7 +147,7 @@ protected:
 	int charsPerLine;
 public:
 	void setRenderingDims(int x, int y, int w, int h) override;
-	virtual void setText(std::string text);
+	virtual bool setText(std::string text);
 	virtual void setFont(std::string fontPath);
 	Label(int x, int y, int w, int h, SDL_Color textColor,std::string pathToBg, int charsPerLine=0 ,std::string pathToFont = "");
 	Label(int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, int charsPerLine=0, std::string pathToFont = "");
@@ -162,15 +163,29 @@ public:
 
 class TextField : public Label {
 protected:
+	int maxAllowedCharacters = 500;
+	std::string renderedText = "";
 	int typingCursorPos = 0;
 	SDL_Color cursorColor = { 0,0,0,255 };
 	int numCharsToDisplay = 9;
 	int posFirstCharToRender = 0;
 	std::vector<Uint8> keysPressedBefore = {};
 	std::vector<Uint8> keysPressed = {};
+	std::string textKeysPressed = "";
 	float pxPerCharacter; //the pixel width of each character (all characters will be the same width)
-	void updateKeysPressed();
+
+	//update keysPressed with the keys pressed this frame and keysPressedBefore with keys pressed last frame
+	void _updateKeysPressed();
+	void _moveCursorLeft(int times=1);
+	void _moveCursorRight(int times=1);
 	void _generateTypingCursor();
+	void _handleKBInput();
+	void _addTextAtCursorPos(std::string text);
+	int _calculateRenderedTextSize();
+	
+
+	//return where the cursor is in the rawtext string
+	int _getCursorPosinText();
 public:
 	TextField(int x, int y, int w, int h, SDL_Color textColor, std::string pathToBg,int maxCharsToDisplay,std::string pathToFont="");
 	TextField(int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, int maxCharsToDisplay, std::string pathToFont = "");
@@ -179,9 +194,16 @@ public:
 	void render() override;
 	void update() override;
 
+
 	//max amount of characters that can be shown in the text field at a time
 	void setCharactersPerLine(int chars) override;
 
 	//set the position of the first character in rawText to begin rendering from
 	void setPosFirstCharToRender(int first);
+
+	bool setText(std::string text) override;
+	bool insertText(int position,std::string text);
+	bool backspace(int pos);
+	bool del(int pos);
+	std::string getRenderedText();
 };
