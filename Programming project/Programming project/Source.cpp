@@ -29,8 +29,7 @@ int main(int argc, char** argv) {
 	//for (int i = 0; i < 4; i++) Renderable::create<Button>(10, i*50, 50, 50, "C:/Screenshot (24).png", temp);
 	//Renderable::create<Draggable>(50, 50, 400, 100, "C:/Screenshot (51).png",ONLY_X);
 	
-	TextField* l=Renderable::create<TextField>(50, 50, 400, 100, SDL_Color(255, 255, 255), SDL_Color(255, 0, 0),7);
-	l->setText("1 2 3 4 5 6 7 8 9 10");
+	TextField* l=Renderable::create<TextField>(50, 50, 400, 100, SDL_Color(255, 255, 255), SDL_Color(255, 0, 0),9);
 	//TextField* r = Renderable::create<TextField>(100, 100, 400, 100, SDL_Color(255, 255, 255), SDL_Color(255, 0, 0));
 	//r->setText("489");
 	//l->setText("abc123")

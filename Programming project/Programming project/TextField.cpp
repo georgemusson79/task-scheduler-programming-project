@@ -68,7 +68,11 @@ void TextField::render() {
 
 	}
 	if (this->focused) {
-		int typingCursorRenderX = (this->typingCursorPos * this->pxPerCharacter)+this->pxPerCharacter;
+		//get where the typing cursor should be based on where it is in the string of rendered characters
+		int startOfTextbox = this->renderScrDims.x;
+		int typingCursorRenderX = startOfTextbox + (this->typingCursorPos * this->pxPerCharacter);
+
+		//draw the cursor to the screen
 		Uint8 r, g, b,a;
 		SDL_GetRenderDrawColor(Main::renderer, &r, &g, &b,&a);
 		SDL_SetRenderDrawColor(Main::renderer, textColor.r, textColor.g, textColor.b, textColor.a);
