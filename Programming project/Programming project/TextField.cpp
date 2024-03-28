@@ -115,7 +115,6 @@ void TextField::_generateTypingCursor() {
 
 	this->typingCursorPos = std::round(cursorxRelativeToBox / this->pxPerCharacter);
 	if (this->typingCursorPos > this->renderedText.size()) this->typingCursorPos = this->renderedText.size();
-	std::cout << this->renderedText.size() << " " << typingCursorPos << "\n";
 }
 
 
@@ -182,9 +181,12 @@ void TextField::_addTextAtCursorPos(std::string text) {
 }
 
 std::string TextField::getRenderedText() {
-	std::cout << this->posFirstCharToRender << " " << this->rawText.length() << "\n";
 	if (this->posFirstCharToRender> this->rawText.length()) return "";
 	return rawText.substr(this->posFirstCharToRender, this->numCharsToDisplay);
+}
+
+std::string TextField::getText() {
+	return this->rawText;
 }
 
 int TextField::_calculateRenderedTextSize() {

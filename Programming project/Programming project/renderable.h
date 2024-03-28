@@ -205,5 +205,7 @@ public:
 	bool insertText(int position,std::string text);
 	bool backspace(int pos);
 	bool del(int pos);
+
 	std::string getRenderedText();
+	std::string getText();
 };
