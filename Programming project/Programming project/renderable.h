@@ -8,6 +8,10 @@
 
 #include "Main_Functions.h"
 #include "Vector2.h"
+namespace Main {
+	extern std::string textInputThisFrame;
+}
+
 enum MovementLimitations {
 	ANYWHERE,ONLY_X,ONLY_Y
 };
@@ -163,6 +167,10 @@ public:
 
 class TextField : public Label {
 protected:
+	int _heldDownKeyPressInterval = 30; //when held down, a functional key will do its action every x milliseconds eg backspace will backspace every 50ms when held down
+	int _heldDownKeyPressLast = 0;
+	int _timeSinceLastFnKeyPress = 0;
+	
 	int maxAllowedCharacters = 500;
 	std::string renderedText = "";
 	int typingCursorPos = 0;
@@ -171,9 +179,13 @@ protected:
 	int posFirstCharToRender = 0;
 	std::vector<Uint8> keysPressedBefore = {};
 	std::vector<Uint8> keysPressed = {};
-	std::string textKeysPressed = "";
+	std::string* _textKeysPressed;
 	float pxPerCharacter; //the pixel width of each character (all characters will be the same width)
 
+	//called in all textfield constructors
+	void _construct(int maxCharsToDisplay, std::string* textKeys);
+	void handleFnKeysSinglePress();
+	void handleFnKeysHeldDown();
 	//update keysPressed with the keys pressed this frame and keysPressedBefore with keys pressed last frame
 	void _updateKeysPressed();
 	void _moveCursorLeft(int times=1);
@@ -187,9 +199,9 @@ protected:
 	//return where the cursor is in the rawtext string
 	int _getCursorPosinText();
 public:
-	TextField(int x, int y, int w, int h, SDL_Color textColor, std::string pathToBg,int maxCharsToDisplay,std::string pathToFont="");
-	TextField(int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, int maxCharsToDisplay, std::string pathToFont = "");
-	TextField(int x, int y, int w, int h, SDL_Color textColor, int maxCharsToDisplay,std::string pathToFont = "");
+	TextField(int x, int y, int w, int h, SDL_Color textColor, std::string pathToBg, int maxCharsToDisplay, std::string pathToFont = "", std::string* textKeys=&Main::textInputThisFrame);
+	TextField(int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, int maxCharsToDisplay, std::string pathToFont = "", std::string* textKeys = &Main::textInputThisFrame);
+	TextField(int x, int y, int w, int h, SDL_Color textColor, int maxCharsToDisplay,std::string pathToFont = "", std::string* textKeys = &Main::textInputThisFrame);
 	~TextField();
 	void render() override;
 	void update() override;

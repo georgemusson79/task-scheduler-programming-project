@@ -1,27 +1,27 @@
 #include "renderable.h"
 #include "Cursor.h"
 #include "Collision.h"
-
+#include "Main_Functions.h"
 #include <string>
 
-TextField::TextField(int x, int y, int w, int h, SDL_Color textColor, std::string pathToBg, int maxCharsToDisplay, std::string pathToFont) : Label(x,y,w,h,textColor,pathToBg,0,pathToFont) {
+void TextField::_construct(int maxCharsToDisplay,std::string* textKeys) {
 	this->setCharactersPerLine(maxCharsToDisplay);
 	this->renderPriority = 10;
 	this->name = "textField";
+	this->_textKeysPressed = textKeys; 
+}
+
+TextField::TextField(int x, int y, int w, int h, SDL_Color textColor, std::string pathToBg, int maxCharsToDisplay, std::string pathToFont,std::string* textKeys) : Label(x,y,w,h,textColor,pathToBg,0,pathToFont) {
+	this->_construct(maxCharsToDisplay, textKeys);
 }
 
 
-TextField::TextField(int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, int maxCharsToDisplay, std::string pathToFont) : Label(x,y, w, h, textColor, bgColor,0,pathToFont) {
-	this->setCharactersPerLine(maxCharsToDisplay);
-	this->renderPriority = 10;
-	this->name = "textField";
+TextField::TextField(int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, int maxCharsToDisplay, std::string pathToFont, std::string* textKeys) : Label(x,y, w, h, textColor, bgColor,0,pathToFont) {
+	this->_construct(maxCharsToDisplay, textKeys);
 }
 
-TextField::TextField(int x, int y, int w, int h, SDL_Color textColor, int maxCharsToDisplay, std::string pathToFont) : Label(x,y,w,h,textColor,0,pathToFont) {
-	this->setCharactersPerLine(maxCharsToDisplay);
-	this->renderPriority = 10;
-	this->name = "textField";
-
+TextField::TextField(int x, int y, int w, int h, SDL_Color textColor, int maxCharsToDisplay, std::string pathToFont, std::string* textKeys) : Label(x,y,w,h,textColor,0,pathToFont) {
+	this->_construct(maxCharsToDisplay, textKeys);
 }
 
 TextField::~TextField() {
@@ -40,7 +40,6 @@ void TextField::_updateKeysPressed() {
 	int szKeys;
 	const Uint8* keys = SDL_GetKeyboardState(&szKeys);
 	keysPressed=std::vector(keys, keys + szKeys);
-	this->textKeysPressed = Main::textInputThisFrame;
 }
 
 void TextField::render() {
@@ -137,18 +136,19 @@ void TextField::_moveCursorRight(int times) {
 
 void TextField::_handleKBInput() {
 	this->_updateKeysPressed();
-	if (this->keysPressed[SDL_SCANCODE_LEFT] && !this->keysPressedBefore[SDL_SCANCODE_LEFT]) this->_moveCursorLeft();
-	else if (this->keysPressed[SDL_SCANCODE_RIGHT] && !this->keysPressedBefore[SDL_SCANCODE_RIGHT]) this->_moveCursorRight();
-	else if (this->keysPressed[SDL_SCANCODE_BACKSPACE] && !this->keysPressedBefore[SDL_SCANCODE_BACKSPACE]) this->backspace(this->posFirstCharToRender + this->typingCursorPos);
-	else if (this->keysPressed[SDL_SCANCODE_DELETE] && !this->keysPressedBefore[SDL_SCANCODE_DELETE]) {
-		int pos = this->posFirstCharToRender + this->typingCursorPos;
-		if (pos > this->rawText.length()) this->backspace(pos - 1);
-		else this->del(pos);
+	bool pressOnce = true;
+
+
+	const SDL_Scancode functionalKeys[] = { SDL_SCANCODE_LEFT ,SDL_SCANCODE_RIGHT, SDL_SCANCODE_BACKSPACE,SDL_SCANCODE_DELETE };
+	for (auto key : functionalKeys) {
+		if (this->keysPressed[key] && !this->keysPressedBefore[key]) this->_timeSinceLastFnKeyPress = SDL_GetTicks();
+		else if (this->keysPressed[key] && this->keysPressedBefore[key] && SDL_GetTicks() - this->_timeSinceLastFnKeyPress > 400) pressOnce = false;
 	}
 
-	if (this->textKeysPressed != "") {
-		this->_addTextAtCursorPos(this->textKeysPressed);
-	}
+	if (pressOnce) this->handleFnKeysSinglePress();
+	else this->handleFnKeysHeldDown();
+
+	if (*this->_textKeysPressed != "") this->_addTextAtCursorPos(*this->_textKeysPressed);
 }
 
 bool TextField::setText(std::string text) {
@@ -221,4 +221,32 @@ bool TextField::del(int pos) {
 
 int TextField::_getCursorPosinText() {
 	return this->posFirstCharToRender + this->typingCursorPos;
+}
+
+void TextField::handleFnKeysSinglePress() {
+	if (this->keysPressed[SDL_SCANCODE_LEFT] && !this->keysPressedBefore[SDL_SCANCODE_LEFT]) this->_moveCursorLeft();
+	else if (this->keysPressed[SDL_SCANCODE_RIGHT] && !this->keysPressedBefore[SDL_SCANCODE_RIGHT]) this->_moveCursorRight();
+	else if (this->keysPressed[SDL_SCANCODE_BACKSPACE] && !this->keysPressedBefore[SDL_SCANCODE_BACKSPACE]) this->backspace(this->posFirstCharToRender + this->typingCursorPos);
+	else if (this->keysPressed[SDL_SCANCODE_DELETE] && !this->keysPressedBefore[SDL_SCANCODE_DELETE]) {
+		int pos = this->posFirstCharToRender + this->typingCursorPos;
+		if (pos > this->rawText.length()) this->backspace(pos - 1);
+		else this->del(pos);
+	}
+}
+
+
+void TextField::handleFnKeysHeldDown() {
+	if (SDL_GetTicks() - this->_heldDownKeyPressLast < this->_heldDownKeyPressInterval) return;
+
+	if (this->keysPressed[SDL_SCANCODE_LEFT]) this->_moveCursorLeft();
+	else if (this->keysPressed[SDL_SCANCODE_RIGHT]) this->_moveCursorRight();
+	else if (this->keysPressed[SDL_SCANCODE_BACKSPACE]) this->backspace(this->posFirstCharToRender + this->typingCursorPos);
+	else if (this->keysPressed[SDL_SCANCODE_DELETE]) {
+		int pos = this->posFirstCharToRender + this->typingCursorPos;
+		if (pos > this->rawText.length()) this->backspace(pos - 1);
+		else this->del(pos);
+	}
+
+	this ->_heldDownKeyPressLast = SDL_GetTicks();
+
 }
