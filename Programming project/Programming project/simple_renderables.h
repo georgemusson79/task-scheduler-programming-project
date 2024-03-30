@@ -152,7 +152,7 @@ public:
 	Rectangle(SDL_Renderer* renderer, int x, int y, int w, int h, bool fill, SDL_Color colour = { 255,255,255,255 });
 };
 
-
+//creates a read only block of text on the screen the size of renderingDims
 class Label : public Renderable {
 protected:
 	SDL_Color textColor;
@@ -242,4 +242,20 @@ public:
 
 	std::string getRenderedText();
 	std::string getText();
+};
+
+
+//similar to label except characters all have the height of heightOfChar
+//width is determined by the width of each character in the font which is then scaled to be proportional to heightofChar
+
+class LabelFixedCharDims : public Label {
+protected:
+	int heightOfChar;
+	std::vector<std::string> _splitTextByLine(std::string text);
+	std::vector<std::string> _splitText(std::string text,int interval);
+public:
+	LabelFixedCharDims(SDL_Renderer* renderer, int x, int y,  int heightOfChar, std::string text, SDL_Color textColor, std::string pathToBg, int charsPerLine = 0, std::string pathToFont = "");
+	LabelFixedCharDims(SDL_Renderer* renderer, int x, int y,  int heightOfChar, std::string text, SDL_Color textColor, SDL_Color bgColor, int charsPerLine = 0, std::string pathToFont = "");
+	LabelFixedCharDims(SDL_Renderer* renderer, int x, int y,  int heightOfChar, std::string text, SDL_Color textColor, int charsPerLine = 0, std::string pathToFont = "");
+	bool setText(std::string text) override;
 };

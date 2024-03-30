@@ -57,7 +57,7 @@ Label::Label(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textC
 Label::Label(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, int charsPerLine, std::string pathToFont) : Renderable(renderer) {
 	this->renderScrDims = { x, y, w, h };
 	this->textColor = textColor;
-	this->charsPerLine = 0;
+	this->setCharactersPerLine(charsPerLine);
 	this->setFont(pathToFont);
 }
 

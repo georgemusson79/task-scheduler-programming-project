@@ -30,6 +30,7 @@ int main(int argc, char** argv) {
 	Button* b=Renderable::create<Button>(Main::renderer, 100, 100, 50, 50, "C:/Screenshot (24).png", temp);
 	TextField* l=Renderable::create<TextField>(Main::renderer,50, 50, 400, 30, SDL_Color(255, 255, 255), SDL_Color(255, 0, 0),40);
 	
+	Renderable::create<LabelFixedCharDims>(Main::renderer, 0, 200, 50, "obamahamehagih", SDL_Color(255, 255, 255),5);
 	SDL_Event e;
 	while (Main::running) {
 

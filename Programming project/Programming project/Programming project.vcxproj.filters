@@ -57,6 +57,9 @@
     <ClCompile Include="TextField.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="LabelFixedCharWidth.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Vector2.h">
@@ -76,6 +79,9 @@
     </ClInclude>
     <ClInclude Include="font.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="task_objects.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
