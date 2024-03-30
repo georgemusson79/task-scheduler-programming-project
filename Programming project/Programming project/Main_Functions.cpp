@@ -4,6 +4,7 @@
 #include <vector>
 #include <Shobjidl.h>
 #include <algorithm>
+#include <set>
 
 #include "simple_renderables.h"
 #include "Main_Functions.h"
@@ -122,6 +123,20 @@ void Main::handleEvents(SDL_Event& e) {
 		case (SDL_TEXTINPUT):
 			Main::textInputThisFrame += e.text.text;
 		}
+
+	}
+}
+
+void Main::removeDestroyedObjects() {
+	std::set<Renderable*> objsToDelete = {};
+	for (Renderable* obj : Main::renderables) {
+		if (obj->toBeDestroyed()) objsToDelete.insert(obj);
+	}
+	for (Renderable* obj : objsToDelete) {
+		auto it = std::find(Main::renderables.begin(), Main::renderables.end(), obj);
+		*it = nullptr;
+		if (it != Main::renderables.end()) Main::renderables.erase(it);
+		delete obj;
 
 	}
 }

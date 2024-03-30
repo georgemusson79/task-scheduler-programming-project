@@ -31,4 +31,5 @@ namespace Main {
 	//Open File Explorer for saving files
 	std::vector<std::wstring> openFileExplorerLoad(std::vector<std::pair<std::wstring, std::wstring>> allowedFiles = { {L"All files",L"*.*"} }, bool multiselect=false); //creates a file explorer window for loading files
 
+	void removeDestroyedObjects();
 }

@@ -33,13 +33,10 @@ int main(int argc, char** argv) {
 	Renderable::create<LabelFixedCharDims>(Main::renderer, 0, 200, 50, "obamahamehagih", SDL_Color(255, 255, 255),5);
 	SDL_Event e;
 	while (Main::running) {
-
+		Main::removeDestroyedObjects();
 		Main::handleEvents(e);
 		Main::updateRenderables();
 		Debug::handleKBInput();
-
-		//Debug::handleFPS();
-		//std::cout << "frame end\n";
 	}
 	return 0;
 }

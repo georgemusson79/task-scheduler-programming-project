@@ -48,3 +48,11 @@ bool Renderable::setRenderingDims(int x, int y, int w, int h) {
 SDL_Rect Renderable::getRenderingDims() {
 	return this->renderScrDims;
 }
+
+void Renderable::destroy() {
+	this->markForDeletion = true;
+}
+
+bool Renderable::toBeDestroyed() {
+	return this->markForDeletion;
+}

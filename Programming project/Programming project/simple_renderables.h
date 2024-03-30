@@ -16,6 +16,7 @@ enum MovementLimitations {
 
 class Renderable {
 protected:
+	bool markForDeletion = false;
 	bool focused = false;
 	int renderPriority = 0;
 	SDL_Renderer* renderer;
@@ -74,6 +75,9 @@ public:
 
 	bool trySetFocus();
 	bool tryRemoveFocus();
+
+	void destroy();
+	bool toBeDestroyed();
 
 };
 
