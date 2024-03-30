@@ -1,4 +1,5 @@
 #pragma once
+
 #include <iostream>
 #include <SDL_image.h>
 #include <functional>
@@ -8,9 +9,6 @@
 
 #include "Main_Functions.h"
 #include "Vector2.h"
-namespace Main {
-	extern std::string textInputThisFrame;
-}
 
 enum MovementLimitations {
 	ANYWHERE,ONLY_X,ONLY_Y
@@ -20,19 +18,34 @@ class Renderable {
 protected:
 	bool focused = false;
 	int renderPriority = 0;
-	SDL_Rect renderScrDims; //dimensions for rendering the object to the screen
+	SDL_Renderer* renderer;
+	SDL_Rect renderScrDims; //dimensions for rendering the object to the screen 
 
 public:
+	//Must be called by every class that inherits Renderable. Sets the renderer
+	Renderable(SDL_Renderer* renderer) : renderer(renderer) {}
 	std::string name;
 	bool moveForwardWhenFocused = true;
 
-	//return true if cursor is within the bounds and isnt clicking anything else
-	virtual void setRenderingDims(int x, int y, int w, int h);
+	//set on screen position
+	virtual bool setPos(Vector2 pos);
+	Vector2 getPos();
+
+	//set on screen width and height
+	virtual bool setDims(Vector2 dims);
+	Vector2 getDims();
+
+
+	//combination of setPos and setDims
+	virtual bool setRenderingDims(int x, int y, int w, int h);
 	SDL_Rect getRenderingDims();
+
 	//Update object, called every frame
 	virtual void update() {}
+
 	//Render object to screen
 	virtual void render() = 0;
+
 	//Create an object that inherits Renderable and push it to Main::renderables, returning a pointer to the created object
 	template <typename RenderableObj,typename... Args>
 	static RenderableObj* create(Args...args) {
@@ -59,12 +72,6 @@ public:
 		std::cout << "renderable destroyed\n";
 	}
 
-	Vector2 getPosition();
-	void setPos(Vector2 pos);
-
-	void setDims(Vector2 dims);
-	Vector2 getDims();
-
 	bool trySetFocus();
 	bool tryRemoveFocus();
 
@@ -82,7 +89,7 @@ public:
 	SDL_RendererFlip flip;
 	
 
-	Sprite(int x, int y, int w, int h, std::string pathToImg, SDL_RendererFlip flip=SDL_FLIP_NONE);
+	Sprite (SDL_Renderer* renderer,int x, int y, int w, int h, std::string pathToImg, SDL_RendererFlip flip=SDL_FLIP_NONE);
 	SDL_Texture* getTexture();
 	void render() override;
 	void setImg(std::string pathToImg);
@@ -100,7 +107,7 @@ private:
 	
 public:
 	template <typename Fn, typename... Args>
-	Button(int x, int y, int w, int h, std::string pathToImg, Fn function = NULL, SDL_RendererFlip flip = SDL_FLIP_NONE,Args... arguments) : Sprite(x,y,w,h,pathToImg,flip) {
+	Button(SDL_Renderer* renderer, int x, int y, int w, int h, std::string pathToImg, Fn function = NULL ,SDL_RendererFlip flip = SDL_FLIP_NONE,Args... arguments) : Sprite(renderer,x,y,w,h,pathToImg,flip) {
 		this->setFunction(function, arguments...);
 		this->renderPriority = 100;
 	}
@@ -114,8 +121,10 @@ public:
 		}
 
 	}
-	void update() override;
 
+
+	void update() override;
+	virtual void onHover() {} //runs when the cursor is hovered over the button
 	void onClick() {
 		this->fn();
 	}
@@ -125,11 +134,14 @@ class Draggable : public Sprite {
 protected:
 	Vector2 dragPosition = { 0,0 }; //position where the cursor picked up the object
 	bool clicked = false;
+	SDL_Rect movementBounds; //area the object can be moved inside
 
 public:
 	MovementLimitations movementLimits;
-	Draggable(int x, int y, int w, int h, std::string pathToImg, MovementLimitations movementLimits = ANYWHERE, SDL_RendererFlip flip = SDL_FLIP_NONE);
+	Draggable(SDL_Renderer* renderer, int x, int y, int w, int h, std::string pathToImg, SDL_Rect* movementBounds=nullptr, MovementLimitations movementLimits = ANYWHERE, SDL_RendererFlip flip = SDL_FLIP_NONE);
 	void update() override;
+
+	bool setPos(Vector2 pos) override;
 };
 
 class Rectangle : public Renderable {
@@ -137,7 +149,7 @@ public:
 	bool fill = false;
 	SDL_Color colour;
 	void render();
-	Rectangle(int x, int y, int w, int h, bool fill, SDL_Color colour = { 255,255,255,255 });
+	Rectangle(SDL_Renderer* renderer, int x, int y, int w, int h, bool fill, SDL_Color colour = { 255,255,255,255 });
 };
 
 
@@ -150,12 +162,12 @@ protected:
 	TTF_Font* font = NULL;
 	int charsPerLine;
 public:
-	void setRenderingDims(int x, int y, int w, int h) override;
+	bool setRenderingDims(int x, int y, int w, int h) override;
 	virtual bool setText(std::string text);
 	virtual void setFont(std::string fontPath);
-	Label(int x, int y, int w, int h, SDL_Color textColor,std::string pathToBg, int charsPerLine=0 ,std::string pathToFont = "");
-	Label(int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, int charsPerLine=0, std::string pathToFont = "");
-	Label(int x, int y, int w, int h, SDL_Color textColor, int charsPerLine=0 ,std::string pathToFont = "");
+	Label(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor,std::string pathToBg, int charsPerLine=0 ,std::string pathToFont = "");
+	Label(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, int charsPerLine=0, std::string pathToFont = "");
+	Label(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, int charsPerLine=0 ,std::string pathToFont = "");
 	~Label();
 	virtual void render() override;
 	virtual void setTextColor(SDL_Color color);
@@ -167,9 +179,14 @@ public:
 
 class TextField : public Label {
 protected:
+	int highlightTxtBegin = -1; //unused
+	int highlightTxtEnd = -1; //unused
+
+
 	int _heldDownKeyPressInterval = 30; //when held down, a functional key will do its action every x milliseconds eg backspace will backspace every 50ms when held down
 	int _heldDownKeyPressLast = 0;
 	int _timeSinceLastFnKeyPress = 0;
+	
 	
 	int maxAllowedCharacters = 500;
 	std::string renderedText = "";
@@ -194,14 +211,19 @@ protected:
 	void _handleKBInput();
 	void _addTextAtCursorPos(std::string text);
 	int _calculateRenderedTextSize();
-	
+
+	void _paste();
+
+	//unused
+	void _highlightText(int begin, int end);
+
 
 	//return where the cursor is in the rawtext string
 	int _getCursorPosinText();
 public:
-	TextField(int x, int y, int w, int h, SDL_Color textColor, std::string pathToBg, int maxCharsToDisplay, std::string pathToFont = "", std::string* textKeys=&Main::textInputThisFrame);
-	TextField(int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, int maxCharsToDisplay, std::string pathToFont = "", std::string* textKeys = &Main::textInputThisFrame);
-	TextField(int x, int y, int w, int h, SDL_Color textColor, int maxCharsToDisplay,std::string pathToFont = "", std::string* textKeys = &Main::textInputThisFrame);
+	TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, std::string pathToBg, int maxCharsToDisplay, std::string pathToFont = "", std::string* textKeys=&Main::textInputThisFrame);
+	TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, int maxCharsToDisplay, std::string pathToFont = "", std::string* textKeys = &Main::textInputThisFrame);
+	TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, int maxCharsToDisplay,std::string pathToFont = "", std::string* textKeys = &Main::textInputThisFrame);
 	~TextField();
 	void render() override;
 	void update() override;

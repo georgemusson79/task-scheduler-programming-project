@@ -1,4 +1,4 @@
-#include "renderable.h"
+#include "simple_renderables.h"
 #include "Cursor.h"
 
 Vector2 Cursor::getPos() {

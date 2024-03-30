@@ -1,4 +1,4 @@
-﻿#include "renderable.h"
+﻿#include "simple_renderables.h"
 #include "font.h"
 #include <SDL_ttf.h>
 
@@ -17,7 +17,7 @@ bool Label::setText(std::string text) {
 
 	SDL_Surface* s = TTF_RenderText_Blended_Wrapped(font, text.c_str(), this->textColor, pixelsPerLine);
 	if (s == nullptr) throw "Unable to load texture";
-	this->textTexture = SDL_CreateTextureFromSurface(Main::renderer, s);
+	this->textTexture = SDL_CreateTextureFromSurface(renderer, s);
 	SDL_FreeSurface(s);
 	return true;
 }
@@ -37,15 +37,15 @@ void Label::setFont(std::string fontPath) {
 
 }
 
-Label::Label(int x, int y, int w, int h, SDL_Color textColor, std::string pathToBg, int charsPerLine, std::string pathToFont) {
+Label::Label(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, std::string pathToBg, int charsPerLine, std::string pathToFont) : Renderable(renderer) {
 	renderScrDims = { x,y,w,h };
-	bg=new Sprite(x, y, w, h, pathToBg);
+	bg=new Sprite(renderer,x, y, w, h, pathToBg);
 	this->textColor = textColor;
 	this->setCharactersPerLine(charsPerLine);
 	this->setFont(pathToFont);
 }
 
-Label::Label(int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor,int charsPerLine, std::string pathToFont) {
+Label::Label(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor,int charsPerLine, std::string pathToFont) : Renderable(renderer) {
 	renderScrDims = { x,y,w,h };
 	this->setBgColor(bgColor);
 	this->textColor = textColor;
@@ -54,7 +54,7 @@ Label::Label(int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor,
 	
 }
 
-Label::Label(int x, int y, int w, int h, SDL_Color textColor, int charsPerLine, std::string pathToFont) {
+Label::Label(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, int charsPerLine, std::string pathToFont) : Renderable(renderer) {
 	this->renderScrDims = { x, y, w, h };
 	this->textColor = textColor;
 	this->charsPerLine = 0;
@@ -65,7 +65,7 @@ Label::Label(int x, int y, int w, int h, SDL_Color textColor, int charsPerLine, 
 
 void Label::render() {
 	if (bg!=nullptr) bg->render();
-	if (this->textTexture != nullptr) SDL_RenderCopy(Main::renderer, textTexture, NULL, &this->renderScrDims);
+	if (this->textTexture != nullptr) SDL_RenderCopy(renderer, textTexture, NULL, &this->renderScrDims);
 }
 
 void Label::setCharactersPerLine(int chars) {
@@ -80,12 +80,12 @@ void Label::setTextColor(SDL_Color color) {
 
 void Label::setBgColor(SDL_Color color) {
 	delete bg;
-	bg = new Rectangle(renderScrDims.x, renderScrDims.y, renderScrDims.w, renderScrDims.h, true, color);
+	bg = new Rectangle(renderer,renderScrDims.x, renderScrDims.y, renderScrDims.w, renderScrDims.h, true, color);
 }
 
 void Label::updateBgImage(std::string pathToBg) {
 	delete bg;
-	if(pathToBg!="") bg = new Sprite(renderScrDims.x, renderScrDims.y, renderScrDims.w, renderScrDims.h, pathToBg);
+	if(pathToBg!="") bg = new Sprite(renderer,renderScrDims.x, renderScrDims.y, renderScrDims.w, renderScrDims.h, pathToBg);
 }
 
 Label::~Label() {
@@ -94,7 +94,8 @@ Label::~Label() {
 	TTF_CloseFont(this->font);
 }
 
-void Label::setRenderingDims(int x, int y, int w, int h) {
+bool Label::setRenderingDims(int x, int y, int w, int h) {
 	renderScrDims = { x,y,w,h };
-	if (bg!=nullptr) bg->setRenderingDims(x, y, w, h);
+	if (bg != nullptr) return bg->setRenderingDims(x, y, w, h);
+	else return false;
 }

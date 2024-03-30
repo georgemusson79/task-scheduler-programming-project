@@ -62,7 +62,7 @@
     <ClInclude Include="Vector2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="renderable.h">
+    <ClInclude Include="simple_renderables.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Cursor.h">

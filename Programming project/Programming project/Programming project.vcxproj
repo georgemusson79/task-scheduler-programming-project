@@ -153,7 +153,7 @@
     <ClInclude Include="Cursor.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="font.h" />
-    <ClInclude Include="renderable.h" />
+    <ClInclude Include="simple_renderables.h" />
     <ClInclude Include="Vector2.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

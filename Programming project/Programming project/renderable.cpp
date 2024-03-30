@@ -1,17 +1,20 @@
-#include "renderable.h"
+#include "simple_renderables.h"
 #include "Cursor.h"
-Vector2 Renderable::getPosition() {
+#include "Collision.h"
+Vector2 Renderable::getPos() {
 	return { this->renderScrDims.x,this->renderScrDims.y };
 }
 
-void Renderable::setPos(Vector2 pos) {
+bool Renderable::setPos(Vector2 pos) {
 	this->renderScrDims.x = pos.x;
 	this->renderScrDims.y = pos.y;
+	return true;
 }
 
-void Renderable::setDims(Vector2 dims) {
+bool Renderable::setDims(Vector2 dims) {
 	this->renderScrDims.w = dims.x;
 	this->renderScrDims.h = dims.y;
+	return true;
 }
 
 Vector2 Renderable::getDims() {
@@ -38,8 +41,9 @@ bool Renderable::tryRemoveFocus() {
 	return false;
 }
 
-void Renderable::setRenderingDims(int x, int y, int w, int h) {
-	this->renderScrDims = { x,y,w,h };
+bool Renderable::setRenderingDims(int x, int y, int w, int h) {
+	if (this->setPos({ x,y }) && this->setDims({ w,h })) return true;
+	return false;
 }
 SDL_Rect Renderable::getRenderingDims() {
 	return this->renderScrDims;

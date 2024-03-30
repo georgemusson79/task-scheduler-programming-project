@@ -5,7 +5,7 @@
 #include <Shobjidl.h>
 #include <algorithm>
 
-#include "renderable.h"
+#include "simple_renderables.h"
 #include "Main_Functions.h"
 #include "Vector2.h"
 #include "Cursor.h"

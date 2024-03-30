@@ -1,4 +1,4 @@
-#include "renderable.h"
+#include "simple_renderables.h"
 #include "Cursor.h"
 #include "Collision.h"
 #include "Main_Functions.h"
@@ -11,16 +11,16 @@ void TextField::_construct(int maxCharsToDisplay,std::string* textKeys) {
 	this->_textKeysPressed = textKeys; 
 }
 
-TextField::TextField(int x, int y, int w, int h, SDL_Color textColor, std::string pathToBg, int maxCharsToDisplay, std::string pathToFont,std::string* textKeys) : Label(x,y,w,h,textColor,pathToBg,0,pathToFont) {
+TextField::TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, std::string pathToBg, int maxCharsToDisplay, std::string pathToFont,std::string* textKeys) : Label(renderer,x,y,w,h,textColor,pathToBg,0,pathToFont) {
 	this->_construct(maxCharsToDisplay, textKeys);
 }
 
 
-TextField::TextField(int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, int maxCharsToDisplay, std::string pathToFont, std::string* textKeys) : Label(x,y, w, h, textColor, bgColor,0,pathToFont) {
+TextField::TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, int maxCharsToDisplay, std::string pathToFont, std::string* textKeys) : Label(renderer,x,y, w, h, textColor, bgColor,0,pathToFont) {
 	this->_construct(maxCharsToDisplay, textKeys);
 }
 
-TextField::TextField(int x, int y, int w, int h, SDL_Color textColor, int maxCharsToDisplay, std::string pathToFont, std::string* textKeys) : Label(x,y,w,h,textColor,0,pathToFont) {
+TextField::TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, int maxCharsToDisplay, std::string pathToFont, std::string* textKeys) : Label(renderer,x,y,w,h,textColor,0,pathToFont) {
 	this->_construct(maxCharsToDisplay, textKeys);
 }
 
@@ -41,6 +41,22 @@ void TextField::_updateKeysPressed() {
 	const Uint8* keys = SDL_GetKeyboardState(&szKeys);
 	keysPressed=std::vector(keys, keys + szKeys);
 }
+
+void TextField::_paste() {
+	std::string text=SDL_GetClipboardText();
+	this->_addTextAtCursorPos(text);
+}
+
+
+void TextField::_highlightText(int begin, int end) {
+
+	this->highlightTxtBegin = std::min(begin, end);
+	this->highlightTxtEnd = std::max(begin, end);
+	
+	if (this->highlightTxtEnd > this->rawText.length()) this->highlightTxtEnd = this->rawText.length();
+	if (this->highlightTxtBegin < 0) this->highlightTxtBegin = 0;
+}
+
 
 void TextField::render() {
 	if (bg != nullptr) bg->render();
@@ -63,7 +79,7 @@ void TextField::render() {
 		SDL_Rect textRenderScrDims = this->renderScrDims;
 		textRenderScrDims.w = this->pxPerCharacter*this->renderedText.length();
 
-		SDL_RenderCopy(Main::renderer, this->textTexture, &textToRender, &textRenderScrDims);
+		SDL_RenderCopy(renderer, this->textTexture, &textToRender, &textRenderScrDims);
 
 	}
 	if (this->focused) {
@@ -73,10 +89,10 @@ void TextField::render() {
 
 		//draw the cursor to the screen
 		Uint8 r, g, b,a;
-		SDL_GetRenderDrawColor(Main::renderer, &r, &g, &b,&a);
-		SDL_SetRenderDrawColor(Main::renderer, textColor.r, textColor.g, textColor.b, textColor.a);
-		SDL_RenderDrawLine(Main::renderer, typingCursorRenderX, this->renderScrDims.y, typingCursorRenderX, this->renderScrDims.y + this->renderScrDims.h);
-		SDL_SetRenderDrawColor(Main::renderer, r, g, b, a);
+		SDL_GetRenderDrawColor(renderer, &r, &g, &b,&a);
+		SDL_SetRenderDrawColor(renderer, textColor.r, textColor.g, textColor.b, textColor.a);
+		SDL_RenderDrawLine(renderer, typingCursorRenderX, this->renderScrDims.y, typingCursorRenderX, this->renderScrDims.y + this->renderScrDims.h);
+		SDL_SetRenderDrawColor(renderer, r, g, b, a);
 	}
 }
 
@@ -149,6 +165,9 @@ void TextField::_handleKBInput() {
 	else this->handleFnKeysHeldDown();
 
 	if (*this->_textKeysPressed != "") this->_addTextAtCursorPos(*this->_textKeysPressed);
+
+	//paste text if user presses ctrl + v
+	if (this->keysPressed[SDL_SCANCODE_LCTRL] && this->keysPressed[SDL_SCANCODE_V] && (!this->keysPressedBefore[SDL_SCANCODE_LCTRL] || !this->keysPressedBefore[SDL_SCANCODE_V])) this->_paste();
 }
 
 bool TextField::setText(std::string text) {
