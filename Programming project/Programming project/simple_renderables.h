@@ -30,10 +30,21 @@ public:
 
 	//set on screen position
 	virtual bool setPos(Vector2 pos);
+	virtual bool setPos(int x, int y) {
+		return this->setPos({x, y});
+	}
 	Vector2 getPos();
+	virtual bool setCenter(Vector2 pos);
+	virtual bool setCenter(int x, int y) {
+		return this->setCenter({ x,y });
+	}
+	Vector2 getCenter();
 
 	//set on screen width and height
 	virtual bool setDims(Vector2 dims);
+	virtual  bool setDims(int w, int h) {
+		return this->setDims({ w,h });
+	}
 	Vector2 getDims();
 
 
@@ -134,16 +145,22 @@ public:
 	}
 };
 
-class Draggable : public Sprite {
+class Draggable : public Renderable {
 protected:
 	Vector2 dragPosition = { 0,0 }; //position where the cursor picked up the object
 	bool clicked = false;
 	SDL_Rect movementBounds; //area the object can be moved inside
+	Renderable* bg = nullptr;
 
 public:
 	MovementLimitations movementLimits;
+	
 	Draggable(SDL_Renderer* renderer, int x, int y, int w, int h, std::string pathToImg, SDL_Rect* movementBounds=nullptr, MovementLimitations movementLimits = ANYWHERE, SDL_RendererFlip flip = SDL_FLIP_NONE);
+	Draggable(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color color, SDL_Color borderColor, SDL_Rect* movementBounds = nullptr, MovementLimitations movementLimits = ANYWHERE, SDL_RendererFlip flip = SDL_FLIP_NONE);
+
+	void render() override;
 	void update() override;
+	~Draggable();
 
 	bool setPos(Vector2 pos) override;
 };
@@ -163,16 +180,35 @@ protected:
 	SDL_Texture* textTexture = nullptr;
 	std::string rawText = "";
 	Renderable* bg = nullptr;
+	std::string fontPath;
 	TTF_Font* font = NULL;
 	int charsPerLine;
 public:
+
+	//create a label with text all on one line but each character is the specified width and height for the generated text
+	static Label* createBasicLabel(SDL_Renderer* renderer, std::string text, int x, int y, int charW, int charH, SDL_Color textColor, std::string pathToBg, std::string pathToFont = "");
+	static Label* createBasicLabel(SDL_Renderer* renderer, std::string text, int x, int y, int charW, int charH, SDL_Color textColor, std::string pathToFont = "");
+	static Label* createBasicLabel(SDL_Renderer* renderer,std::string text, int x, int y, int charW, int charH,SDL_Color textColor,SDL_Color bgColor, std::string pathToFont = "");
+
 	bool setRenderingDims(int x, int y, int w, int h) override;
 	virtual bool setText(std::string text);
-	virtual void setFont(std::string fontPath);
+	virtual void setFont(std::string fontPath, int fontSz=72);
 	Label(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor,std::string pathToBg, int charsPerLine=0 ,std::string pathToFont = "");
 	Label(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, int charsPerLine=0, std::string pathToFont = "");
 	Label(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, int charsPerLine=0 ,std::string pathToFont = "");
 	~Label();
+	SDL_Texture* getTextTexture() {
+		return this->textTexture;
+	}
+	std::string getText() {
+		return this->rawText;
+	}
+
+	bool setPos(int x, int y)  override{
+		return this->setPos({ x, y });
+	}
+
+	bool setPos(Vector2 pos) override;
 	virtual void render() override;
 	virtual void setTextColor(SDL_Color color);
 	void setBgColor(SDL_Color color);
@@ -245,7 +281,7 @@ public:
 	bool del(int pos);
 
 	std::string getRenderedText();
-	std::string getText();
+	
 };
 
 

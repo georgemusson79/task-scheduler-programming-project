@@ -204,9 +204,6 @@ std::string TextField::getRenderedText() {
 	return rawText.substr(this->posFirstCharToRender, this->numCharsToDisplay);
 }
 
-std::string TextField::getText() {
-	return this->rawText;
-}
 
 int TextField::_calculateRenderedTextSize() {
 	int rawTextSz = this->rawText.length();

@@ -146,6 +146,7 @@
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Main_Functions.h" />
     <ClCompile Include="Sprite.cpp" />
+    <ClCompile Include="TaskObject.cpp" />
     <ClCompile Include="TextField.cpp" />
     <ClCompile Include="Vector2.cpp" />
   </ItemGroup>
@@ -154,9 +155,17 @@
     <ClInclude Include="Cursor.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="font.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="simple_renderables.h" />
     <ClInclude Include="task_objects.h" />
     <ClInclude Include="Vector2.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="..\..\..\..\..\..\Downloads\arial-font\arial.ttf" />
+    <Font Include="arial.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Programming project.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

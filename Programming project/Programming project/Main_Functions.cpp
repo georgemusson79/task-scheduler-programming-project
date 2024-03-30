@@ -34,7 +34,6 @@ void Main::updateRenderables() {
 
 	if (Cursor::focusedItem != nullptr && Cursor::focusedItem->moveForwardWhenFocused) Cursor::focusedItem->render(); //render the item held by the cursor to the top of the screen if required
 
-
 	SDL_RenderPresent(Main::renderer);
 	//set cursor to normal if it isnt interacting with anything
 	if (!Cursor::hasCursorChanged && Cursor::currentCursorType!=SDL_SYSTEM_CURSOR_ARROW) Cursor::setCursor(SDL_SYSTEM_CURSOR_ARROW);
@@ -141,5 +140,15 @@ void Main::removeDestroyedObjects() {
 	}
 }
 
+WindowsResource Main::loadWindowsResource(int id) {
+	HMODULE hModule = GetModuleHandle(NULL);
+	HRSRC datasrc = FindResource(hModule, MAKEINTRESOURCE(id), TEXT("FONT"));
+	if (datasrc == 0)std::cout << "bruh\n";
+	HGLOBAL hresData= LoadResource(hModule, datasrc);
+	void* data=LockResource(hresData);
+	int dataSz=SizeofResource(hModule, datasrc);
+	std::cout << dataSz << "\n";
+	return { data,dataSz };
+}
 
 
