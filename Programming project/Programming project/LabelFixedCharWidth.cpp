@@ -3,7 +3,7 @@
 #include <sstream>
 #include <iostream>
 
-LabelFixedCharDims::LabelFixedCharDims(SDL_Renderer* renderer, int x, int y, int heightOfChar,std::string text, SDL_Color textColor, std::string pathToBg, int charsPerLine, std::string pathToFont) : Label(renderer, x, y, 0, 0, textColor, pathToBg, charsPerLine, pathToFont) {
+LabelFixedCharDims::LabelFixedCharDims(SDL_Renderer* renderer, int x, int y, int heightOfChar, std::string text, SDL_Color textColor, std::string pathToBg, int charsPerLine, std::string pathToFont) : Label(renderer, x, y, 0, 0, textColor, pathToBg, charsPerLine, pathToFont) {
 	this->heightOfChar = heightOfChar;
 	this->setText(text);
 }
@@ -21,7 +21,9 @@ LabelFixedCharDims::LabelFixedCharDims(SDL_Renderer* renderer, int x, int y, int
 }
 
 bool LabelFixedCharDims::setText(std::string text) {
-	if (Label::setText(text)) {
+	SDL_DestroyTexture(this->textTexture);
+	this->textTexture = nullptr;
+	if (text != "") {
 		int biggestW = 0;
 		int h = 0;
 		std::vector<std::string> lines = this->_splitText(text, this->charsPerLine);
@@ -32,23 +34,21 @@ bool LabelFixedCharDims::setText(std::string text) {
 			TTF_SizeText(this->font, line.c_str(), &w, &h);
 			if (w > biggestW) biggestW = w;
 		}
-		
+
 		//scale the size of the text so it has the same height as the inputted character height
-		float scaleFactor = this->heightOfChar/h;
+		float scaleFactor = (float)this->heightOfChar / h;
 		this->renderScrDims.w = biggestW * scaleFactor;
 
 
 		int lineCount = (this->charsPerLine != 0) ? std::ceil((double)text.length() / this->charsPerLine) : 1; //if charsPerLine is 0 then there is only one line
 		//increase height further in case new lines are created with \n
-		int extraLineCount = this->_splitTextByLine(text).size()-1;
+		int extraLineCount = this->_splitTextByLine(text).size() - 1;
 		lineCount += extraLineCount;
 
 		int heightOfRectangle = this->heightOfChar * lineCount;
 		this->renderScrDims.h = heightOfRectangle;
-		std::cout << heightOfRectangle << "\n";
-		return true;
+		return Label::setText(text);
 	}
-	return false;
 }
 
 std::vector<std::string> LabelFixedCharDims::_splitText(std::string text, int interval) {
@@ -70,5 +70,5 @@ std::vector<std::string> LabelFixedCharDims::_splitTextByLine(std::string text) 
 	while (std::getline(str, line)) split.push_back(line);
 	return split;
 
-	
+
 }

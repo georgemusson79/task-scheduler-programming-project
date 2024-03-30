@@ -11,6 +11,18 @@ bool Renderable::setPos(Vector2 pos) {
 	return true;
 }
 
+bool Renderable::setCenter(Vector2 pos) {
+	Vector2 dims = this->getDims();
+	Vector2 newpos = { pos.x - (dims.x / 2) ,pos.y - (dims.y / 2) };
+	return this->setPos(newpos);
+}
+
+Vector2 Renderable::getCenter() {
+	int x = this->renderScrDims.x + (this->renderScrDims.w / 2);
+	int y = this->renderScrDims.y + (this->renderScrDims.h / 2);
+	return { x,y };
+}
+
 bool Renderable::setDims(Vector2 dims) {
 	this->renderScrDims.w = dims.x;
 	this->renderScrDims.h = dims.y;

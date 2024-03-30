@@ -14,7 +14,7 @@
 Vector2 Main::getDisplayDims() {
 	SDL_Rect r;
 	SDL_GetDisplayBounds(0, &r);
-	return {r.w, r.h};
+	return { r.w, r.h };
 }
 
 
@@ -34,22 +34,21 @@ void Main::updateRenderables() {
 
 	if (Cursor::focusedItem != nullptr && Cursor::focusedItem->moveForwardWhenFocused) Cursor::focusedItem->render(); //render the item held by the cursor to the top of the screen if required
 
-
 	SDL_RenderPresent(Main::renderer);
 	//set cursor to normal if it isnt interacting with anything
-	if (!Cursor::hasCursorChanged && Cursor::currentCursorType!=SDL_SYSTEM_CURSOR_ARROW) Cursor::setCursor(SDL_SYSTEM_CURSOR_ARROW);
+	if (!Cursor::hasCursorChanged && Cursor::currentCursorType != SDL_SYSTEM_CURSOR_ARROW) Cursor::setCursor(SDL_SYSTEM_CURSOR_ARROW);
 }
 
 
 
-std::vector<std::wstring> Main::openFileExplorerLoad(std::vector<std::pair<std::wstring,std::wstring>> allowedFiles, bool multiselect) {
+std::vector<std::wstring> Main::openFileExplorerLoad(std::vector<std::pair<std::wstring, std::wstring>> allowedFiles, bool multiselect) {
 
 	IFileOpenDialog* fileEx;
 	CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_INPROC, IID_PPV_ARGS(&fileEx));
 	IFileDialogEvents* e = nullptr;
 	PWSTR f = NULL;
 	//fileEx->Advise(NULL, &cookie);
-	
+
 	//set allowed file types
 	int numOfFileTypes = allowedFiles.size();
 	COMDLG_FILTERSPEC* COMAllowedFiles = new COMDLG_FILTERSPEC[numOfFileTypes];
@@ -90,7 +89,7 @@ std::vector<std::wstring> Main::openFileExplorerLoad(std::vector<std::pair<std::
 
 std::wstring Main::openFileExplorerSave(std::vector<std::pair<std::wstring, std::wstring>> allowedFiles) {
 	IFileSaveDialog* fileEx;
-	wchar_t empty[] =L"";
+	wchar_t empty[] = L"";
 	CoCreateInstance(CLSID_FileSaveDialog, NULL, CLSCTX_INPROC, IID_PPV_ARGS(&fileEx));
 
 	int numOfFileTypes = allowedFiles.size();
@@ -141,5 +140,15 @@ void Main::removeDestroyedObjects() {
 	}
 }
 
+WindowsResource Main::loadWindowsResource(int id) {
+	HMODULE hModule = GetModuleHandle(NULL);
+	HRSRC datasrc = FindResource(hModule, MAKEINTRESOURCE(id), TEXT("FONT"));
+	if (datasrc == 0)std::cout << "bruh\n";
+	HGLOBAL hresData = LoadResource(hModule, datasrc);
+	void* data = LockResource(hresData);
+	int dataSz = SizeofResource(hModule, datasrc);
+	std::cout << dataSz << "\n";
+	return { data,dataSz };
+}
 
 

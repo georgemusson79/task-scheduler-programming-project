@@ -4,23 +4,23 @@
 #include "Main_Functions.h"
 #include <string>
 
-void TextField::_construct(int maxCharsToDisplay,std::string* textKeys) {
+void TextField::_construct(int maxCharsToDisplay, std::string* textKeys) {
 	this->setCharactersPerLine(maxCharsToDisplay);
 	this->renderPriority = 10;
 	this->name = "textField";
-	this->_textKeysPressed = textKeys; 
+	this->_textKeysPressed = textKeys;
 }
 
-TextField::TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, std::string pathToBg, int maxCharsToDisplay, std::string pathToFont,std::string* textKeys) : Label(renderer,x,y,w,h,textColor,pathToBg,0,pathToFont) {
+TextField::TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, std::string pathToBg, int maxCharsToDisplay, std::string pathToFont, std::string* textKeys) : Label(renderer, x, y, w, h, textColor, pathToBg, 0, pathToFont) {
 	this->_construct(maxCharsToDisplay, textKeys);
 }
 
 
-TextField::TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, int maxCharsToDisplay, std::string pathToFont, std::string* textKeys) : Label(renderer,x,y, w, h, textColor, bgColor,0,pathToFont) {
+TextField::TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, int maxCharsToDisplay, std::string pathToFont, std::string* textKeys) : Label(renderer, x, y, w, h, textColor, bgColor, 0, pathToFont) {
 	this->_construct(maxCharsToDisplay, textKeys);
 }
 
-TextField::TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, int maxCharsToDisplay, std::string pathToFont, std::string* textKeys) : Label(renderer,x,y,w,h,textColor,0,pathToFont) {
+TextField::TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, int maxCharsToDisplay, std::string pathToFont, std::string* textKeys) : Label(renderer, x, y, w, h, textColor, 0, pathToFont) {
 	this->_construct(maxCharsToDisplay, textKeys);
 }
 
@@ -39,11 +39,11 @@ void TextField::_updateKeysPressed() {
 	this->keysPressedBefore = keysPressed;
 	int szKeys;
 	const Uint8* keys = SDL_GetKeyboardState(&szKeys);
-	keysPressed=std::vector(keys, keys + szKeys);
+	keysPressed = std::vector(keys, keys + szKeys);
 }
 
 void TextField::_paste() {
-	std::string text=SDL_GetClipboardText();
+	std::string text = SDL_GetClipboardText();
 	this->_addTextAtCursorPos(text);
 }
 
@@ -52,7 +52,7 @@ void TextField::_highlightText(int begin, int end) {
 
 	this->highlightTxtBegin = std::min(begin, end);
 	this->highlightTxtEnd = std::max(begin, end);
-	
+
 	if (this->highlightTxtEnd > this->rawText.length()) this->highlightTxtEnd = this->rawText.length();
 	if (this->highlightTxtBegin < 0) this->highlightTxtBegin = 0;
 }
@@ -77,7 +77,7 @@ void TextField::render() {
 		SDL_Rect textToRender = { w,0,w2,h2 };
 
 		SDL_Rect textRenderScrDims = this->renderScrDims;
-		textRenderScrDims.w = this->pxPerCharacter*this->renderedText.length();
+		textRenderScrDims.w = this->pxPerCharacter * this->renderedText.length();
 
 		SDL_RenderCopy(renderer, this->textTexture, &textToRender, &textRenderScrDims);
 
@@ -88,8 +88,8 @@ void TextField::render() {
 		int typingCursorRenderX = startOfTextbox + (this->typingCursorPos * this->pxPerCharacter);
 
 		//draw the cursor to the screen
-		Uint8 r, g, b,a;
-		SDL_GetRenderDrawColor(renderer, &r, &g, &b,&a);
+		Uint8 r, g, b, a;
+		SDL_GetRenderDrawColor(renderer, &r, &g, &b, &a);
 		SDL_SetRenderDrawColor(renderer, textColor.r, textColor.g, textColor.b, textColor.a);
 		SDL_RenderDrawLine(renderer, typingCursorRenderX, this->renderScrDims.y, typingCursorRenderX, this->renderScrDims.y + this->renderScrDims.h);
 		SDL_SetRenderDrawColor(renderer, r, g, b, a);
@@ -123,9 +123,9 @@ void TextField::update() {
 	if (cursorIsClicked && !cursorCollides) this->tryRemoveFocus();
 }
 
-void TextField::_generateTypingCursor() { 
+void TextField::_generateTypingCursor() {
 	Vector2 cursorPos = Cursor::getPos();
-	int cursorxRelativeToBox=cursorPos.x - this->renderScrDims.x;
+	int cursorxRelativeToBox = cursorPos.x - this->renderScrDims.x;
 
 
 	this->typingCursorPos = std::round(cursorxRelativeToBox / this->pxPerCharacter);
@@ -135,14 +135,14 @@ void TextField::_generateTypingCursor() {
 
 
 void TextField::_moveCursorLeft(int times) {
-	if (this->typingCursorPos > 0) this->typingCursorPos-=times;
+	if (this->typingCursorPos > 0) this->typingCursorPos -= times;
 	else {
 		this->setPosFirstCharToRender(this->posFirstCharToRender - times);
 	}
-	
+
 }
 void TextField::_moveCursorRight(int times) {
-	if (this->typingCursorPos+times <= this->renderedText.size()) this->typingCursorPos+=times;
+	if (this->typingCursorPos + times <= this->renderedText.size()) this->typingCursorPos += times;
 	else if (this->renderedText.size() == 0) return;
 	else {
 		this->setPosFirstCharToRender(this->posFirstCharToRender + times);
@@ -200,21 +200,18 @@ void TextField::_addTextAtCursorPos(std::string text) {
 }
 
 std::string TextField::getRenderedText() {
-	if (this->posFirstCharToRender> this->rawText.length()) return "";
+	if (this->posFirstCharToRender > this->rawText.length()) return "";
 	return rawText.substr(this->posFirstCharToRender, this->numCharsToDisplay);
 }
 
-std::string TextField::getText() {
-	return this->rawText;
-}
 
 int TextField::_calculateRenderedTextSize() {
 	int rawTextSz = this->rawText.length();
 	/*normally the number of characters to display is the amount generated however if
 	if the user is at the end of the text in the textbox there will be less characters so the function
 	will work out the actual amount*/
-	if (this->numCharsToDisplay+this->posFirstCharToRender > rawTextSz) {
-		int charsRendered=rawTextSz - this->posFirstCharToRender;
+	if (this->numCharsToDisplay + this->posFirstCharToRender > rawTextSz) {
+		int charsRendered = rawTextSz - this->posFirstCharToRender;
 		return charsRendered;
 	}
 }
@@ -234,7 +231,7 @@ bool TextField::del(int pos) {
 	if (pos < 0) return false;
 	if (pos > rawText.size()) return false;
 	std::string newtext = rawText;
-	newtext.erase(pos,1);
+	newtext.erase(pos, 1);
 	return this->setText(newtext);
 }
 
@@ -266,6 +263,6 @@ void TextField::handleFnKeysHeldDown() {
 		else this->del(pos);
 	}
 
-	this ->_heldDownKeyPressLast = SDL_GetTicks();
+	this->_heldDownKeyPressLast = SDL_GetTicks();
 
 }

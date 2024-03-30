@@ -7,9 +7,14 @@
 struct Vector2;
 class Renderable;
 
-
+struct WindowsResource {
+	void* data;
+	int szData;
+};
 
 namespace Main {
+
+
 	inline bool running = true; //if false close the program
 	inline std::vector<Renderable*> renderables;
 	inline SDL_Window* window;
@@ -27,9 +32,11 @@ namespace Main {
 
 	//Open File Explorer for loading files
 	std::wstring openFileExplorerSave(std::vector<std::pair<std::wstring, std::wstring>> allowedFiles = { {L"All files",L"*.*"} });
-	
+
 	//Open File Explorer for saving files
-	std::vector<std::wstring> openFileExplorerLoad(std::vector<std::pair<std::wstring, std::wstring>> allowedFiles = { {L"All files",L"*.*"} }, bool multiselect=false); //creates a file explorer window for loading files
+	std::vector<std::wstring> openFileExplorerLoad(std::vector<std::pair<std::wstring, std::wstring>> allowedFiles = { {L"All files",L"*.*"} }, bool multiselect = false); //creates a file explorer window for loading files
 
 	void removeDestroyedObjects();
+
+	WindowsResource loadWindowsResource(int id);
 }
