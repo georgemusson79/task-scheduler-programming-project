@@ -41,7 +41,7 @@ void Main::updateRenderables() {
 
 
 
-std::vector<std::wstring> Main::openFileExplorerLoad(std::vector<std::pair<std::wstring, std::wstring>> allowedFiles, bool multiselect) {
+std::wstring Main::openFileExplorerLoad(std::vector<std::pair<std::wstring, std::wstring>> allowedFiles, bool multiselect) {
 
 	IFileOpenDialog* fileEx;
 	CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_INPROC, IID_PPV_ARGS(&fileEx));
@@ -63,25 +63,18 @@ std::vector<std::wstring> Main::openFileExplorerLoad(std::vector<std::pair<std::
 
 	fileEx->Show(NULL);
 	wchar_t empty[] = L"";
-	IShellItemArray* pItems;
+	std::wstring text = L"";
+	IShellItem* pItem;
 	DWORD count;
-	std::vector<std::wstring> items = {};
-	if (fileEx->GetResults(&pItems) == S_OK) {
-		pItems->GetCount(&count);
-		for (int i = 0; i < count; i++) {
-			PWSTR str = NULL;
-			IShellItem* item;
-			pItems->GetItemAt(i, &item);
-			item->GetDisplayName(SIGDN_FILESYSPATH, &str);
-			items.push_back(str);
-			item->Release();
-		}
+	if (fileEx->GetResult(&pItem) == S_OK) {
+		PWSTR str = NULL;
+		pItem->GetDisplayName(SIGDN_FILESYSPATH, &str);
+		pItem->Release();
+		text = str;
 	}
 
-	//free file dialog and items
-	pItems->Release();
 	fileEx->Release();
-	return items;
+	return text;
 
 
 }

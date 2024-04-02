@@ -269,6 +269,7 @@ public:
 	void update() override;
 
 
+	void setMaxAllowedChars(int chars);
 	//max amount of characters that can be shown in the text field at a time
 	void setCharactersPerLine(int chars) override;
 

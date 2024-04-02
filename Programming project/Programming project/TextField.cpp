@@ -35,6 +35,12 @@ void TextField::setCharactersPerLine(int chars) {
 	this->pxPerCharacter = (float)this->renderScrDims.w / chars;
 }
 
+void TextField::setMaxAllowedChars(int chars) {
+	if (chars < 0) chars = 0;
+	this->maxAllowedCharacters = chars;
+	if (this->rawText.length() > chars) this->setText(rawText.substr(0, chars));
+}
+
 void TextField::_updateKeysPressed() {
 	this->keysPressedBefore = keysPressed;
 	int szKeys;
@@ -173,6 +179,7 @@ void TextField::_handleKBInput() {
 bool TextField::setText(std::string text) {
 	if (text.size() < this->maxAllowedCharacters) {
 		Label::setText(text);
+		if (this->posFirstCharToRender > text.length() - this->numCharsToDisplay) this->posFirstCharToRender = text.length() - this->numCharsToDisplay;
 		this->renderedText = this->getRenderedText();
 	}
 
