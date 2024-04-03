@@ -100,7 +100,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level1</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
@@ -138,6 +138,7 @@
     <ClCompile Include="cursor.cpp" />
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="Draggable.cpp" />
+    <ClCompile Include="DropDownMenu.cpp" />
     <ClCompile Include="Label.cpp" />
     <ClCompile Include="LabelFixedCharWidth.cpp" />
     <ClCompile Include="Main_Functions.cpp" />
@@ -146,6 +147,7 @@
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Main_Functions.h" />
     <ClCompile Include="Sprite.cpp" />
+    <ClCompile Include="TaskList.cpp" />
     <ClCompile Include="taskObject.cpp" />
     <ClCompile Include="TextField.cpp" />
     <ClCompile Include="Vector2.cpp" />

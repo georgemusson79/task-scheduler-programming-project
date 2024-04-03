@@ -18,11 +18,25 @@ private:
 public:
 	TaskObject(SDL_Renderer* renderer, int x, int y, int w, int h);
 	~TaskObject();
+	void setName(std::string text);
 
-	static void staticSetFilePath(TaskObject* object);
-	void setFilePath(std::string data);
+	void setFilePath();
 	void render() override;
 	void update() override;
 	bool setPos(Vector2 pos) override;
 
+};
+
+
+class TaskList : public Renderable {
+protected:
+	std::vector<TaskObject*> tasks = {};
+	Rectangle* biggerbox = nullptr;
+	Rectangle* smallerbox = nullptr;
+public:
+	TaskList(SDL_Renderer* renderer, int x, int y, int w, int h);
+	~TaskList();
+	void addTask(std::string taskName);
+	void render() override;
+	void update() override;
 };

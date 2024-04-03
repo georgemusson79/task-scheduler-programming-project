@@ -79,6 +79,10 @@ public:
 		return renderPriority;
 	}
 
+	bool getFocused() {
+		return this->focused;
+	}
+
 	virtual ~Renderable() {
 		tryRemoveFocus();
 		std::cout << "renderable destroyed\n";
@@ -149,11 +153,12 @@ class Draggable : public Renderable {
 protected:
 	Vector2 dragPosition = { 0,0 }; //position where the cursor picked up the object
 	bool clicked = false;
-	SDL_Rect movementBounds; //area the object can be moved inside
 	Renderable* bg = nullptr;
 
 public:
 	MovementLimitations movementLimits;
+	SDL_Rect movementBounds; //area the object can be moved inside
+
 
 	Draggable(SDL_Renderer* renderer, int x, int y, int w, int h, std::string pathToImg, SDL_Rect* movementBounds = nullptr, MovementLimitations movementLimits = ANYWHERE, SDL_RendererFlip flip = SDL_FLIP_NONE);
 	Draggable(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color color, SDL_Color borderColor, SDL_Rect* movementBounds = nullptr, MovementLimitations movementLimits = ANYWHERE, SDL_RendererFlip flip = SDL_FLIP_NONE);
@@ -167,10 +172,13 @@ public:
 
 class Rectangle : public Renderable {
 public:
-	bool fill = false;
+	bool renderWithBorder;
+	SDL_Color borderColor;
+	bool fill;
 	SDL_Color colour;
 	void render();
-	Rectangle(SDL_Renderer* renderer, int x, int y, int w, int h, bool fill, SDL_Color colour = { 255,255,255,255 });
+	virtual ~Rectangle() {};
+	Rectangle(SDL_Renderer* renderer, int x, int y, int w, int h, bool fill, SDL_Color colour = { 255,255,255,255 },bool renderWithBorder=true, SDL_Color borderColor={0,0,0});
 };
 
 //creates a read only block of text on the screen the size of renderingDims
@@ -222,6 +230,7 @@ protected:
 	int highlightTxtBegin = -1; //unused
 	int highlightTxtEnd = -1; //unused
 
+	bool cursorIsClicked = false;
 
 	int _heldDownKeyPressInterval = 30; //when held down, a functional key will do its action every x milliseconds eg backspace will backspace every 50ms when held down
 	int _heldDownKeyPressLast = 0;
@@ -299,4 +308,50 @@ public:
 	LabelFixedCharDims(SDL_Renderer* renderer, int x, int y, int heightOfChar, std::string text, SDL_Color textColor, SDL_Color bgColor, int charsPerLine = 0, std::string pathToFont = "");
 	LabelFixedCharDims(SDL_Renderer* renderer, int x, int y, int heightOfChar, std::string text, SDL_Color textColor, int charsPerLine = 0, std::string pathToFont = "");
 	bool setText(std::string text) override;
+};
+
+class DropDownMenuItem;
+
+class DropDownMenu : public Renderable {
+protected:
+	int selectedItem = 0;
+	std::vector<DropDownMenuItem*> items;
+
+public:
+	std::string getSelectedItem();
+	bool setDims(Vector2 dims) override;
+	bool setPos(Vector2 pos) override;
+	//dimensions here are the dimensions of each dropMenuItem
+	DropDownMenu(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color color, SDL_Color highlightColor, std::vector<std::string> text);
+	~DropDownMenu();
+	void render() override;
+	void update() override;
+	
+};
+
+class DropDownMenuItem : public Rectangle {
+protected:
+	Label* label;
+	bool isClickTapped = false;
+	bool isClicked = false;
+	SDL_Color defaultColor;
+	DropDownMenu* parent;
+public:
+	SDL_Color highlightColor;
+	DropDownMenuItem(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color color, SDL_Color highlightColor, std::string text, DropDownMenu* parent);
+	~DropDownMenuItem();
+	void render() override;
+	void update() override;
+	bool getIsClickedOnThis();
+	bool setPos(Vector2 pos) override;
+	bool setDims(Vector2 dims) override;
+
+	std::string getText();
+	SDL_Rect getLabelDims() {
+		Vector2 dims=this->label->getDims();
+		Vector2 pos = this->label->getPos();
+		return { (int)pos.x,(int)pos.y,(int)dims.x,(int)dims.y };
+	}
+	void setText(std::string text);
+
 };

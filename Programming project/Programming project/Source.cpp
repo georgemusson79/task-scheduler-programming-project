@@ -26,19 +26,20 @@ int main(int argc, char** argv) {
 
 
 	Vector2 scrDims = Main::getDisplayDims();
-	Main::window = SDL_CreateWindow("Task Scheduler", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, scrDims.x * 0.9, scrDims.y * 0.8, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+	Main::window = SDL_CreateWindow("Task Scheduler", (0x1FFF0000u | (0)), SDL_WINDOWPOS_UNDEFINED, scrDims.x * 0.9, scrDims.y * 0.8, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 	SDL_GetWindowSize(Main::window, &WINDOW_WIDTH, &WINDOW_HEIGHT);
 	Main::renderer = (Debug::vsync) ? SDL_CreateRenderer(Main::window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC) : SDL_CreateRenderer(Main::window, -1, SDL_RENDERER_ACCELERATED);
 	Draggable* d = Renderable::create<Draggable>(Main::renderer, 5, 70, 100, 100, "C:/Screenshot (51).png");
 	int w = WINDOW_WIDTH / 2;
 	int h = WINDOW_HEIGHT / 8;
 	std::cout << w << " " << h << "\n";
-	Renderable::create<TaskObject>(Main::renderer, 0, 0, w, h);
-	//Button* b=Renderable::create<Button>(Main::renderer, 100, 100, 50, 50, "C:/Screenshot (24).png", temp);
-	//TextField* l=Renderable::create<TextField>(Main::renderer,50, 50, 400, 30, SDL_Color(255, 255, 255), SDL_Color(255, 0, 0),40);
-	Renderable::create<LabelFixedCharDims>(Main::renderer, 0, 200, 100, "bruh", SDL_Color(0, 255, 255, 255));
+	TaskList* t=Renderable::create <TaskList>(Main::renderer, 0, 0, w, 900);
+	t->addTask("task #1");
+	//Renderable::create<LabelFixedCharDims>(Main::renderer, 0, 200, 100, "bruh", SDL_Color(0, 255, 255, 255));
+	std::vector<std::string> items = { "item1", "item2", "item3" };
+	DropDownMenu* dr=Renderable::create <DropDownMenu>(Main::renderer, 200, 200, 110, 30, SDL_Color(255, 255, 255), SDL_Color(170, 255, 255),items );
+	Renderable::create<Button>(Main::renderer, 400, 300, 100, 100, "C:/Screenshot (51).png",&DropDownMenu::destroy,SDL_FLIP_NONE,dr);
 
-	//Renderable::create<LabelFixedCharDims>(Main::renderer, 0, 200, 50, "obamahamehagih", SDL_Color(255, 255, 255),5);
 	SDL_Event e;
 	while (Main::running) {
 		Main::removeDestroyedObjects();

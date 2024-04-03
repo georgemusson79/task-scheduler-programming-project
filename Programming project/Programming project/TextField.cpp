@@ -112,11 +112,14 @@ void TextField::setPosFirstCharToRender(int first) {
 
 void TextField::update() {
 	bool cursorCollides = Collision::collidesWith(this->renderScrDims, Cursor::getPos());
-	bool cursorIsClicked = Cursor::isLeftClicked();
+
+	bool oldCursorIsClicked = this->cursorIsClicked;
+	this->cursorIsClicked = Cursor::isLeftClicked();
+	bool cursorIsTapped = (this->cursorIsClicked && !oldCursorIsClicked);
 
 	if (cursorCollides) {
 		Cursor::setCursor(SDL_SYSTEM_CURSOR_IBEAM);
-		if (cursorIsClicked) {
+		if (cursorIsTapped) {
 			//if nothing else has been clicked and the user selects the textbox, generate a typing indicator in the nearest available position
 			if (this->trySetFocus() || this->focused) this->_generateTypingCursor();
 		}

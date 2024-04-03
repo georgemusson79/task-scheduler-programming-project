@@ -15,7 +15,7 @@ TaskObject::TaskObject(SDL_Renderer* renderer, int x, int y, int w, int h) : Dra
 	this->filePath= new TextField(renderer, taskName->getPos().x+taskName->getDims().y + margin, taskName->getPos().y, charWidth * 20, charHeight, textColor, textBoxBg, 20);
 	this ->filePath->setMaxAllowedChars(MAX_PATH);
 	this->filePathHeading = Label::createBasicLabel(renderer, "Path to file:", 0, 0, charWidth, charHeight, textColor);
-	this->filePathBrowse = new Button(renderer, this->getPos().x, this->getPos().y, charWidth * 8, charHeight*1.2, "browse.png", TaskObject::staticSetFilePath,SDL_FLIP_NONE,this);
+	this->filePathBrowse = new Button(renderer, this->getPos().x, this->getPos().y, charWidth * 8, charHeight*1.2, "browse.png", &TaskObject::setFilePath,SDL_FLIP_NONE,this);
 	//Button(renderer, this->getPos().x, this->getPos().y, charWidth * 6, charHeight, "browse.png", setFilePath, SDL_FLIP_NONE, this);
 
 	this->extraArgs = new TextField(renderer, taskName->getPos().x + taskName->getDims().y + margin, taskName->getPos().y, charWidth * 20, charHeight, textColor, textBoxBg, 20);
@@ -42,6 +42,7 @@ void TaskObject::update() {
 	this->taskName->update();
 	this->filePath->update();
 	this->filePathBrowse->update();
+	this->extraArgs->update();
 	Draggable::update();
 }
 
@@ -85,11 +86,15 @@ TaskObject::~TaskObject() {
 
 }
 
-void TaskObject::staticSetFilePath(TaskObject* object) {
+
+
+void TaskObject::setFilePath() {
 	std::wstring data = Main::openFileExplorerLoad();
-	if (data!=L"") object->setFilePath(std::string(data.begin(), data.end()));
+
+	this->filePath->setText(std::string(data.begin(),data.end()));
 }
 
-void TaskObject::setFilePath(std::string data) {
-	this->filePath->setText(data);
+void TaskObject::setName(std::string text) {
+	std::cout << text << "\n";
+	this->taskName->setText(text);
 }

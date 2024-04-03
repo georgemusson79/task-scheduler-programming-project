@@ -10,11 +10,20 @@ void Rectangle::render() {
 	if (error != 0) std::cerr << "Unable to draw rectangle: " << SDL_GetError(); //raise exception if unable to render to screen
 	
 
+	if (this->renderWithBorder) {
+		SDL_SetRenderDrawColor(renderer, borderColor.r, borderColor.g, borderColor.b, borderColor.a); //set renderer color to specified color then draw rectangle
+
+		SDL_RenderDrawRect(renderer, &this->renderScrDims);
+	}
+
 	SDL_SetRenderDrawColor(renderer, r, g, b, a); //set renderer colours back to before
+
 }
 
-Rectangle::Rectangle(SDL_Renderer* renderer, int x, int y, int w, int h, bool fill,SDL_Color colour) : Renderable(renderer) {
+Rectangle::Rectangle(SDL_Renderer* renderer, int x, int y, int w, int h, bool fill,SDL_Color colour, bool renderWithBorder,SDL_Color borderColor) : Renderable(renderer) {
 	this->colour = colour;
 	this->renderScrDims = { x,y,w,h };
 	this->fill = fill;
+	this->renderWithBorder = renderWithBorder;
+	this->borderColor = borderColor;
 }
