@@ -114,6 +114,14 @@ Label::~Label() {
 	std::cout << "label destroyed\n";
 }
 
+bool Label::setDims(int x, int y) {
+	return this->setRenderingDims(this->getPos().x, this->getPos().y, x, y);
+}
+
+bool Label::setDims(Vector2 dims) {
+	return this->setRenderingDims(this->getPos().x, this->getPos().y, dims.x, dims.y);
+}
+
 bool Label::setRenderingDims(int x, int y, int w, int h) {
 	renderScrDims = { x,y,w,h };
 	if (bg != nullptr) return bg->setRenderingDims(x, y, w, h);

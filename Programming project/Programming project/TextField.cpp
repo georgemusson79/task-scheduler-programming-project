@@ -15,6 +15,11 @@ TextField::TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Col
 	this->_construct(maxCharsToDisplay, textKeys);
 }
 
+bool TextField::setDims(Vector2 dims) {
+	Label::setDims(dims);
+	this->setCharactersPerLine(this->numCharsToDisplay);
+	return true;
+}
 
 TextField::TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, int maxCharsToDisplay, std::string pathToFont, std::string* textKeys) : Label(renderer, x, y, w, h, textColor, bgColor, 0, pathToFont) {
 	this->_construct(maxCharsToDisplay, textKeys);
@@ -32,7 +37,7 @@ void TextField::setCharactersPerLine(int chars) {
 	this->numCharsToDisplay = chars;
 
 	//adjust the pixel width of each character so that the width doesnt change as you add or remove characters
-	this->pxPerCharacter = (float)this->renderScrDims.w / chars;
+	this->pxPerCharacter = this->renderScrDims.w / chars;
 }
 
 void TextField::setMaxAllowedChars(int chars) {

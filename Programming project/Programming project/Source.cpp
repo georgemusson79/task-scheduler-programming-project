@@ -33,13 +33,17 @@ int main(int argc, char** argv) {
 	int w = WINDOW_WIDTH / 2;
 	int h = WINDOW_HEIGHT / 8;
 	std::cout << w << " " << h << "\n";
-	TaskList* t=Renderable::create <TaskList>(Main::renderer, 0, 0, w, 900);
-	t->addTask("task #1");
+	//TaskList* t=Renderable::create <TaskList>(Main::renderer, 0, 0, w, 900);
+	//t->addTask("task #1");
 	//Renderable::create<LabelFixedCharDims>(Main::renderer, 0, 200, 100, "bruh", SDL_Color(0, 255, 255, 255));
 	std::vector<std::string> items = { "item1", "item2", "item3" };
-	DropDownMenu* dr=Renderable::create <DropDownMenu>(Main::renderer, 200, 200, 110, 30, SDL_Color(255, 255, 255), SDL_Color(170, 255, 255),items );
-	Renderable::create<Button>(Main::renderer, 400, 300, 100, 100, "C:/Screenshot (51).png",&DropDownMenu::destroy,SDL_FLIP_NONE,dr);
-
+	DropDownMenu* dr=Renderable::create <DropDownMenu>(Main::renderer, 200, 200, 110, 30,items );
+	Renderable::create<Button>(Main::renderer, 400*2, 300, 100, 100, "C:/Screenshot (51).png",&DropDownMenu::destroy,SDL_FLIP_NONE,dr);
+	TaskObject* t=Renderable::create <TaskObject>(Main::renderer, 0, 0, 500, 100);
+	t->setDims(t->getDims().x*2,t->getDims().y);
+	TextField* tex=Renderable::create <TextField>(Main::renderer, 0, 100, 400, 60, SDL_Color(0, 0, 0,255),SDL_Color(255,255,255), 12);
+	//tex->setDims({ tex->getDims().x * 2, tex->getDims().y });
+		
 	SDL_Event e;
 	while (Main::running) {
 		Main::removeDestroyedObjects();

@@ -172,6 +172,7 @@ public:
 
 class Rectangle : public Renderable {
 public:
+
 	bool renderWithBorder;
 	SDL_Color borderColor;
 	bool fill;
@@ -198,6 +199,9 @@ public:
 	static Label* createBasicLabel(SDL_Renderer* renderer, std::string text, int x, int y, int charW, int charH, SDL_Color textColor, std::string pathToFont = "");
 	static Label* createBasicLabel(SDL_Renderer* renderer, std::string text, int x, int y, int charW, int charH, SDL_Color textColor, SDL_Color bgColor, std::string pathToFont = "");
 
+
+	bool setDims(int x, int y) override;
+	bool setDims(Vector2 dims) override;
 	bool setRenderingDims(int x, int y, int w, int h) override;
 	virtual bool setText(std::string text);
 	virtual void setFont(std::string fontPath, int fontSz = 72);
@@ -274,6 +278,7 @@ public:
 	TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, int maxCharsToDisplay, std::string pathToFont = "", std::string* textKeys = &Main::textInputThisFrame);
 	TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, int maxCharsToDisplay, std::string pathToFont = "", std::string* textKeys = &Main::textInputThisFrame);
 	~TextField();
+	bool setDims(Vector2 dims) override;
 	void render() override;
 	void update() override;
 
@@ -321,8 +326,9 @@ public:
 	std::string getSelectedItem();
 	bool setDims(Vector2 dims) override;
 	bool setPos(Vector2 pos) override;
+	bool setPos(int x, int y) override;
 	//dimensions here are the dimensions of each dropMenuItem
-	DropDownMenu(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color color, SDL_Color highlightColor, std::vector<std::string> text);
+	DropDownMenu(SDL_Renderer* renderer, int x, int y, int w, int h, std::vector<std::string> text,SDL_Color color=SDL_Color(255,255,255), SDL_Color highlightColor= SDL_Color(170, 255, 255));
 	~DropDownMenu();
 	void render() override;
 	void update() override;
@@ -331,6 +337,8 @@ public:
 
 class DropDownMenuItem : public Rectangle {
 protected:
+	int xmargin;
+	int ymargin;
 	Label* label;
 	bool isClickTapped = false;
 	bool isClicked = false;

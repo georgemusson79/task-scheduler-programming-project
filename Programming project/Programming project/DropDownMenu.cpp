@@ -5,8 +5,8 @@
 
 DropDownMenuItem::DropDownMenuItem(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color color, SDL_Color highlightColor, std::string text, DropDownMenu* parent) : Rectangle(renderer, x, y, w, h, true, color) {
 	this->highlightColor = highlightColor;
-	int xmargin = w * 0.2;
-	int ymargin = h * 0.1;
+	this->xmargin = this->renderScrDims.w * 0.2;
+	this->ymargin = this->renderScrDims.h * 0.1;
 	this->label = new Label(renderer, x+xmargin, y+ymargin, w-(xmargin*2), h-(ymargin*2), SDL_Color(0, 0, 0, 255));
 	this->label->setText(text);
 	this->defaultColor = color;
@@ -26,8 +26,10 @@ void DropDownMenuItem::render() {
 	this->label->render();
 }
 
-void setPos(Vector2 pos) {
 
+
+bool DropDownMenu::setPos(int x, int y) {
+	return this->setPos({ x,y });
 }
 
 void DropDownMenuItem::update() {
@@ -57,12 +59,15 @@ bool DropDownMenuItem::getIsClickedOnThis() {
 
 bool DropDownMenuItem::setPos(Vector2 pos) {
 	Rectangle::setPos(pos);
-	this->label->setPos(pos);
+	this->label->setPos(pos.x+this->xmargin,pos.y+this->ymargin);
 	return true;
 }
 bool DropDownMenuItem::setDims(Vector2 dims) {
+	this->xmargin = this->renderScrDims.w * 0.2;
+	this->ymargin = this->renderScrDims.h * 0.1;
 	Rectangle::setDims(dims);
-	this->label->setDims(dims);
+	this->label->setDims(dims.x-(2*xmargin),dims.y-(2*ymargin));
+	this->setPos(this->getPos());
 	return true;
 }
 
@@ -87,6 +92,7 @@ bool DropDownMenu::setDims(Vector2 dims) {
 }
 
 bool DropDownMenu::setPos(Vector2 pos) {
+	if (this->items.empty()) return false;
 	this->renderScrDims.x = pos.x;
 	this->renderScrDims.y = pos.y;
 
@@ -100,7 +106,7 @@ bool DropDownMenu::setPos(Vector2 pos) {
 
 
 //dimensions here are the dimensions of each dropMenuItem
-DropDownMenu::DropDownMenu(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color color, SDL_Color highlightColor, std::vector<std::string> text) : Renderable(renderer) {
+DropDownMenu::DropDownMenu(SDL_Renderer* renderer, int x, int y, int w, int h, std::vector<std::string> text, SDL_Color color, SDL_Color highlightColor) : Renderable(renderer) {
 	this->renderScrDims = { x,y,w,h };
 	int itemY = y;
 	for (std::string item : text) {

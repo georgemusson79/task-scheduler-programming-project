@@ -1,27 +1,60 @@
 #include "task_objects.h"
 #include <Windows.h>
 
+
+bool TaskObject::setDims(int x, int y) {
+	this->renderScrDims.w = x;
+	this->renderScrDims.h = y;
+	this->charWidth = this->renderScrDims.w / 70;
+	this->charHeight = this->renderScrDims.h / 5;
+	this->margin = charWidth;
+	int headingWidth;
+	this->bg->setDims(x, y);
+
+
+	this->taskName->setDims({ this->charWidth * 20, this->charHeight });
+	headingWidth = this->taskNameHeading->getText().size() * charWidth;
+	this->taskNameHeading->setDims(headingWidth, charHeight);
+
+	this->filePath->setDims({ this->charWidth * 20, this->charHeight });
+	headingWidth = this->filePathHeading->getText().size() * charWidth;
+	this->filePathHeading->setDims({ headingWidth, charHeight });
+	this->filePathBrowse->setDims({ charWidth * 8, charHeight * 1.2 });
+
+	this->setPos(this->getPos()); //set pos to set first elements into position to calculate extra args width and position
+
+	int extraArgsX = this->filePathBrowse->getPos().x + this->filePathBrowse->getDims().x;
+	int extraArgsWidth = this->renderScrDims.w - extraArgsX - (2 * margin);
+	int extraArgsCharCount = extraArgsWidth / this->charWidth;
+	this->extraArgs->setCharactersPerLine(extraArgsCharCount);
+	this->extraArgs->setDims({ extraArgsWidth, this->charHeight });
+	return true;
+
+}
+
 TaskObject::TaskObject(SDL_Renderer* renderer, int x, int y, int w, int h) : Draggable(renderer, x, y, w, h, SDL_Color(191, 191, 191), SDL_Color(110, 110, 110), nullptr, ONLY_Y) {
-	int charWidth = (float)w / 70;
-	int charHeight = h / 3.5;
-	int margin = charWidth; //distance between textboxes
+	this->charWidth = (float)w / 70;
+	this->charHeight = h / 5;
+	this->margin = charWidth; 
+	SDL_Color textColor= { 0,0,0 };
+	SDL_Color textBoxBg = { 255, 255, 255 };
 	std::cout << "char" << charHeight;
-	SDL_Color textColor={ 0,0,0 };
-	SDL_Color textBoxBg(255, 255, 255);
 	
-	this->taskName = new TextField(renderer, 0, y + (int)(h * 0.5), charWidth * 20, charHeight, textColor,textBoxBg,20);
+
+	this->taskName = new TextField(renderer, x, y + (int)(h * 0.5), charWidth * 20, charHeight, textColor,textBoxBg,20);
 	this->taskNameHeading = Label::createBasicLabel(renderer, "Task Name:", 0, 0, charWidth, charHeight, textColor);
 
 	this->filePath= new TextField(renderer, taskName->getPos().x+taskName->getDims().y + margin, taskName->getPos().y, charWidth * 20, charHeight, textColor, textBoxBg, 20);
-	this ->filePath->setMaxAllowedChars(MAX_PATH);
+	this->filePath->setMaxAllowedChars(MAX_PATH);
 	this->filePathHeading = Label::createBasicLabel(renderer, "Path to file:", 0, 0, charWidth, charHeight, textColor);
-	this->filePathBrowse = new Button(renderer, this->getPos().x, this->getPos().y, charWidth * 8, charHeight*1.2, "browse.png", &TaskObject::setFilePath,SDL_FLIP_NONE,this);
-	//Button(renderer, this->getPos().x, this->getPos().y, charWidth * 6, charHeight, "browse.png", setFilePath, SDL_FLIP_NONE, this);
+	this->filePathBrowse = new Button(renderer, x, y, charWidth * 8, charHeight*1.2, "browse.png", &TaskObject::setFilePath,SDL_FLIP_NONE,this);
 
-	this->extraArgs = new TextField(renderer, taskName->getPos().x + taskName->getDims().y + margin, taskName->getPos().y, charWidth * 20, charHeight, textColor, textBoxBg, 20);
+
+
+	this->extraArgs = new TextField(renderer,x , y, charWidth*20, charHeight, textColor, textBoxBg, 20);
 	this->extraArgsHeading = Label::createBasicLabel(renderer, "Extra arguments:", 0, 0, charWidth, charHeight, textColor);
 
-
+	this->whenToDoTask = new DropDownMenu(renderer, x, y, w/5, charHeight, { "Immediately", "At set time" });
 	
 	this->setPos({ x, y });
 }
@@ -37,34 +70,46 @@ void TaskObject::render() {
 	this->extraArgs->render();
 	this->extraArgsHeading->render();
 
+	this->whenToDoTask->render();
+
 }
 void TaskObject::update() {
 	this->taskName->update();
 	this->filePath->update();
 	this->filePathBrowse->update();
 	this->extraArgs->update();
+	this->whenToDoTask->update();
 	Draggable::update();
 }
+
+
 
 bool TaskObject::setPos(Vector2 pos) {
 	if (Draggable::setPos(pos)) {
 		Vector2 newpos = this->getPos();
 		Vector2 center = this->getCenter();
 		Vector2 dims = this->getDims();
-		int headingRenderHeight = newpos.y + (dims.y * 0.2);
-		int charWidth = this->getDims().x / 60;
-		int charHeight = this->getDims().y / 3.5;
-		int margin = charWidth; //distance between textboxes
 
-		this->taskNameHeading->setPos(newpos.x + (dims.x * 0.05), headingRenderHeight);
-		this->taskName->setPos(this->taskNameHeading->getPos().x, this->taskNameHeading->getPos().y + (this->taskNameHeading->getDims().y));
-		
-		this->filePath->setPos(taskName->getPos().x + taskName->getDims().x + margin, taskName->getPos().y);
-		this->filePathHeading->setPos(this->filePath->getPos().x, this->filePath->getPos().y - this->filePath->getDims().y);
-		this->filePathBrowse->setPos(filePath->getPos().x + filePath->getDims().x, filePath->getPos().y);
+		int headingRenderY = (float)newpos.y + (dims.y * 0.05);
+		int contentRenderingY = headingRenderY + charHeight;
+		int renderX = this->getPos().x+margin;
 
-		this->extraArgs->setPos(filePathBrowse->getPos().x + filePathBrowse->getDims().x + margin, filePathBrowse->getPos().y);
-		this->extraArgsHeading->setPos(this->extraArgs->getPos().x, this->extraArgs->getPos().y - this->extraArgs->getDims().y);
+
+		this->taskNameHeading->setPos(newpos.x, headingRenderY);
+		this->taskName->setPos(renderX, contentRenderingY);
+		renderX += this->taskName->getDims().x + margin;
+
+		this->filePath->setPos(renderX, taskName->getPos().y);
+		this->filePathHeading->setPos(this->filePath->getPos().x, headingRenderY);
+		renderX += this->filePath->getDims().x;
+		this->filePathBrowse->setPos(renderX, contentRenderingY);
+		renderX += this->filePathBrowse->getDims().x + margin;
+
+		this->extraArgs->setPos(renderX, contentRenderingY);
+		this->extraArgsHeading->setPos(this->extraArgs->getPos().x, headingRenderY);
+		renderX += this->extraArgs->getDims().x + margin;
+
+		this->whenToDoTask->setPos(renderX, contentRenderingY);
 		
 
 
@@ -83,6 +128,8 @@ TaskObject::~TaskObject() {
 
 	delete this->extraArgs;
 	delete this->extraArgsHeading;
+
+	delete this->whenToDoTask;
 
 }
 
