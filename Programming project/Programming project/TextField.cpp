@@ -72,26 +72,9 @@ void TextField::_highlightText(int begin, int end) {
 void TextField::render() {
 	if (bg != nullptr) bg->render();
 	if (this->textTexture != nullptr) {
-
-		int start = this->posFirstCharToRender;
-		//get a string of the characters up to the ones that will be rendered on the screen and their pixel width
-		std::string prev = rawText.substr(0, start);
-		int w;
-		int h;
-		TTF_SizeText(this->font, prev.c_str(), &w, &h);
-
-		//get a string of the characters that will be rendered on the screen and their pixel width
-		this->renderedText = rawText.substr(start, this->numCharsToDisplay);
-		int w2;
-		int h2;
-		TTF_SizeText(this->font, this->renderedText.c_str(), &w2, &h2);
-		SDL_Rect textToRender = { w,0,w2,h2 };
-
-		SDL_Rect textRenderScrDims = this->renderScrDims;
-		textRenderScrDims.w = this->pxPerCharacter * this->renderedText.length();
-
-		SDL_RenderCopy(renderer, this->textTexture, &textToRender, &textRenderScrDims);
-
+		SDL_Rect renderedCharDims = this->renderScrDims;
+		renderedCharDims.w = this->renderedText.size() * this->pxPerCharacter;
+		SDL_RenderCopy(renderer, this->textTexture, NULL, &renderedCharDims);
 	}
 	if (this->focused) {
 		//get where the typing cursor should be based on where it is in the string of rendered characters
@@ -152,6 +135,7 @@ void TextField::_moveCursorLeft(int times) {
 	if (this->typingCursorPos > 0) this->typingCursorPos -= times;
 	else {
 		this->setPosFirstCharToRender(this->posFirstCharToRender - times);
+		this->_updateRenderedText();
 	}
 
 }
@@ -161,6 +145,7 @@ void TextField::_moveCursorRight(int times) {
 	else {
 		this->setPosFirstCharToRender(this->posFirstCharToRender + times);
 		this->typingCursorPos = this->renderedText.size();
+		this->_updateRenderedText();
 	}
 }
 
@@ -186,9 +171,8 @@ void TextField::_handleKBInput() {
 
 bool TextField::setText(std::string text) {
 	if (text.size() < this->maxAllowedCharacters) {
-		Label::setText(text);
-		if (this->posFirstCharToRender > text.length() - this->numCharsToDisplay) this->posFirstCharToRender = text.length() - this->numCharsToDisplay;
-		this->renderedText = this->getRenderedText();
+		this->rawText = text;
+		this->_updateRenderedText();
 	}
 
 	else return false;
@@ -252,6 +236,15 @@ bool TextField::del(int pos) {
 
 int TextField::_getCursorPosinText() {
 	return this->posFirstCharToRender + this->typingCursorPos;
+}
+
+void TextField::_updateRenderedText() {
+	std::string temp = this->rawText;
+	this->renderedText = temp.substr(this->posFirstCharToRender, this->numCharsToDisplay);
+	Label::setText(this->renderedText);
+	this->rawText = temp;
+	std::cout << this->renderedText << "\n";
+	std::cout << this->rawText << "\n";
 }
 
 void TextField::handleFnKeysSinglePress() {

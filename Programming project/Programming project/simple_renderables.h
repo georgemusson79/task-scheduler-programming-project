@@ -254,6 +254,7 @@ protected:
 
 	//called in all textfield constructors
 	void _construct(int maxCharsToDisplay, std::string* textKeys);
+	void _updateRenderedText();
 	void handleFnKeysSinglePress();
 	void handleFnKeysHeldDown();
 	//update keysPressed with the keys pressed this frame and keysPressedBefore with keys pressed last frame
