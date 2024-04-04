@@ -33,8 +33,8 @@ int main(int argc, char** argv) {
 	int w = WINDOW_WIDTH / 2;
 	int h = WINDOW_HEIGHT / 8;
 	std::cout << w << " " << h << "\n";
-	//TaskList* t=Renderable::create <TaskList>(Main::renderer, 0, 0, w, 900);
-	//t->addTask("task #1");
+	TaskList* t=Renderable::create <TaskList>(Main::renderer, 0, 0, w, 900);
+	t->addTask("task #1");
 	//Renderable::create<LabelFixedCharDims>(Main::renderer, 0, 200, 100, "bruh", SDL_Color(0, 255, 255, 255));
 	std::vector<std::string> items = { "item1", "item2", "item3" };
 	//DropDownMenu* dr=Renderable::create <DropDownMenu>(Main::renderer, 200, 200, 110, 30,items );
