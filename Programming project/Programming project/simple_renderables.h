@@ -237,7 +237,7 @@ protected:
 	int _timeSinceLastFnKeyPress = 0;
 
 
-	int maxAllowedCharacters = 500;
+	long maxAllowedCharacters = 99999999999999;
 	std::string renderedText = "";
 	int typingCursorPos = 0;
 	SDL_Color cursorColor = { 0,0,0,255 };
@@ -250,6 +250,7 @@ protected:
 
 	//called in all textfield constructors
 	void _construct(int maxCharsToDisplay, std::string* textKeys);
+	void _updateRenderedText();
 	void handleFnKeysSinglePress();
 	void handleFnKeysHeldDown();
 	//update keysPressed with the keys pressed this frame and keysPressedBefore with keys pressed last frame

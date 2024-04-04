@@ -13,12 +13,16 @@ bool Label::setText(std::string text) {
 	int w;
 	int h;
 	TTF_SizeText(font, text.c_str(), &w, &h);
-	int pixelsPerLine = (w / text.size()) * this->charsPerLine;
+	int pixelsPerLine = ((double)w / text.size()) * this->charsPerLine;
 
 	this->setFont(this->fontPath, this->renderScrDims.w);
 	SDL_Surface* s = TTF_RenderText_Blended_Wrapped(font, text.c_str(), this->textColor, pixelsPerLine);
-	if (s == nullptr) throw "Unable to load texture";
+	if (s == nullptr) {
+		throw "Unable to load texture";
+		return false;
+	}
 	this->textTexture = SDL_CreateTextureFromSurface(renderer, s);
+	std::cout << SDL_GetError() << "\n";
 	SDL_FreeSurface(s);
 	return true;
 }

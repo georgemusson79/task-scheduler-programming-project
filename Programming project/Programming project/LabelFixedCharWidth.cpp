@@ -36,7 +36,7 @@ bool LabelFixedCharDims::setText(std::string text) {
 		}
 
 		//scale the size of the text so it has the same height as the inputted character height
-		float scaleFactor = (float)this->heightOfChar / h;
+		float scaleFactor = this->heightOfChar / h;
 		this->renderScrDims.w = biggestW * scaleFactor;
 
 
