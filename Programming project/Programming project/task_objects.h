@@ -3,8 +3,6 @@
 
 class TaskObject : public Draggable {
 private:
-	DropDownMenu* whenToDoTask = nullptr;
-
 	Label* taskNameHeading = nullptr;
 	TextField* taskName = nullptr;
 
@@ -14,16 +12,14 @@ private:
 
 	Label* extraArgsHeading = nullptr;
 	TextField* extraArgs = nullptr;
-	int charWidth;
-	int charHeight;
-	int margin; //distance between textboxes
+
 	bool isInPlace = false;
 	void _create();
 public:
 	TaskObject(SDL_Renderer* renderer, int x, int y, int w, int h);
 	~TaskObject();
 	void setName(std::string text);
-	bool setDims(int x, int y) override;
+
 	void setFilePath();
 	void render() override;
 	void update() override;
