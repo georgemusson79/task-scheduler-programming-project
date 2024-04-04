@@ -241,7 +241,7 @@ protected:
 	int _timeSinceLastFnKeyPress = 0;
 
 
-	int maxAllowedCharacters = 500;
+	long maxAllowedCharacters = 99999999999999;
 	std::string renderedText = "";
 	int typingCursorPos = 0;
 	SDL_Color cursorColor = { 0,0,0,255 };
