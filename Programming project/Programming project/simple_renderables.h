@@ -229,8 +229,24 @@ public:
 
 };
 
+enum class AllowedChars {
+	ANY,
+	ONLY_NUMBERS,
+	ONLY_LETTERS,
+	ONLY_PUNCTUATION
+};
+
+enum class AllowedCase {
+	ANY,
+	ONLY_UPPER,
+	ONLY_LOWER
+};
+
 class TextField : public Label {
 protected:
+
+	AllowedCase allowedCase;
+	AllowedChars allowedChars;
 	int highlightTxtBegin = -1; //unused
 	int highlightTxtEnd = -1; //unused
 
@@ -243,7 +259,7 @@ protected:
 
 	long maxAllowedCharacters = 99999999999999;
 	std::string renderedText = "";
-	int typingCursorPos = 0;
+	int typingCursorPos = 0; //what character the typing cursor will be rendered next to on the screem, this can be any value from 0 to numCharsToDisplay
 	SDL_Color cursorColor = { 0,0,0,255 };
 	int numCharsToDisplay = 9;
 	int posFirstCharToRender = 0;
@@ -253,7 +269,7 @@ protected:
 	float pxPerCharacter; //the pixel width of each character (all characters will be the same width)
 
 	//called in all textfield constructors
-	void _construct(int maxCharsToDisplay, std::string* textKeys);
+	void _construct(int maxCharsToDisplay, std::string* textKeys, AllowedChars allowedChars, AllowedCase allowedCase);
 	void _updateRenderedText();
 	void handleFnKeysSinglePress();
 	void handleFnKeysHeldDown();
@@ -275,9 +291,10 @@ protected:
 	//return where the cursor is in the rawtext string
 	int _getCursorPosinText();
 public:
-	TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, std::string pathToBg, int maxCharsToDisplay, std::string pathToFont = "", std::string* textKeys = &Main::textInputThisFrame);
-	TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, int maxCharsToDisplay, std::string pathToFont = "", std::string* textKeys = &Main::textInputThisFrame);
-	TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, int maxCharsToDisplay, std::string pathToFont = "", std::string* textKeys = &Main::textInputThisFrame);
+
+	TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, std::string pathToBg, int maxCharsToDisplay, AllowedChars allowedChars= AllowedChars::ANY,AllowedCase allowedCase=AllowedCase::ANY,std::string pathToFont = "", std::string* textKeys = &Main::textInputThisFrame);
+	TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, int maxCharsToDisplay, AllowedChars allowedChars = AllowedChars::ANY, AllowedCase allowedCase = AllowedCase::ANY, std::string pathToFont = "", std::string* textKeys = &Main::textInputThisFrame);
+	TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, int maxCharsToDisplay, AllowedChars allowedChars = AllowedChars::ANY, AllowedCase allowedCase = AllowedCase::ANY, std::string pathToFont = "", std::string* textKeys = &Main::textInputThisFrame);
 	~TextField();
 	bool setDims(Vector2 dims) override;
 	void render() override;
@@ -292,6 +309,7 @@ public:
 	void setPosFirstCharToRender(int first);
 
 	bool setText(std::string text) override;
+	void setCursorPos(int pos);
 	bool insertText(int position, std::string text);
 	bool backspace(int pos);
 	bool del(int pos);

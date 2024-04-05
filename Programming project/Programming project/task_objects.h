@@ -3,7 +3,10 @@
 
 class TaskObject : public Draggable {
 private:
+
+
 	DropDownMenu* whenToDoTask = nullptr;
+	Label* doTaskHeading = nullptr;
 
 	Label* taskNameHeading = nullptr;
 	TextField* taskName = nullptr;

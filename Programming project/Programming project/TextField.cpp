@@ -2,17 +2,21 @@
 #include "Cursor.h"
 #include "Collision.h"
 #include "Main_Functions.h"
+#include "Utils.h"
+
 #include <string>
 
-void TextField::_construct(int maxCharsToDisplay, std::string* textKeys) {
+void TextField::_construct(int maxCharsToDisplay, std::string* textKeys, AllowedChars allowedChars, AllowedCase allowedCase) {
 	this->setCharactersPerLine(maxCharsToDisplay);
 	this->renderPriority = 10;
 	this->name = "textField";
 	this->_textKeysPressed = textKeys;
+	this->allowedCase = allowedCase;
+	this->allowedChars = allowedChars;
 }
 
-TextField::TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, std::string pathToBg, int maxCharsToDisplay, std::string pathToFont, std::string* textKeys) : Label(renderer, x, y, w, h, textColor, pathToBg, 0, pathToFont) {
-	this->_construct(maxCharsToDisplay, textKeys);
+TextField::TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, std::string pathToBg, int maxCharsToDisplay, AllowedChars allowedChars, AllowedCase allowedCase, std::string pathToFont, std::string* textKeys) : Label(renderer, x, y, w, h, textColor, pathToBg, 0, pathToFont) {
+	this->_construct(maxCharsToDisplay, textKeys, allowedChars, allowedCase);
 }
 
 bool TextField::setDims(Vector2 dims) {
@@ -21,12 +25,12 @@ bool TextField::setDims(Vector2 dims) {
 	return true;
 }
 
-TextField::TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, int maxCharsToDisplay, std::string pathToFont, std::string* textKeys) : Label(renderer, x, y, w, h, textColor, bgColor, 0, pathToFont) {
-	this->_construct(maxCharsToDisplay, textKeys);
+TextField::TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, int maxCharsToDisplay, AllowedChars allowedChars, AllowedCase allowedCase,std::string pathToFont, std::string* textKeys) : Label(renderer, x, y, w, h, textColor, bgColor, 0, pathToFont) {
+	this->_construct(maxCharsToDisplay, textKeys,allowedChars,allowedCase);
 }
 
-TextField::TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, int maxCharsToDisplay, std::string pathToFont, std::string* textKeys) : Label(renderer, x, y, w, h, textColor, 0, pathToFont) {
-	this->_construct(maxCharsToDisplay, textKeys);
+TextField::TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, int maxCharsToDisplay, AllowedChars allowedChars, AllowedCase allowedCase, std::string pathToFont, std::string* textKeys) : Label(renderer, x, y, w, h, textColor, 0, pathToFont) {
+	this->_construct(maxCharsToDisplay, textKeys, allowedChars, allowedCase);
 }
 
 TextField::~TextField() {
@@ -93,9 +97,9 @@ void TextField::render() {
 void TextField::setPosFirstCharToRender(int first) {
 	if (first < 0) first = 0;
 	//else if (first >= rawText.length()-this->numCharsToDisplay) first = rawText.length()-this->numCharsToDisplay;
-	else if (first > (int)rawText.length() - this->numCharsToDisplay && first > this->posFirstCharToRender) return;
-	this->posFirstCharToRender = first;
-	this->renderedText = rawText.substr(this->posFirstCharToRender, this->numCharsToDisplay);
+	else if (first > (int)rawText.length() - this->numCharsToDisplay && first >= this->posFirstCharToRender) first = rawText.length() - this->numCharsToDisplay;
+	else this->posFirstCharToRender = first;
+	this->_updateRenderedText();
 }
 
 void TextField::update() {
@@ -129,13 +133,16 @@ void TextField::_generateTypingCursor() {
 	if (this->typingCursorPos > this->renderedText.size()) this->typingCursorPos = this->renderedText.size();
 }
 
-
+void TextField::setCursorPos(int pos) {
+	if (pos < 0) pos = 0;
+	else if (pos > this->maxAllowedCharacters) pos = maxAllowedCharacters;
+	this->typingCursorPos = pos;
+}
 
 void TextField::_moveCursorLeft(int times) {
 	if (this->typingCursorPos > 0) this->typingCursorPos -= times;
 	else {
 		this->setPosFirstCharToRender(this->posFirstCharToRender - times);
-		this->_updateRenderedText();
 	}
 
 }
@@ -145,7 +152,6 @@ void TextField::_moveCursorRight(int times) {
 	else {
 		this->setPosFirstCharToRender(this->posFirstCharToRender + times);
 		this->typingCursorPos = this->renderedText.size();
-		this->_updateRenderedText();
 	}
 }
 
@@ -170,19 +176,42 @@ void TextField::_handleKBInput() {
 }
 
 bool TextField::setText(std::string text) {
-	if (text.size() < this->maxAllowedCharacters) {
-		this->rawText = text;
-		this->_updateRenderedText();
+	std::string moddedtext = "";
+	if (text.size() <= this->maxAllowedCharacters) {
+		for (char ch : text) {
+			switch (this->allowedChars) {
+				case AllowedChars::ONLY_NUMBERS:
+					if (std::isdigit(ch)) moddedtext += ch;
+					break;
+				case AllowedChars::ONLY_LETTERS:
+					if (std::isalpha(ch)) moddedtext += ch;
+					break;
+				case AllowedChars::ONLY_PUNCTUATION:
+					if (std::ispunct(ch)) moddedtext += ch;
+					break;
+				default:
+					moddedtext.push_back(ch);
+					break;
+			}
+		}
+
+		switch (this->allowedCase) {
+			case (AllowedCase::ONLY_UPPER):
+				moddedtext = Utils::toUpper(moddedtext);
+				break;
+			case (AllowedCase::ONLY_LOWER):
+				moddedtext = Utils::toLower(moddedtext);
+				break;
+		}
+
+		this->rawText = moddedtext;
+		this->setPosFirstCharToRender(this->posFirstCharToRender);
 	}
 
 	else return false;
 
 }
 bool TextField::insertText(int position, std::string text) {
-	//std::string prev = rawText.substr(0, position);
-	//std::string after = rawText.substr(position, rawText.size());
-	//prev.append(text);
-	//prev.append(after);
 	if (position > rawText.size()) position = rawText.size();
 	if (position < 0) position = 0;
 
@@ -243,8 +272,6 @@ void TextField::_updateRenderedText() {
 	this->renderedText = temp.substr(this->posFirstCharToRender, this->numCharsToDisplay);
 	Label::setText(this->renderedText);
 	this->rawText = temp;
-	std::cout << this->renderedText << "\n";
-	std::cout << this->rawText << "\n";
 }
 
 void TextField::handleFnKeysSinglePress() {

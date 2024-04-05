@@ -38,8 +38,6 @@ TaskObject::TaskObject(SDL_Renderer* renderer, int x, int y, int w, int h) : Dra
 	this->margin = charWidth; 
 	SDL_Color textColor= { 0,0,0 };
 	SDL_Color textBoxBg = { 255, 255, 255 };
-	std::cout << "char" << charHeight;
-	
 
 	this->taskName = new TextField(renderer, x, y + (int)(h * 0.5), charWidth * 20, charHeight, textColor,textBoxBg,20);
 	this->taskNameHeading = Label::createBasicLabel(renderer, "Task Name:", 0, 0, charWidth, charHeight, textColor);
@@ -54,9 +52,11 @@ TaskObject::TaskObject(SDL_Renderer* renderer, int x, int y, int w, int h) : Dra
 	this->extraArgs = new TextField(renderer,x , y, charWidth*20, charHeight, textColor, textBoxBg, 20);
 	this->extraArgsHeading = Label::createBasicLabel(renderer, "Extra arguments:", 0, 0, charWidth, charHeight, textColor);
 
-	this->whenToDoTask = new DropDownMenu(renderer, x, y, w/5, charHeight, { "Immediately", "At set time" });
-	
+	this->whenToDoTask = new DropDownMenu(renderer, x, y, charWidth * 20, charHeight, { "Immediately", "At set time" });
+	this->doTaskHeading = Label::createBasicLabel(renderer, "When To Do: ", 0, 0, charWidth, charHeight, textColor);
+
 	this->setPos({ x, y });
+	this->setDims( w,h );
 }
 void TaskObject::render() {
 	Draggable::render();
@@ -71,6 +71,7 @@ void TaskObject::render() {
 	this->extraArgsHeading->render();
 
 	this->whenToDoTask->render();
+	this->doTaskHeading->render();
 
 }
 void TaskObject::update() {
@@ -95,12 +96,12 @@ bool TaskObject::setPos(Vector2 pos) {
 		int renderX = this->getPos().x+margin;
 
 
-		this->taskNameHeading->setPos(newpos.x, headingRenderY);
+		this->taskNameHeading->setPos(renderX, headingRenderY);
 		this->taskName->setPos(renderX, contentRenderingY);
 		renderX += this->taskName->getDims().x + margin;
 
 		this->filePath->setPos(renderX, taskName->getPos().y);
-		this->filePathHeading->setPos(this->filePath->getPos().x, headingRenderY);
+		this->filePathHeading->setPos(renderX, headingRenderY);
 		renderX += this->filePath->getDims().x;
 		this->filePathBrowse->setPos(renderX, contentRenderingY);
 		renderX += this->filePathBrowse->getDims().x + margin;
@@ -109,9 +110,12 @@ bool TaskObject::setPos(Vector2 pos) {
 		this->extraArgsHeading->setPos(this->extraArgs->getPos().x, headingRenderY);
 		renderX += this->extraArgs->getDims().x + margin;
 
-		this->whenToDoTask->setPos(renderX, contentRenderingY);
 		
-
+		renderX = margin;
+		contentRenderingY += charHeight * 2;
+		this->doTaskHeading->setPos(renderX, contentRenderingY);
+		renderX += this->doTaskHeading->getDims().x + margin;
+		this->whenToDoTask->setPos(renderX, contentRenderingY);
 
 		return true;
 	}
@@ -139,9 +143,9 @@ void TaskObject::setFilePath() {
 	std::wstring data = Main::openFileExplorerLoad();
 
 	this->filePath->setText(std::string(data.begin(),data.end()));
+	this->filePath->setPosFirstCharToRender(0);
 }
 
 void TaskObject::setName(std::string text) {
-	std::cout << text << "\n";
 	this->taskName->setText(text);
 }

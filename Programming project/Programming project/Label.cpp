@@ -22,7 +22,6 @@ bool Label::setText(std::string text) {
 		return false;
 	}
 	this->textTexture = SDL_CreateTextureFromSurface(renderer, s);
-	std::cout << SDL_GetError() << "\n";
 	SDL_FreeSurface(s);
 	return true;
 }
@@ -30,10 +29,6 @@ bool Label::setText(std::string text) {
 void Label::setFont(std::string fontPath, int fontSz) {
 	TTF_CloseFont(this->font);
 	if (fontPath == "") {
-		//SDL_RWops* data = SDL_RWFromConstMem(loadedFont.data, loadedFont.szData);
-		////std::cout << sizeof(defaultFont) << "\n";
-		//this->font = TTF_OpenFontRW(data, 1, 1);
-		//if (this->font == NULL) std::cout << TTF_GetError() << "\n";
 		this->font = TTF_OpenFont("arial.ttf", fontSz);
 		this->fontPath = "arial.ttf";
 		if (this->font == nullptr) std::cout << TTF_GetError() << "\n";

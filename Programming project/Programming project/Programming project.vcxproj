@@ -150,15 +150,19 @@
     <ClCompile Include="TaskList.cpp" />
     <ClCompile Include="taskObject.cpp" />
     <ClCompile Include="TextField.cpp" />
+    <ClCompile Include="TimeAndDate.cpp" />
+    <ClCompile Include="Utils.cpp" />
     <ClCompile Include="Vector2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h" />
     <ClInclude Include="Cursor.h" />
+    <ClInclude Include="DateAndTime.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="font.h" />
     <ClInclude Include="simple_renderables.h" />
     <ClInclude Include="task_objects.h" />
+    <ClInclude Include="Utils.h" />
     <ClInclude Include="Vector2.h" />
   </ItemGroup>
   <ItemGroup>
