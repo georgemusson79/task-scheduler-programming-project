@@ -21,23 +21,37 @@ bool TaskObject::setDims(int x, int y) {
 	this->filePathHeading->setDims({ headingWidth, charHeight });
 	this->filePathBrowse->setDims({ charWidth * 8, charHeight * 1.2 });
 
+	this->whenToDoTask->setDims({ charWidth * 20, charHeight });
+	this->timeInput->setDims({ charWidth * 10,charHeight });
+	this->doTaskHeading->setDims(charWidth * this->doTaskHeading->getText().length(), charHeight);
+
+
+
 	this->setPos(this->getPos()); //set pos to set first elements into position to calculate extra args width and position
 
-	int extraArgsX = this->filePathBrowse->getPos().x + this->filePathBrowse->getDims().x;
+	int extraArgsX = this->filePathBrowse->getPos().x + this->filePathBrowse->getDims().x - this->renderScrDims.x;
 	int extraArgsWidth = this->renderScrDims.w - extraArgsX - (2 * margin);
 	int extraArgsCharCount = extraArgsWidth / this->charWidth;
 	this->extraArgs->setCharactersPerLine(extraArgsCharCount);
 	this->extraArgs->setDims({ extraArgsWidth, this->charHeight });
+
+	int frequencyWidth = this->renderScrDims.w - (this->frequency->getPos().x - this->renderScrDims.x) - margin;
+	this->frequency->setDims({ frequencyWidth,charHeight });
+	this->frequencyHeading->setDims({ this->frequencyHeading->getText().length() * charWidth, charHeight });
+
+	this->setPos(this->getPos());
 	return true;
 
 }
 
-TaskObject::TaskObject(SDL_Renderer* renderer, int x, int y, int w, int h) : Draggable(renderer, x, y, w, h, SDL_Color(191, 191, 191), SDL_Color(110, 110, 110), nullptr, ONLY_Y) {
+TaskObject::TaskObject(SDL_Renderer* renderer, int x, int y, int w, int h) : Draggable(renderer, x, y, w, h, SDL_Color(191, 191, 191), SDL_Color(110, 110, 110), nullptr , ONLY_Y) {
 	this->charWidth = (float)w / 70;
 	this->charHeight = h / 5;
 	this->margin = charWidth; 
 	SDL_Color textColor= { 0,0,0 };
 	SDL_Color textBoxBg = { 255, 255, 255 };
+
+	//this would be an array if i had more time
 
 	this->taskName = new TextField(renderer, x, y + (int)(h * 0.5), charWidth * 20, charHeight, textColor,textBoxBg,20);
 	this->taskNameHeading = Label::createBasicLabel(renderer, "Task Name:", 0, 0, charWidth, charHeight, textColor);
@@ -54,11 +68,16 @@ TaskObject::TaskObject(SDL_Renderer* renderer, int x, int y, int w, int h) : Dra
 
 	this->whenToDoTask = new DropDownMenu(renderer, x, y, charWidth * 20, charHeight, { "Immediately", "At set time" });
 	this->doTaskHeading = Label::createBasicLabel(renderer, "When To Do: ", 0, 0, charWidth, charHeight, textColor);
+	this->timeInput = new TimeInputBox(renderer, 0, 0, charWidth*5, charHeight, SDL_Color{ 0,0,0 }, SDL_Color(255, 255, 255),SDL_Color(255,255,255));
+
+	this->frequencyHeading = Label::createBasicLabel(renderer, "Repeat: ", 0, 0, charWidth, charHeight, textColor);
+	this->frequency = new DropDownMenu(renderer, 0, 0, charWidth * 20, charHeight, { "Only once","Daily","Weekly","Monthly","Yearly" });
 
 	this->setPos({ x, y });
 	this->setDims( w,h );
 }
 void TaskObject::render() {
+	//this would be a for loop if i had more time
 	Draggable::render();
 	this->taskNameHeading->render();
 	this->taskName->render();
@@ -72,14 +91,20 @@ void TaskObject::render() {
 
 	this->whenToDoTask->render();
 	this->doTaskHeading->render();
+	this->frequencyHeading->render();
+	this->frequency->render();
+	if (this->whenToDoTask->getSelectedItem()=="At set time") this->timeInput->render();
 
 }
 void TaskObject::update() {
+	//this would be a for loop if i had more time
 	this->taskName->update();
 	this->filePath->update();
 	this->filePathBrowse->update();
 	this->extraArgs->update();
 	this->whenToDoTask->update();
+	this->frequency->update();
+	if (this->whenToDoTask->getSelectedItem() == "At set time") this->timeInput->update(); //only display the time input if the user wants to run the task at a specific time
 	Draggable::update();
 }
 
@@ -95,7 +120,7 @@ bool TaskObject::setPos(Vector2 pos) {
 		int contentRenderingY = headingRenderY + charHeight;
 		int renderX = this->getPos().x+margin;
 
-
+		//this would be a for loop if i had more time
 		this->taskNameHeading->setPos(renderX, headingRenderY);
 		this->taskName->setPos(renderX, contentRenderingY);
 		renderX += this->taskName->getDims().x + margin;
@@ -111,12 +136,19 @@ bool TaskObject::setPos(Vector2 pos) {
 		renderX += this->extraArgs->getDims().x + margin;
 
 		
-		renderX = margin;
+		renderX = this->renderScrDims.x+margin;
 		contentRenderingY += charHeight * 2;
 		this->doTaskHeading->setPos(renderX, contentRenderingY);
 		renderX += this->doTaskHeading->getDims().x + margin;
 		this->whenToDoTask->setPos(renderX, contentRenderingY);
-
+		renderX += this->whenToDoTask->getDims().x + margin;
+		this->timeInput->setPos(renderX, contentRenderingY);
+		renderX += this->timeInput->getDims().x + margin;
+		
+		this->frequencyHeading->setPos(renderX, contentRenderingY);
+		renderX += this->frequencyHeading->getDims().x + margin;
+		this->frequency->setPos(renderX, contentRenderingY);
+		
 		return true;
 	}
 	return false;
@@ -134,6 +166,11 @@ TaskObject::~TaskObject() {
 	delete this->extraArgsHeading;
 
 	delete this->whenToDoTask;
+	delete this->timeInput;
+	delete this->doTaskHeading;
+
+	delete this->frequency;
+	delete this->frequencyHeading;
 
 }
 

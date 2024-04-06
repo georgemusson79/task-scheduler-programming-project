@@ -204,7 +204,7 @@ public:
 	bool setDims(Vector2 dims) override;
 	bool setRenderingDims(int x, int y, int w, int h) override;
 	virtual bool setText(std::string text);
-	virtual void setFont(std::string fontPath, int fontSz = 72);
+	virtual void setFont(std::string fontPath, int fontSz = 40);
 	Label(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, std::string pathToBg, int charsPerLine = 0, std::string pathToFont = "");
 	Label(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, int charsPerLine = 0, std::string pathToFont = "");
 	Label(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, int charsPerLine = 0, std::string pathToFont = "");

@@ -16,7 +16,7 @@ bool Label::setText(std::string text) {
 	int pixelsPerLine = ((double)w / text.size()) * this->charsPerLine;
 
 	this->setFont(this->fontPath, this->renderScrDims.w);
-	SDL_Surface* s = TTF_RenderText_Blended_Wrapped(font, text.c_str(), this->textColor, pixelsPerLine);
+	SDL_Surface* s = TTF_RenderText_Solid_Wrapped(font, text.c_str(), this->textColor, pixelsPerLine);
 	if (s == nullptr) {
 		throw "Unable to load texture";
 		return false;

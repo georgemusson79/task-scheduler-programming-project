@@ -1,10 +1,14 @@
 #pragma once
+#include "DateAndTime.h"
 #include "simple_renderables.h"
 
 class TaskObject : public Draggable {
 private:
 
+	Label* frequencyHeading = nullptr;
+	DropDownMenu* frequency = nullptr;
 
+	TimeInputBox* timeInput = nullptr;
 	DropDownMenu* whenToDoTask = nullptr;
 	Label* doTaskHeading = nullptr;
 

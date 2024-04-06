@@ -1,5 +1,27 @@
 #include "DateAndTime.h"
 
+NumericTextbox::NumericTextbox(SDL_Renderer* renderer, int x, int y, int w, int h, int numChars, int maxNumericValue, int minNumericValue, SDL_Color textColor, SDL_Color bgColor) : TextField(renderer, x, y, w, h, textColor, bgColor, numChars, AllowedChars::ONLY_NUMBERS) {
+	this->maxAllowedCharacters = numChars;
+	this->maxNumericValue = maxNumericValue;
+	this->minNumericValue = minNumericValue;
+}
+
+bool NumericTextbox::setText(std::string text) {
+	std::string moddedtext = "";
+	if (text.size() <= this->maxAllowedCharacters) {
+		for (char ch : text) if (std::isdigit(ch)) moddedtext += ch;
+
+		if (moddedtext.length() != 0) {
+			int num = std::stoi(moddedtext);
+			if (num > this->maxNumericValue || num < this->minNumericValue) return false;
+		}
+		this->rawText = moddedtext;
+		this->_updateRenderedText();
+		return true;
+	}
+	return false;
+}
+
 std::string TimeInputBox::getTime() {
 	std::string time = "";
 	for (NumericTextbox* t : timeTextBox) if (t->getText().empty()) t->setText("0"); //fill empty slots with 0s
@@ -10,7 +32,7 @@ std::string TimeInputBox::getTime() {
 
 TimeInputBox::TimeInputBox(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, SDL_Color seperatorColor) : Renderable(renderer) {
 	for (int i = 0; i < 4; i++) this->timeTextBox[i] = new NumericTextbox(renderer, x, y, 10, 10, 1, 9, 0, textColor, bgColor);
-	seperator = Label::createBasicLabel(renderer, ":", x, y, w / 5, h, textColor);
+	seperator = Label::createBasicLabel(renderer, ":", x, y, w / 5, h, seperatorColor);
 	this->timeTextBox[HOURS_BIG]->maxNumericValue = 2;
 	this->timeTextBox[MINUTES_BIG]->maxNumericValue = 5;
 	this->setDims({ w,h });

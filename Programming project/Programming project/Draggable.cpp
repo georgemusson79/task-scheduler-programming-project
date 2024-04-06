@@ -27,10 +27,7 @@ Draggable::Draggable(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Col
 	this->name = "draggable";
 
 	if (movementBounds == nullptr) {
-		int w;
-		int h;
-		SDL_GetWindowSize(Main::window, &w, &h);
-		this->movementBounds = { 0,0,w,h };
+		this->movementBounds = { 0,0,99999999,99999999 };
 	}
 	else this->movementBounds = *movementBounds;
 }

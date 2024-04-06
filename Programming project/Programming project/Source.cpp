@@ -7,6 +7,7 @@
 #include "Debug.h"
 #include "Vector2.h"
 #include "simple_renderables.h"
+#include "DateAndTime.h"
 #include "Cursor.h"
 #include "Collision.h"
 #include "DateAndTime.h"
@@ -39,12 +40,12 @@ int main(int argc, char** argv) {
 	std::vector<std::string> items = { "item1", "item2", "item3" };
 	//DropDownMenu* dr=Renderable::create <DropDownMenu>(Main::renderer, 200, 200, 110, 30,items );
 	//Renderable::create<Button>(Main::renderer, 400*2, 300, 100, 100, "C:/Screenshot (51).png",&DropDownMenu::destroy,SDL_FLIP_NONE,dr);
-	//TaskObject* t=Renderable::create <TaskObject>(Main::renderer, 0, 0, 500, 100);
-	TimeInputBox* t=Renderable::create<TimeInputBox>(Main::renderer, 0, 400, 400, 30, SDL_Color(255, 0, 0), SDL_Color(255, 255, 255),  SDL_Color(255, 0, 0));
-	//t->setDims(t->getDims().x*2,t->getDims().y);
+	TaskObject* t=Renderable::create <TaskObject>(Main::renderer, 0, 0, 800, 150);
+	//t->setDims(t->getDims().x*0.9,t->getDims().y);
 	//TextField* tex=Renderable::create <TextField>(Main::renderer, 0, 100, 400, 60, SDL_Color(0, 0, 0,255),SDL_Color(255,255,255), 12,AllowedChars::ONLY_NUMBERS,AllowedCase::ONLY_LOWER);
 	//tex->setDims({ tex->getDims().x * 2, tex->getDims().y });
-		
+	//TimeInputBox* time=Renderable::create<TimeInputBox>(Main::renderer, 0, 0, 200, 20, SDL_Color(0, 0, 0), SDL_Color(255, 255, 255), SDL_Color(255, 255, 255));
+	//time->setDims({time->getDims().x * 7, time->getDims().y * 7});
 	SDL_Event e;
 	while (Main::running) {
 
