@@ -21,4 +21,6 @@ namespace Utils {
 		SDL_QueryTexture(t, NULL, NULL, &w, &h);
 		return Vector2( w,h );
 	}
+
+	
 }

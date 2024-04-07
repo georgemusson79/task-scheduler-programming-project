@@ -178,7 +178,7 @@ public:
 	bool fill;
 	SDL_Color colour;
 	void render();
-	virtual ~Rectangle() {};
+	//virtual ~Rectangle() {};
 	Rectangle(SDL_Renderer* renderer, int x, int y, int w, int h, bool fill, SDL_Color colour = { 255,255,255,255 },bool renderWithBorder=true, SDL_Color borderColor={0,0,0});
 };
 
@@ -295,7 +295,6 @@ public:
 	TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, std::string pathToBg, int maxCharsToDisplay, AllowedChars allowedChars= AllowedChars::ANY,AllowedCase allowedCase=AllowedCase::ANY,std::string pathToFont = "", std::string* textKeys = &Main::textInputThisFrame);
 	TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, int maxCharsToDisplay, AllowedChars allowedChars = AllowedChars::ANY, AllowedCase allowedCase = AllowedCase::ANY, std::string pathToFont = "", std::string* textKeys = &Main::textInputThisFrame);
 	TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, int maxCharsToDisplay, AllowedChars allowedChars = AllowedChars::ANY, AllowedCase allowedCase = AllowedCase::ANY, std::string pathToFont = "", std::string* textKeys = &Main::textInputThisFrame);
-	~TextField();
 	bool setDims(Vector2 dims) override;
 	void render() override;
 	void update() override;

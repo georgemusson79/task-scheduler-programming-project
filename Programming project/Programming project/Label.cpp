@@ -110,7 +110,6 @@ Label::~Label() {
 	delete bg;
 	SDL_DestroyTexture(this->textTexture);
 	TTF_CloseFont(this->font);
-	std::cout << "label destroyed\n";
 }
 
 bool Label::setDims(int x, int y) {

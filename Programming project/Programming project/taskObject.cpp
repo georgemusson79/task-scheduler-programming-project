@@ -45,38 +45,6 @@ bool TaskObject::setDims(int x, int y) {
 
 }
 
-TaskObject::TaskObject(SDL_Renderer* renderer, int x, int y, int w, int h) : Draggable(renderer, x, y, w, h, SDL_Color(191, 191, 191), SDL_Color(110, 110, 110), nullptr , ONLY_Y) {
-	this->charWidth = (float)w / 70;
-	this->charHeight = h / 5;
-	this->margin = charWidth; 
-	SDL_Color textColor= { 0,0,0 };
-	SDL_Color textBoxBg = { 255, 255, 255 };
-
-	//this would be an array if i had more time
-
-	this->taskName = new TextField(renderer, x, y + (int)(h * 0.5), charWidth * 20, charHeight, textColor,textBoxBg,20);
-	this->taskNameHeading = Label::createBasicLabel(renderer, "Task Name:", 0, 0, charWidth, charHeight, textColor);
-
-	this->filePath= new TextField(renderer, taskName->getPos().x+taskName->getDims().y + margin, taskName->getPos().y, charWidth * 20, charHeight, textColor, textBoxBg, 20);
-	this->filePath->setMaxAllowedChars(MAX_PATH);
-	this->filePathHeading = Label::createBasicLabel(renderer, "Path to file:", 0, 0, charWidth, charHeight, textColor);
-	this->filePathBrowse = new Button(renderer, x, y, charWidth * 8, charHeight*1.2, "browse.png", &TaskObject::setFilePath,SDL_FLIP_NONE,this);
-
-
-
-	this->extraArgs = new TextField(renderer,x , y, charWidth*20, charHeight, textColor, textBoxBg, 20);
-	this->extraArgsHeading = Label::createBasicLabel(renderer, "Extra arguments:", 0, 0, charWidth, charHeight, textColor);
-
-	this->whenToDoTask = new DropDownMenu(renderer, x, y, charWidth * 20, charHeight, { "Immediately", "At set time" });
-	this->doTaskHeading = Label::createBasicLabel(renderer, "When To Do: ", 0, 0, charWidth, charHeight, textColor);
-	this->timeInput = new TimeInputBox(renderer, 0, 0, charWidth*5, charHeight, SDL_Color{ 0,0,0 }, SDL_Color(255, 255, 255),SDL_Color(255,255,255));
-
-	this->frequencyHeading = Label::createBasicLabel(renderer, "Repeat: ", 0, 0, charWidth, charHeight, textColor);
-	this->frequency = new DropDownMenu(renderer, 0, 0, charWidth * 20, charHeight, { "Only once","Daily","Weekly","Monthly","Yearly" });
-
-	this->setPos({ x, y });
-	this->setDims( w,h );
-}
 
 
 void TaskObject::render() {
@@ -158,7 +126,7 @@ bool TaskObject::setPos(Vector2 pos) {
 		this->whenToDoTask->setPos(renderX, contentRenderingY);
 		renderX += this->whenToDoTask->getDims().x + margin;
 		this->timeInput->setPos(renderX, contentRenderingY);
-		renderX += this->timeInput->getDims().x + margin;
+		renderX += this->timeInput->getDims().x + margin*5;
 		
 		this->frequencyHeading->setPos(renderX, contentRenderingY);
 		renderX += this->frequencyHeading->getDims().x + margin;
@@ -167,6 +135,39 @@ bool TaskObject::setPos(Vector2 pos) {
 		return true;
 	}
 	return false;
+}
+
+TaskObject::TaskObject(SDL_Renderer* renderer, int x, int y, int w, int h) : Draggable(renderer, x, y, w, h, SDL_Color(191, 191, 191), SDL_Color(110, 110, 110), nullptr, ONLY_Y) {
+	this->charWidth = (float)w / 70;
+	this->charHeight = h / 5;
+	this->margin = charWidth;
+	SDL_Color textColor = { 0,0,0 };
+	SDL_Color textBoxBg = { 255, 255, 255 };
+
+	//this would be an array if i had more time
+
+	this->taskName = new TextField(renderer, x, y + (int)(h * 0.5), charWidth * 20, charHeight, textColor, textBoxBg, 20);
+	this->taskNameHeading = Label::createBasicLabel(renderer, "Task Name:", 0, 0, charWidth, charHeight, textColor);
+
+	this->filePath = new TextField(renderer, taskName->getPos().x + taskName->getDims().y + margin, taskName->getPos().y, charWidth * 20, charHeight, textColor, textBoxBg, 20);
+	this->filePath->setMaxAllowedChars(MAX_PATH);
+	this->filePathHeading = Label::createBasicLabel(renderer, "Path to file:", 0, 0, charWidth, charHeight, textColor);
+	this->filePathBrowse = new Button(renderer, x, y, charWidth * 8, charHeight * 1.2, "browse.png", &TaskObject::setFilePath, SDL_FLIP_NONE, this);
+
+
+
+	this->extraArgs = new TextField(renderer, x, y, charWidth * 20, charHeight, textColor, textBoxBg, 20);
+	this->extraArgsHeading = Label::createBasicLabel(renderer, "Extra arguments:", 0, 0, charWidth, charHeight, textColor);
+
+	this->whenToDoTask = new DropDownMenu(renderer, x, y, charWidth * 20, charHeight, { "Immediately", "At set time" });
+	this->doTaskHeading = Label::createBasicLabel(renderer, "When To Do: ", 0, 0, charWidth, charHeight, textColor);
+	this->timeInput = new TimeInputBox(renderer, 0, 0, charWidth * 5, charHeight, SDL_Color{ 0,0,0 }, SDL_Color(255, 255, 255), SDL_Color(255, 255, 255));
+
+	this->frequencyHeading = Label::createBasicLabel(renderer, "Repeat: ", 0, 0, charWidth, charHeight, textColor);
+	this->frequency = new DropDownMenu(renderer, 0, 0, charWidth * 20, charHeight, { "Only once","Daily","Weekly","Monthly","Yearly" });
+
+	this->setPos({ x, y });
+	this->setDims(w, h);
 }
 
 TaskObject::~TaskObject() {
@@ -200,4 +201,17 @@ void TaskObject::setFilePath() {
 
 void TaskObject::setName(std::string text) {
 	this->taskName->setText(text);
+}
+
+std::string TaskObject::getTaskName() {
+	return this->taskName->getText();
+}
+std::string TaskObject::getExtraArgs() {
+	return this->extraArgs->getText();
+}
+std::string TaskObject::getProgramPath() {
+	return this->filePath->getText();
+}
+std::string TaskObject::getInputtedTime() {
+	return this->timeInput->getTime();
 }

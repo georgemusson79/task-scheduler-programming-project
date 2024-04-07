@@ -1,4 +1,5 @@
 #include "task_objects.h"
+#include "Collision.h"
 #include "Utils.h"
 #include <iterator>
 
@@ -29,10 +30,28 @@ void TaskList::updateTaskPositions() {
 	int h = this->smallerbox->getDims().y / this->tasksOnScreen;
 	int x = this->smallerbox->getPos().x;
 	int y = this->smallerbox->getPos().y;
+	int initialY = y;
 
-	std::vector<TaskObject*> renderedItems = Utils::getSubArray(this->tasks, this->posFirstTaskToRender, this->tasksOnScreen);
-	for (TaskObject* task : renderedItems) {
-		task->setPos({ x, y });
+	//std::vector<TaskObject*> renderedItems = Utils::getSubArray(this->tasks, this->posFirstTaskToRender, this->tasksOnScreen);
+	
+	
+
+	int maxValue = (this->tasks.size() - this->posFirstTaskToRender - this->tasksOnScreen > 0) ? this->posFirstTaskToRender + this->tasksOnScreen : this->tasks.size() - posFirstTaskToRender;
+	int focusedTaskActualPos = -1;
+	int focusedTaskArrayPos = -1;
+
+	std::vector<TaskObject*> values = Utils::getSubArray(this->tasks, posFirstTaskToRender, maxValue);
+	for (int i = 0; i < values.size(); i++) if (values[i]->getFocused()) {
+		focusedTaskActualPos = i;
+		focusedTaskArrayPos = this->getNearestIndexFromYPos(values[i]->getPos().y);
+	}
+	if (focusedTaskActualPos != -1) {
+		Utils::moveItem(values, focusedTaskActualPos, focusedTaskArrayPos);
+	}
+
+
+	for (TaskObject* t : values) {
+		t->setPos({ x,y });
 		y += h;
 	}
 }
@@ -43,10 +62,11 @@ void TaskList::render() {
 	std::vector<TaskObject*> renderedItems = Utils::getSubArray(this->tasks, this->posFirstTaskToRender, this->tasksOnScreen);
 	int taskNum = 0;
 	for (auto& task : renderedItems) {
-		task->render();
+		bool isInsideBox = Collision::isInsideOf(this->smallerbox->getRenderingDims(), task->getRenderingDims());
+		if (isInsideBox) task->render();
 		if (task->getFocused() && this->getTaskPixelPosition(taskNum) != task->getPos()) {
-			int index = this->getNearestIndexFromYPos(task->getPos().y);
-			int indexToPxPos = this->getTaskPixelPosition(this->posFirstTaskToRender + index).y;
+			this->selectedTaskPos = this->getNearestIndexFromYPos(task->getPos().y);
+			int indexToPxPos = this->getTaskPixelPosition(this->posFirstTaskToRender + this->selectedTaskPos).y;
 			SDL_RenderDrawLine(this->renderer, this->biggerbox->getPos().x, indexToPxPos, this->smallerbox->getPos().x+ this->biggerbox->getDims().x, indexToPxPos);
 		}
 	}
@@ -66,12 +86,13 @@ void TaskList::update() {
 			this->selectedTask = task;
 			whereToMoveTask = this->getNearestIndexFromYPos(task->getPos().y);
 			selectedTaskNum = taskNum;
+			this->updateTaskPositions();
 		}
 		task->update();
 		taskNum++;
 	}
 
-	if (selectedTask != nullptr && !selectedTask->getFocused()) this->swapTasks(selectedTaskNum, whereToMoveTask);
+	if (selectedTask != nullptr && !selectedTask->getFocused()) this->moveTask(selectedTaskNum, whereToMoveTask);
 	this->handleKBInput();
 	for (Button* b : this->buttons) b->update();
 
@@ -121,15 +142,34 @@ Vector2 TaskList::getTaskPixelPosition(int pos) {
 	}
 }
 
-void TaskList::swapTasks(int first, int second) {
-	if (second >= this->tasks.size()) {
+void TaskList::moveTask(int first, int second) {
+	if (second == first) {
+		this->updateTaskPositions();
+		return;
+	}
+	else if (second >= this->tasks.size()) {
 		this->tasks.push_back(this->tasks[first]);
 		this->tasks.erase(this->tasks.begin() + first);
 	}
 	else {
-		auto it1 = this->tasks.begin() + first;
-		auto it2 = this->tasks.begin() + second;
-		std::iter_swap(it1, it2);
+		auto firstIt= this->tasks.begin() + first;
+		auto secondIt = this->tasks.begin() + second;
+		Utils::moveItem(this->tasks, first, second);
+		//if (first < second) {
+		//	for (auto it1 = firstIt; it1 < secondIt; it1++) {
+		//		auto next = std::next(it1);
+		//		std::iter_swap(it1, next);
+		//	}
+		//}
+
+		//else {
+		//	for (auto it1 = firstIt; it1 > secondIt; it1--) {
+		//		auto prev = std::prev(it1);
+		//		std::iter_swap(it1,prev);
+		//	}
+		//}
+
+		for (auto e : this->tasks) std::cout << e->getTaskName() << "\n";
 	}
 	this->updateTaskPositions();
 }

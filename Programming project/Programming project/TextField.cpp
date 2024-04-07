@@ -33,9 +33,6 @@ TextField::TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Col
 	this->_construct(maxCharsToDisplay, textKeys, allowedChars, allowedCase);
 }
 
-TextField::~TextField() {
-
-}
 
 void TextField::setCharactersPerLine(int chars) {
 	this->numCharsToDisplay = chars;

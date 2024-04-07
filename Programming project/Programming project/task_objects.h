@@ -29,6 +29,11 @@ private:
 	bool highlighted = false;
 	void _create();
 public:
+	std::string getTaskName();
+	std::string getExtraArgs();
+	std::string getProgramPath();
+	std::string getInputtedTime();
+
 	TaskObject(SDL_Renderer* renderer, int x, int y, int w, int h);
 	~TaskObject();
 	void setName(std::string text);
@@ -48,6 +53,8 @@ class TaskList : public Renderable {
 protected:
 	//get where a task should be on the screen, takes an array index relative to this->tasks as input
 	TaskObject* selectedTask = nullptr;
+	int selectedTaskPos = 0;
+
 	Vector2 getTaskPixelPosition(int pos);
 	int getNearestIndexFromYPos(int yPos);
 	int getTaskHeight() {
@@ -61,7 +68,7 @@ protected:
 	std::vector<TaskObject*> tasks = {};
 	Rectangle* biggerbox = nullptr;
 	Rectangle* smallerbox = nullptr;
-	void swapTasks(int first, int second);
+	void moveTask(int first, int second);
 	void handleKBInput();
 public:
 
