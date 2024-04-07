@@ -12,9 +12,13 @@ namespace Utils {
 		std::vector<T> res = {};
 		if (first < 0) first = 0;
 		if (amount <= 0) return {};
-		if (amount + first > array.size()) amount = array.size() - first;
+		if (amount + first > array.size()) amount = array.size();
 
-		for (int i = first; i < amount; i++) res.push_back(array[i]);
+		
+		for (int i = first; i < first+amount; i++) {
+			res.push_back(array[i]);
+
+		}
 		return res;
 	}
 

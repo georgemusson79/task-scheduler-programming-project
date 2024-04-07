@@ -25,7 +25,7 @@ int main(int argc, char** argv) {
 
 
 	Vector2 scrDims = Main::getDisplayDims();
-	Main::window = SDL_CreateWindow("Task Scheduler", (0x1FFF0000u | (0)), SDL_WINDOWPOS_UNDEFINED, scrDims.x * 0.9, scrDims.y * 0.8, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+	Main::window = SDL_CreateWindow("Task Scheduler", (0x1FFF0000u | (0)), SDL_WINDOWPOS_UNDEFINED, scrDims.x * 0.9, scrDims.y * 0.8, SDL_WINDOW_SHOWN);
 	SDL_GetWindowSize(Main::window, &WINDOW_WIDTH, &WINDOW_HEIGHT);
 	Main::renderer = (Debug::vsync) ? SDL_CreateRenderer(Main::window, -1,  SDL_RENDERER_PRESENTVSYNC) : SDL_CreateRenderer(Main::window, -1, SDL_RENDERER_ACCELERATED);
 	int w = WINDOW_WIDTH / 1.5;

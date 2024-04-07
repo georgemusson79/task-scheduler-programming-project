@@ -36,14 +36,14 @@ void TaskList::updateTaskPositions() {
 	
 	
 
-	int maxValue = (this->tasks.size() - this->posFirstTaskToRender - this->tasksOnScreen > 0) ? this->posFirstTaskToRender + this->tasksOnScreen : this->tasks.size() - posFirstTaskToRender;
 	int focusedTaskActualPos = -1;
 	int focusedTaskArrayPos = -1;
+	int maxValue = this->tasksOnScreen;
 
 	std::vector<TaskObject*> values = Utils::getSubArray(this->tasks, posFirstTaskToRender, maxValue);
 	for (int i = 0; i < values.size(); i++) if (values[i]->getFocused()) {
 		focusedTaskActualPos = i;
-		focusedTaskArrayPos = this->getNearestIndexFromYPos(values[i]->getPos().y);
+		focusedTaskArrayPos = this->getNearestIndexFromYPos(values[i]->getPos().y) - this->posFirstTaskToRender;
 	}
 	if (focusedTaskActualPos != -1) {
 		Utils::moveItem(values, focusedTaskActualPos, focusedTaskArrayPos);
@@ -66,7 +66,8 @@ void TaskList::render() {
 		if (isInsideBox) task->render();
 		if (task->getFocused() && this->getTaskPixelPosition(taskNum) != task->getPos()) {
 			this->selectedTaskPos = this->getNearestIndexFromYPos(task->getPos().y);
-			int indexToPxPos = this->getTaskPixelPosition(this->posFirstTaskToRender + this->selectedTaskPos).y;
+			std::cout << this->selectedTaskPos << "\n";
+			int indexToPxPos = this->getTaskPixelPosition(this->selectedTaskPos).y;
 			SDL_RenderDrawLine(this->renderer, this->biggerbox->getPos().x, indexToPxPos, this->smallerbox->getPos().x+ this->biggerbox->getDims().x, indexToPxPos);
 		}
 	}
@@ -187,17 +188,42 @@ TaskList::TaskList(SDL_Renderer* renderer,int x, int y, int w, int h,int tasksOn
 	int buttonY = ymargintop - buttonHeight-(h/100);
 	int gapBetweenButtons = w / 80;
 
+
+
 	this->buttons.push_back(new Button(renderer, xmargin, buttonY, buttonWidth, buttonHeight, "add task.png", &TaskList::addTask, SDL_FLIP_NONE, this));
 	this->buttons.push_back(new Button(renderer, xmargin+buttonWidth+gapBetweenButtons, buttonY, buttonWidth, buttonHeight, "remove task.png", &TaskList::removeTaskFromEnd, SDL_FLIP_NONE, this));
-	
-	//this->buttons.push_back(new Button(renderer, xmargin, buttonY, buttonWidth, buttonHeight, "remove task.png", &TaskList::removeTaskFromEnd, SDL_FLIP_NONE, this));
+
+
 
 	this->smallerbox = new Rectangle(renderer, x + xmargin, y + ymargintop, w - (2 * xmargin), h - ymargintop, true, SDL_Color(150, 150, 150));
 	this->biggerbox = new Rectangle(renderer, x, y, w, h, true, SDL_Color(210, 210, 210));
+	
+
+	int boxCenter = this->smallerbox->getPos().x + (this->smallerbox->getDims().x / 2);
+	int upDownButtonWidth = buttonWidth / 4;
+	int upDownButtonPosX = this->smallerbox->getDims().x + this->smallerbox->getPos().x;
+	this->buttons.push_back(new Button(renderer, upDownButtonPosX, this->smallerbox->getPos().y, upDownButtonWidth, buttonHeight/2, "task up button.png", &TaskList::scrollUp, SDL_FLIP_NONE, this));
+	this->buttons.push_back(new Button(renderer, upDownButtonPosX, this->smallerbox->getPos().y+this->smallerbox->getDims().y-buttonHeight/2, upDownButtonWidth, buttonHeight / 2, "task up button.png", &TaskList::scrollDown, SDL_FLIP_VERTICAL, this));
 
 
 
 
+
+}
+
+
+void TaskList::scrollDown() {
+	if (this->posFirstTaskToRender + this->tasksOnScreen < tasks.size()) {
+		this->posFirstTaskToRender += 1;
+		this->updateTaskPositions();
+	}
+	
+}
+void TaskList::scrollUp() {
+	if (this->posFirstTaskToRender > 0) {
+		this->posFirstTaskToRender -= 1;
+		this->updateTaskPositions();
+	}
 }
 
 TaskList::~TaskList() {

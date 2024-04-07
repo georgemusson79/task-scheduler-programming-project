@@ -70,6 +70,10 @@ protected:
 	Rectangle* smallerbox = nullptr;
 	void moveTask(int first, int second);
 	void handleKBInput();
+
+	void scrollDown();
+	void scrollUp();
+
 public:
 
 
