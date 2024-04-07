@@ -1,5 +1,6 @@
 #include "task_objects.h"
-#include <Windows.h>
+#include "Collision.h"
+#include "Cursor.h"
 
 
 bool TaskObject::setDims(int x, int y) {
@@ -76,6 +77,8 @@ TaskObject::TaskObject(SDL_Renderer* renderer, int x, int y, int w, int h) : Dra
 	this->setPos({ x, y });
 	this->setDims( w,h );
 }
+
+
 void TaskObject::render() {
 	//this would be a for loop if i had more time
 	Draggable::render();
@@ -106,7 +109,19 @@ void TaskObject::update() {
 	this->frequency->update();
 	if (this->whenToDoTask->getSelectedItem() == "At set time") this->timeInput->update(); //only display the time input if the user wants to run the task at a specific time
 	Draggable::update();
+
+
+	const bool alreadyClicked = clicked;
+	const bool cursorIntersects = Collision::collidesWith(renderScrDims, Cursor::getPos());
+	clicked = Cursor::isLeftClicked();
+	if (cursorIntersects && clicked && this->getFocused()) this->highlighted = true;
+	if (clicked && !cursorIntersects) this->highlighted = false;
+
+	Rectangle* bg = dynamic_cast<Rectangle*>(this->bg);
+	if (this->highlighted) bg->borderColor = { 0,255,0 };
+	else bg->borderColor = { 0,0,0 };
 }
+
 
 
 

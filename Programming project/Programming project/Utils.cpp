@@ -1,4 +1,5 @@
 #include "Utils.h"
+
 namespace Utils {
 	std::string toUpper(std::string str) {
 		for (char& ch : str) ch=std::toupper(ch);
@@ -14,5 +15,10 @@ namespace Utils {
 		SDL_GetWindowSize(window, &w, &h);
 		return  { 0,0,w,h };
 	}
-
+	Vector2 getTextureDims(SDL_Texture* t) {
+		int w;
+		int h;
+		SDL_QueryTexture(t, NULL, NULL, &w, &h);
+		return Vector2( w,h );
+	}
 }

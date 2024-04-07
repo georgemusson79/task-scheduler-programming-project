@@ -9,8 +9,11 @@ Sprite::Sprite(SDL_Renderer* renderer, int x, int y, int w, int h, std::string p
 
 void Sprite::setImg(std::string pathToImg) {
 	this->img = IMG_LoadTexture(renderer, pathToImg.c_str());
-	if (this->img==NULL && pathToImg!="") std::cerr << "Unable to load image: " << IMG_GetError() << "\n";
-	SDL_QueryTexture(this->img, NULL, NULL, &this->textureWidth, &this->textureHeight);
+	int w;
+	int h;
+	SDL_QueryTexture(this->img, NULL, NULL, &w, &h);
+	this->textureWidth = w;
+	this->textureHeight = h;
 	this->renderImgDims = { 0,0,this->textureWidth,this->textureHeight };
 	this->pathToImg = pathToImg;
 }
@@ -25,7 +28,7 @@ std::string Sprite::getPathToImg() {
 
 Sprite::~Sprite() {
 	SDL_DestroyTexture(this->img);
-	std::cout<<"sprite destroyed";
+	//std::cout<<"sprite destroyed";
 }
 
 SDL_Texture* Sprite::getTexture() {

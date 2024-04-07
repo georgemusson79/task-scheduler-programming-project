@@ -19,6 +19,7 @@ Vector2 Main::getDisplayDims() {
 
 
 void Main::updateRenderables() {
+
 	Cursor::hasCursorChanged = false;
 	SDL_RenderClear(Main::renderer);
 
@@ -33,7 +34,6 @@ void Main::updateRenderables() {
 
 
 	if (Cursor::focusedItem != nullptr && Cursor::focusedItem->moveForwardWhenFocused) Cursor::focusedItem->render(); //render the item held by the cursor to the top of the screen if required
-
 	SDL_RenderPresent(Main::renderer);
 	//set cursor to normal if it isnt interacting with anything
 	if (!Cursor::hasCursorChanged && Cursor::currentCursorType != SDL_SYSTEM_CURSOR_ARROW) Cursor::setCursor(SDL_SYSTEM_CURSOR_ARROW);

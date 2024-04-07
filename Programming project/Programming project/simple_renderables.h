@@ -7,6 +7,7 @@
 #include <limits>
 #include <SDL_ttf.h>
 
+#include "Utils.h"
 #include "Main_Functions.h"
 #include "Vector2.h"
 
@@ -64,7 +65,6 @@ public:
 		static_assert(std::is_constructible_v<RenderableObj, Args...>, "Unable to construct class with current arguments"); //assert that class can be created with args
 		static_assert(std::is_base_of_v<Renderable, RenderableObj>, "RenderableObj is not of type Renderable"); //assert that class base is Renderable
 		RenderableObj* obj = new RenderableObj(args...); //dynamically allocate object then append to Main::renderables
-
 		Main::renderables.push_back(obj);
 
 		//sort list by render priority, higher means it will render towards the top of the screen
@@ -85,7 +85,7 @@ public:
 
 	virtual ~Renderable() {
 		tryRemoveFocus();
-		std::cout << "renderable destroyed\n";
+		//std::cout << "renderable destroyed\n";
 	}
 
 	bool trySetFocus();
@@ -120,24 +120,24 @@ public:
 
 class Button : public Sprite {
 private:
-	SDL_Texture* img;
 	std::function<void()> fn;
 	bool alreadyClicked = false;
 
 public:
 	template <typename Fn, typename... Args>
-	Button(SDL_Renderer* renderer, int x, int y, int w, int h, std::string pathToImg, Fn function = NULL, SDL_RendererFlip flip = SDL_FLIP_NONE, Args... arguments) : Sprite(renderer, x, y, w, h, pathToImg, flip) {
-		this->setFunction(function, arguments...);
+	Button(SDL_Renderer* renderer, int x, int y, int w, int h, std::string pathToImg, Fn function = []() {}, SDL_RendererFlip flip = SDL_FLIP_NONE, Args... arguments) : Sprite(renderer, x, y, w, h, pathToImg, flip) {
+		this -> name = "button";
+		if (function!=NULL) this->setFunction(function, arguments...);
 		this->renderPriority = 100;
 	}
 
 	template <typename Fn, typename... Args>
 	void setFunction(Fn function, Args... arguments) {
-		if (function != NULL) {
-			static_assert(std::is_invocable_v<Fn, Args...>, "Function is not callable with provided arguments");
+		//if (function != []() {}) {
+		//	//static_assert(std::is_invocable_v<Fn, Args...>, "Function is not callable with provided arguments");
 			auto f = std::bind(function, arguments...);
 			fn = f;
-		}
+		//}
 
 	}
 
