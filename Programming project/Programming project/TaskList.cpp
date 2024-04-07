@@ -1,6 +1,8 @@
 #include "task_objects.h"
 #include "Collision.h"
 #include "Utils.h"
+#include <fstream>
+#include <sstream>
 #include <iterator>
 
 std::string TaskList::getNameNextTask() {
@@ -188,11 +190,13 @@ TaskList::TaskList(SDL_Renderer* renderer,int x, int y, int w, int h,int tasksOn
 	int buttonY = ymargintop - buttonHeight-(h/100);
 	int gapBetweenButtons = w / 80;
 
+	int buttonX = x + xmargin;
 
-
-	this->buttons.push_back(new Button(renderer, xmargin, buttonY, buttonWidth, buttonHeight, "add task.png", &TaskList::addTask, SDL_FLIP_NONE, this));
-	this->buttons.push_back(new Button(renderer, xmargin+buttonWidth+gapBetweenButtons, buttonY, buttonWidth, buttonHeight, "remove task.png", &TaskList::removeTaskFromEnd, SDL_FLIP_NONE, this));
-
+	this->buttons.push_back(new Button(renderer,buttonX, buttonY, buttonWidth, buttonHeight, "add task.png", &TaskList::addTask, SDL_FLIP_NONE, this));
+	buttonX += buttonWidth + gapBetweenButtons;
+	this->buttons.push_back(new Button(renderer, buttonX, buttonY, buttonWidth*1.2, buttonHeight, "remove task.png", &TaskList::removeTaskFromEnd, SDL_FLIP_NONE, this));
+	buttonX += (buttonWidth*1.2) + gapBetweenButtons;
+	this->buttons.push_back(new Button(renderer, buttonX, buttonY, buttonWidth*1.2, buttonHeight, "export task.png", &TaskList::exportCurrentTaskList, SDL_FLIP_NONE, this));
 
 
 	this->smallerbox = new Rectangle(renderer, x + xmargin, y + ymargintop, w - (2 * xmargin), h - ymargintop, true, SDL_Color(150, 150, 150));
@@ -229,4 +233,22 @@ void TaskList::scrollUp() {
 TaskList::~TaskList() {
 	delete this->biggerbox;
 	delete this->smallerbox;
+}
+
+bool TaskList::exportCurrentTaskList() {
+	std::wstring path = Main::openFileExplorerSave({ {L".task Files",L"*.task"} });
+	if (path == L"") return false;
+	std::ofstream file(path);
+	file << this->convertToExportableFormat();
+	return true;
+}
+
+std::string TaskList::convertToExportableFormat() {
+	std::stringstream ss;
+	for (auto task : this->tasks) {
+		ss << task->getTaskName() << "," << task->getProgramPath() << "," << task->getExtraArgs() << "," << task->getFrequency() << task->getWhenToRun();
+		if (task->getWhenToRun() != "Immediately") ss << task->getInputtedTime();
+		ss << "\n";
+	}
+	return ss.str();
 }

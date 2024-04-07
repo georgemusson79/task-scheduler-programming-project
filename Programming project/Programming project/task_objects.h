@@ -33,6 +33,8 @@ public:
 	std::string getExtraArgs();
 	std::string getProgramPath();
 	std::string getInputtedTime();
+	std::string getFrequency();
+	std::string getWhenToRun();
 
 	TaskObject(SDL_Renderer* renderer, int x, int y, int w, int h);
 	~TaskObject();
@@ -84,4 +86,6 @@ public:
 	void updateTaskPositions();
 	void render() override;
 	void update() override;
+	bool exportCurrentTaskList();
+	std::string convertToExportableFormat();
 };

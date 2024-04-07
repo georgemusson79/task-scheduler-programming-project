@@ -15,6 +15,7 @@ struct WindowsResource {
 namespace Main {
 
 
+	inline SDL_Color bgColor = { 255,255,255 };
 	inline bool running = true; //if false close the program
 	inline std::vector<Renderable*> renderables;
 	inline SDL_Window* window;
@@ -36,6 +37,7 @@ namespace Main {
 	//Open File Explorer for saving files
 	std::wstring openFileExplorerLoad(std::vector<std::pair<std::wstring, std::wstring>> allowedFiles = { {L"All files",L"*.*"} }, bool multiselect = false); //creates a file explorer window for loading files
 
+	void clearScreenDrawBackground();
 	void removeDestroyedObjects();
 
 	WindowsResource loadWindowsResource(int id);

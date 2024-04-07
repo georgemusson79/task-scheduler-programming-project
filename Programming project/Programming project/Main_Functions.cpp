@@ -21,7 +21,7 @@ Vector2 Main::getDisplayDims() {
 void Main::updateRenderables() {
 
 	Cursor::hasCursorChanged = false;
-	SDL_RenderClear(Main::renderer);
+	Main::clearScreenDrawBackground();
 
 
 	//objects are rendered in reverse order to ensure objects with higher priority are updated first but also rendered more forward 
@@ -89,16 +89,17 @@ std::wstring Main::openFileExplorerSave(std::vector<std::pair<std::wstring, std:
 	COMDLG_FILTERSPEC* COMAllowedFiles = new COMDLG_FILTERSPEC[numOfFileTypes];
 	for (int i = 0; i < numOfFileTypes; i++) COMAllowedFiles[i] = { allowedFiles[i].first.c_str(),allowedFiles[i].second.c_str() };
 	fileEx->SetFileTypes(numOfFileTypes, COMAllowedFiles);
+	if (!allowedFiles.size()==1) fileEx->SetDefaultExtension(allowedFiles[0].second.c_str());
 	delete COMAllowedFiles;
 
 	fileEx->Show(NULL);
-	IShellItem* fileName;
+	IShellItem* fileName = nullptr;
 	fileEx->GetResult(&fileName);
 	PWSTR fileNameBuf = empty;
-	fileName->GetDisplayName(SIGDN_FILESYSPATH, &fileNameBuf);
-
-	//free file dialog and items
-	fileName->Release();
+	if (fileName != nullptr) {
+		fileName->GetDisplayName(SIGDN_FILESYSPATH, &fileNameBuf);
+		fileName->Release();
+	}
 	fileEx->Release();
 	return fileNameBuf;
 }
@@ -142,4 +143,13 @@ WindowsResource Main::loadWindowsResource(int id) {
 	return { data,dataSz };
 }
 
+
+void Main::clearScreenDrawBackground() {
+	Uint8 r, g, b, a;
+	SDL_Color color = Main::bgColor;
+	SDL_GetRenderDrawColor(Main::renderer, &r, &g, &b,&a);
+	SDL_SetRenderDrawColor(Main::renderer, color.r, color.b, color.g, color.a);
+	SDL_RenderClear(Main::renderer);
+	SDL_SetRenderDrawColor(Main::renderer, r, g, b, a);
+}
 

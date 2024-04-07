@@ -215,3 +215,10 @@ std::string TaskObject::getProgramPath() {
 std::string TaskObject::getInputtedTime() {
 	return this->timeInput->getTime();
 }
+
+std::string TaskObject::getFrequency() {
+	return this->frequency->getSelectedItem();
+}
+std::string TaskObject::getWhenToRun() {
+	return this->whenToDoTask->getSelectedItem();
+}
