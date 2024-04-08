@@ -26,7 +26,7 @@ void TaskList::removeTaskFromEnd() {
 	TaskObject* t = this->tasks.back();
 	this->tasks.pop_back();
 	delete t;
-
+	if (this->posFirstTaskToRender != 0) this->posFirstTaskToRender--;
 	this->updateTaskPositions();
 }
 
