@@ -21,7 +21,7 @@ protected:
 	bool focused = false;
 	int renderPriority = 0;
 	SDL_Renderer* renderer;
-	SDL_Rect renderScrDims; //dimensions for rendering the object to the screen 
+	SDL_Rect renderScrDims = { 0,0,0,0 }; //dimensions for rendering the object to the screen 
 
 public:
 	//Must be called by every class that inherits Renderable. Sets the renderer
@@ -118,36 +118,7 @@ public:
 
 
 
-class Button : public Sprite {
-private:
-	std::function<void()> fn;
-	bool alreadyClicked = false;
 
-public:
-	template <typename Fn, typename... Args>
-	Button(SDL_Renderer* renderer, int x, int y, int w, int h, std::string pathToImg, Fn function = []() {}, SDL_RendererFlip flip = SDL_FLIP_NONE, Args... arguments) : Sprite(renderer, x, y, w, h, pathToImg, flip) {
-		this -> name = "button";
-		if (function!=NULL) this->setFunction(function, arguments...);
-		this->renderPriority = 100;
-	}
-
-	template <typename Fn, typename... Args>
-	void setFunction(Fn function, Args... arguments) {
-		//if (function != []() {}) {
-		//	//static_assert(std::is_invocable_v<Fn, Args...>, "Function is not callable with provided arguments");
-			auto f = std::bind(function, arguments...);
-			fn = f;
-		//}
-
-	}
-
-
-	void update() override;
-	virtual void onHover() {} //runs when the cursor is hovered over the button
-	void onClick() {
-		this->fn();
-	}
-};
 
 class Draggable : public Renderable {
 protected:
@@ -337,7 +308,6 @@ class DropDownMenuItem;
 
 class DropDownMenu : public Renderable {
 protected:
-	int selectedItem = 0;
 	std::vector<DropDownMenuItem*> items;
 
 public:
@@ -350,6 +320,9 @@ public:
 	~DropDownMenu();
 	void render() override;
 	void update() override;
+	void setItem(int pos);
+	void setItem(std::string itemName);
+
 	
 };
 
@@ -380,4 +353,35 @@ public:
 	}
 	void setText(std::string text);
 
+};
+
+class Button : public Sprite {
+private:
+	std::function<void()> fn;
+	bool alreadyClicked = false;
+
+public:
+	template <typename Fn, typename... Args>
+	Button(SDL_Renderer* renderer, int x, int y, int w, int h, std::string pathToImg, Fn function = []() {}, SDL_RendererFlip flip = SDL_FLIP_NONE, Args... arguments) : Sprite(renderer, x, y, w, h, pathToImg, flip) {
+		this->name = "button";
+		if (function != NULL) this->setFunction(function, arguments...);
+		this->renderPriority = 100;
+	}
+
+	template <typename Fn, typename... Args>
+	void setFunction(Fn function, Args... arguments) {
+		//if (function != []() {}) {
+		//	//static_assert(std::is_invocable_v<Fn, Args...>, "Function is not callable with provided arguments");
+		auto f = std::bind(function, arguments...);
+		fn = f;
+		//}
+
+	}
+
+
+	void update() override;
+	virtual void onHover() {} //runs when the cursor is hovered over the button
+	void onClick() {
+		this->fn();
+	}
 };

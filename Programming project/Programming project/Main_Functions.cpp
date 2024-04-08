@@ -89,9 +89,9 @@ std::wstring Main::openFileExplorerSave(std::vector<std::pair<std::wstring, std:
 	COMDLG_FILTERSPEC* COMAllowedFiles = new COMDLG_FILTERSPEC[numOfFileTypes];
 	for (int i = 0; i < numOfFileTypes; i++) COMAllowedFiles[i] = { allowedFiles[i].first.c_str(),allowedFiles[i].second.c_str() };
 	fileEx->SetFileTypes(numOfFileTypes, COMAllowedFiles);
-	if (!allowedFiles.size()==1) fileEx->SetDefaultExtension(allowedFiles[0].second.c_str());
+	if (allowedFiles.size()==1) fileEx->SetDefaultExtension(allowedFiles[0].second.c_str());
 	delete COMAllowedFiles;
-
+	
 	fileEx->Show(NULL);
 	IShellItem* fileName = nullptr;
 	fileEx->GetResult(&fileName);

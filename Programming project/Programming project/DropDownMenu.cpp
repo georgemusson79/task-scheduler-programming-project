@@ -2,6 +2,7 @@
 #include "Collision.h"
 #include "Cursor.h"
 #include <memory>
+#include <iterator>
 
 DropDownMenuItem::DropDownMenuItem(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color color, SDL_Color highlightColor, std::string text, DropDownMenu* parent) : Rectangle(renderer, x, y, w, h, true, color) {
 	this->highlightColor = highlightColor;
@@ -161,4 +162,19 @@ std::string DropDownMenu::getSelectedItem() {
 
 DropDownMenu::~DropDownMenu() {
 	for (DropDownMenuItem* item : this->items) delete item;
+}
+
+void DropDownMenu::setItem(int pos) {
+	if (pos<0 || pos>this->items.size()) return;
+	std::string temp = this->items[pos]->getText();
+	this->items[pos]->setText(this->items[0]->getText());
+	this->items[0]->setText(temp);
+}
+
+
+void DropDownMenu::setItem(std::string itemName) {
+	auto it = std::find_if(items.begin(), items.end(), [itemName](DropDownMenuItem* item) {
+		return item->getText() == itemName;
+		});
+	if (it!=items.end()) this->setItem(std::distance(items.begin(),it));
 }

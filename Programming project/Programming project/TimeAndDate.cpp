@@ -30,6 +30,22 @@ std::string TimeInputBox::getTime() {
 
 }
 
+void TimeInputBox::setTime(std::string time) {
+	int i = 0;
+	if (time.size() < 4) return;
+
+	//ensure clock times are valid otherwise return
+	if (Utils::toInt(time[0])>2) return;
+	if (Utils::toInt(time[0]) == 2 && Utils::toInt(time[1]) > 4) return;
+	if (Utils::toInt(time[2])>6) return;
+
+	for (auto box : this->timeTextBox) {
+		std::string ch = time.substr(i,1);
+		if (!box->setText(ch)) box->setText("0");
+		i++;
+	}
+}
+
 TimeInputBox::TimeInputBox(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, SDL_Color seperatorColor) : Renderable(renderer) {
 	for (int i = 0; i < 4; i++) this->timeTextBox[i] = new NumericTextbox(renderer, x, y, 10, 10, 1, 9, 0, textColor, bgColor);
 	seperator = Label::createBasicLabel(renderer, ":", x, y, w / 5, h, seperatorColor);

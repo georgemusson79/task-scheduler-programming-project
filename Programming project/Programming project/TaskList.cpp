@@ -1,6 +1,7 @@
 #include "task_objects.h"
 #include "Collision.h"
 #include "Utils.h"
+
 #include <fstream>
 #include <sstream>
 #include <iterator>
@@ -9,7 +10,7 @@ std::string TaskList::getNameNextTask() {
 	return "Task #" + std::to_string(this->tasks.size() + 1);
 }
 
-void TaskList::addTask() {
+TaskObject* TaskList::addTask() {
 	int taskHeight = this->smallerbox->getDims().y / this->tasksOnScreen;
 	SDL_Rect dims = { this->smallerbox->getPos().x,this->smallerbox->getPos().y,this->smallerbox->getDims().x,taskHeight};
 	TaskObject* t=new TaskObject(renderer, dims.x,dims.y+(taskHeight*this->tasks.size()), dims.w, dims.h);
@@ -17,6 +18,7 @@ void TaskList::addTask() {
 	t->setName(this->getNameNextTask());
 	this->tasks.push_back(t);
 	this->updateTaskPositions();
+	return t;
 }
 
 void TaskList::removeTaskFromEnd() {
@@ -197,6 +199,8 @@ TaskList::TaskList(SDL_Renderer* renderer,int x, int y, int w, int h,int tasksOn
 	this->buttons.push_back(new Button(renderer, buttonX, buttonY, buttonWidth*1.2, buttonHeight, "remove task.png", &TaskList::removeTaskFromEnd, SDL_FLIP_NONE, this));
 	buttonX += (buttonWidth*1.2) + gapBetweenButtons;
 	this->buttons.push_back(new Button(renderer, buttonX, buttonY, buttonWidth*1.2, buttonHeight, "export task.png", &TaskList::exportCurrentTaskList, SDL_FLIP_NONE, this));
+	buttonX += (buttonWidth * 1.2) + gapBetweenButtons;
+	this->buttons.push_back(new Button(renderer, buttonX, buttonY, buttonWidth * 1.2, buttonHeight, "import task.png", &TaskList::importTaskList, SDL_FLIP_NONE, this));
 
 
 	this->smallerbox = new Rectangle(renderer, x + xmargin, y + ymargintop, w - (2 * xmargin), h - ymargintop, true, SDL_Color(150, 150, 150));
@@ -243,12 +247,36 @@ bool TaskList::exportCurrentTaskList() {
 	return true;
 }
 
+bool TaskList::importTaskList() {
+	std::wstring path = Main::openFileExplorerLoad({ {L".task Files",L"*.task"} });
+	std::ifstream file(path);
+	std::string buffer;
+	while (std::getline(file, buffer)) {
+		std::vector<std::string> split = Utils::split(buffer, ',');
+		if (split.size() < 5) {
+			std::cout << "invalid size\n";
+			return false;
+		}
+		else {
+			TaskObject* t=this->addTask();
+			t->setName(split[0]);
+			t->setFilePathStr(split[1]);
+			t->setExtraArgs(split[2]);
+			t->setFrequency(split[3]);
+			t->setWhenToRun(split[4]);
+			if (t->getWhenToRun() != "Immediately") t->setTime(split[5]);
+		}
+	}
+	return true;
+}
+
 std::string TaskList::convertToExportableFormat() {
 	std::stringstream ss;
 	for (auto task : this->tasks) {
-		ss << task->getTaskName() << "," << task->getProgramPath() << "," << task->getExtraArgs() << "," << task->getFrequency() << task->getWhenToRun();
+		ss << task->getTaskName() << "," << task->getProgramPath() << "," << task->getExtraArgs() << "," << task->getFrequency() << "," << task->getWhenToRun();
 		if (task->getWhenToRun() != "Immediately") ss << task->getInputtedTime();
 		ss << "\n";
 	}
 	return ss.str();
 }
+

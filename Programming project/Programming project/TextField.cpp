@@ -206,6 +206,7 @@ bool TextField::setText(std::string text) {
 	}
 
 	else return false;
+	return true;
 
 }
 bool TextField::insertText(int position, std::string text) {

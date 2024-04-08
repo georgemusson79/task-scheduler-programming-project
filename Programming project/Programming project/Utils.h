@@ -47,5 +47,7 @@ namespace Utils {
 			}
 		}
 	}
-
+	
+	std::vector<std::string> split(std::string str,char delimiter = '\n');
+	int toInt(char c);
 }

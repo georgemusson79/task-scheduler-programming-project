@@ -109,5 +109,14 @@
     <Image Include="browse.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="import task.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="export task.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="task up button.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

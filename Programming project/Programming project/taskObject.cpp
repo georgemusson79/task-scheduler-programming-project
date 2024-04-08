@@ -190,7 +190,25 @@ TaskObject::~TaskObject() {
 
 }
 
+void TaskObject::setFilePathStr(std::string path) {
+	this->filePath->setText(path);
+}
 
+void TaskObject::setExtraArgs(std::string args) {
+	this->extraArgs->setText(args);
+}
+
+void TaskObject::setTime(std::string time) {
+	this->timeInput->setTime(time);
+}
+
+void TaskObject::setFrequency(std::string item) {
+	this->frequency->setItem(item);
+}
+
+void TaskObject::setWhenToRun(std::string item) {
+	this->whenToDoTask->setItem(item);
+}
 
 void TaskObject::setFilePath() {
 	std::wstring data = Main::openFileExplorerLoad();

@@ -1,6 +1,13 @@
 #include "Utils.h"
+#include <sstream>
 
 namespace Utils {
+
+	int toInt(char c) {
+		return c - '0';
+	}
+
+
 	std::string toUpper(std::string str) {
 		for (char& ch : str) ch=std::toupper(ch);
 		return str;
@@ -22,5 +29,12 @@ namespace Utils {
 		return Vector2( w,h );
 	}
 
+	std::vector<std::string> split(std::string str,char delimiter) {
+		std::vector<std::string> v = {};
+		std::stringstream ss(str);
+		std::string buffer;
+		while (std::getline(ss, buffer, delimiter)) v.push_back(buffer);
+		return v;
+	}
 	
 }

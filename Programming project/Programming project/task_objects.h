@@ -41,6 +41,13 @@ public:
 	void setName(std::string text);
 	bool setDims(int x, int y) override;
 	void setFilePath();
+
+	void setFilePathStr(std::string path);
+	void setExtraArgs(std::string args);
+	void setTime(std::string time);
+	void setFrequency(std::string item);
+	void setWhenToRun(std::string item);
+
 	void render() override;
 	void update() override;
 	bool setPos(Vector2 pos) override;
@@ -72,7 +79,6 @@ protected:
 	Rectangle* smallerbox = nullptr;
 	void moveTask(int first, int second);
 	void handleKBInput();
-
 	void scrollDown();
 	void scrollUp();
 
@@ -81,11 +87,12 @@ public:
 
 	TaskList(SDL_Renderer* renderer, int x, int y, int w, int h, int tasksOnScreen = 4);
 	~TaskList();
-	void addTask();
+	TaskObject* addTask();
 	void removeTaskFromEnd();
 	void updateTaskPositions();
 	void render() override;
 	void update() override;
 	bool exportCurrentTaskList();
 	std::string convertToExportableFormat();
+	bool importTaskList();
 };
