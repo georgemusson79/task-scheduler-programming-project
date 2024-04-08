@@ -118,5 +118,14 @@
     <Image Include="task up button.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="add task.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="remove task.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="arial.ttf" />
   </ItemGroup>
 </Project>

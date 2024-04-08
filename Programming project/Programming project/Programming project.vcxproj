@@ -166,10 +166,15 @@
     <ClInclude Include="Vector2.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="add task.png" />
     <Image Include="browse.png" />
     <Image Include="export task.png" />
     <Image Include="import task.png" />
+    <Image Include="remove task.png" />
     <Image Include="task up button.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="arial.ttf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
