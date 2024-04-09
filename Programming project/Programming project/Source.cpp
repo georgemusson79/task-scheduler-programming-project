@@ -3,6 +3,7 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
 #include <thread>
+#include <fstream>
 #include "Main_Functions.h"
 #include "Debug.h"
 #include "Vector2.h"
@@ -12,7 +13,6 @@
 #include "Collision.h"
 #include "DateAndTime.h"
 #include "task_objects.h"
-
 
 int main(int argc, char** argv) {
 	int WINDOW_WIDTH;

@@ -68,12 +68,18 @@ void TaskList::render() {
 	for (auto& task : renderedItems) {
 		bool isInsideBox = Collision::isInsideOf(this->smallerbox->getRenderingDims(), task->getRenderingDims());
 		if (isInsideBox) task->render();
+
 		if (task->getFocused() && this->getTaskPixelPosition(taskNum) != task->getPos()) {
 			this->selectedTaskPos = this->getNearestIndexFromYPos(task->getPos().y);
-			std::cout << this->selectedTaskPos << "\n";
+			if (this->selectedTaskPos >= tasks.size()) this->selectedTaskPos = tasks.size()-1;
 			int indexToPxPos = this->getTaskPixelPosition(this->selectedTaskPos).y;
-			SDL_RenderDrawLine(this->renderer, this->biggerbox->getPos().x, indexToPxPos, this->smallerbox->getPos().x+ this->biggerbox->getDims().x, indexToPxPos);
+			std::cout << this->selectedTaskPos << "\n";
+			if (this->selectedTaskPos==this->posFirstTaskToRender+1) {
+				std::cout << "here";
+			}
+			SDL_RenderDrawLine(this->renderer, this->biggerbox->getPos().x, indexToPxPos, this->biggerbox->getPos().x+ this->biggerbox->getDims().x, indexToPxPos);
 		}
+		taskNum++;
 	}
 	for (Button*b : this->buttons) b->render();
 		
@@ -83,14 +89,15 @@ void TaskList::render() {
 void TaskList::update() {
 	int taskNum=0;
 	this->selectedTask = nullptr;
-	int selectedTaskNum = 0;
-	int whereToMoveTask = 0;
-	for (auto task : this->tasks) {
+	int selectedTaskNum = this->posFirstTaskToRender;
+	int whereToMoveTask = this->posFirstTaskToRender;
+	std::vector<TaskObject*> renderedTasks = Utils::getSubArray(this->tasks, this->posFirstTaskToRender, this->tasksOnScreen);
+	for (auto task : renderedTasks) {
 		
 		if (task->getFocused()) {
 			this->selectedTask = task;
 			whereToMoveTask = this->getNearestIndexFromYPos(task->getPos().y);
-			selectedTaskNum = taskNum;
+			selectedTaskNum = taskNum+ this->posFirstTaskToRender;
 			this->updateTaskPositions();
 		}
 		task->update();
