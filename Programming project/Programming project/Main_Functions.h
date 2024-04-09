@@ -41,4 +41,6 @@ namespace Main {
 	void removeDestroyedObjects();
 
 	WindowsResource loadWindowsResource(int id);
+	int windowsErrMessageBoxOkCancel(std::string title, std::string msg);
+	int windowsErrMessageBoxOk(std::string title, std::string msg);
 }

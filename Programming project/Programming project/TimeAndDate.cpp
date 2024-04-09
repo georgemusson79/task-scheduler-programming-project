@@ -24,7 +24,7 @@ bool NumericTextbox::setText(std::string text) {
 
 std::string TimeInputBox::getTime() {
 	std::string time = "";
-	for (NumericTextbox* t : timeTextBox) if (t->getText().empty()) t->setText("0"); //fill empty slots with 0s
+	if (this->fillEmptySlots) for (NumericTextbox* t : timeTextBox) if (t->getText().empty()) t->setText("0"); //fill empty slots with 0s
 	for (NumericTextbox* t : timeTextBox) time += t->getText();
 	return time;
 

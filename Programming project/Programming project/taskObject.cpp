@@ -1,6 +1,7 @@
 #include "task_objects.h"
 #include "Collision.h"
 #include "Cursor.h"
+#include <filesystem>
 
 
 bool TaskObject::setDims(int x, int y) {
@@ -240,3 +241,28 @@ std::string TaskObject::getFrequency() {
 std::string TaskObject::getWhenToRun() {
 	return this->whenToDoTask->getSelectedItem();
 }
+
+std::vector<std::string> TaskObject::checkValidityOfTask() {
+	std::vector<std::string> err;
+	if (this->getTaskName() == "") err.push_back("Task Name is blank");
+
+	if (!std::filesystem::exists(this->getProgramPath())) {
+		err.push_back("Specified file: " + this->getProgramPath() + " does not exist");
+	}
+
+	if (this->getWhenToRun() != "Immediately") {
+		std::string time = this->getInputtedTime();
+		bool timeValid = true;
+		if (time.size() < 4 || time.size() > 4) timeValid = false;
+		else {
+			//verify digits for inputted time are valid
+			int nums[4];
+			for (int i = 0; i < 4; i++) nums[i] = Utils::toInt(time[i]);
+			if (nums[0] > 2) timeValid = false;
+			else if (nums[0] == 2 && nums[1] > 4) timeValid = false;
+		}
+		if (!timeValid) err.push_back("Time is not valid");
+	}
+	return err;
+}
+

@@ -29,6 +29,12 @@ private:
 	bool highlighted = false;
 	void _create();
 public:
+
+	/*
+	* Get if a task's parameters are all valid
+	* \return Returns an empty vector if all parameters are valid otherwise returns string list of errors
+	*/
+	std::vector<std::string> checkValidityOfTask();
 	std::string getTaskName();
 	std::string getExtraArgs();
 	std::string getProgramPath();
@@ -81,7 +87,7 @@ protected:
 	void handleKBInput();
 	void scrollDown();
 	void scrollUp();
-
+	int checkInvalidThenDisplayErr();
 public:
 
 

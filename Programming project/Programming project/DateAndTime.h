@@ -23,7 +23,7 @@ private:
 	Label* seperator;
 
 public:
-
+	bool fillEmptySlots = false;
 	//returns time without colon
 	std::string getTime();
 	TimeInputBox(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor = SDL_Color(0, 0, 0), SDL_Color bgColor = SDL_Color(255, 255, 255), SDL_Color seperatorColor = SDL_Color(0, 0, 0));

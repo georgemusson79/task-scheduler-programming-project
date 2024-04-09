@@ -153,3 +153,11 @@ void Main::clearScreenDrawBackground() {
 	SDL_SetRenderDrawColor(Main::renderer, r, g, b, a);
 }
 
+int Main::windowsErrMessageBoxOkCancel(std::string title, std::string msg) {
+	return MessageBoxA(NULL, msg.c_str(), title.c_str(), MB_ICONERROR |MB_YESNO);
+}
+
+int Main::windowsErrMessageBoxOk(std::string title, std::string msg) {
+	return MessageBoxA(NULL, msg.c_str(), title.c_str(), MB_ICONERROR | MB_OK);
+}
+

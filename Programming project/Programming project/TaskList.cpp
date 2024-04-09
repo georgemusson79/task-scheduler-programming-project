@@ -1,6 +1,9 @@
+
+
 #include "task_objects.h"
 #include "Collision.h"
 #include "Utils.h"
+#include "Main_Functions.h"
 
 #include <fstream>
 #include <sstream>
@@ -167,19 +170,7 @@ void TaskList::moveTask(int first, int second) {
 		auto firstIt= this->tasks.begin() + first;
 		auto secondIt = this->tasks.begin() + second;
 		Utils::moveItem(this->tasks, first, second);
-		//if (first < second) {
-		//	for (auto it1 = firstIt; it1 < secondIt; it1++) {
-		//		auto next = std::next(it1);
-		//		std::iter_swap(it1, next);
-		//	}
-		//}
 
-		//else {
-		//	for (auto it1 = firstIt; it1 > secondIt; it1--) {
-		//		auto prev = std::prev(it1);
-		//		std::iter_swap(it1,prev);
-		//	}
-		//}
 
 		for (auto e : this->tasks) std::cout << e->getTaskName() << "\n";
 	}
@@ -208,7 +199,6 @@ TaskList::TaskList(SDL_Renderer* renderer,int x, int y, int w, int h,int tasksOn
 	this->buttons.push_back(new Button(renderer, buttonX, buttonY, buttonWidth*1.2, buttonHeight, "export task.png", &TaskList::exportCurrentTaskList, SDL_FLIP_NONE, this));
 	buttonX += (buttonWidth * 1.2) + gapBetweenButtons;
 	this->buttons.push_back(new Button(renderer, buttonX, buttonY, buttonWidth * 1.2, buttonHeight, "import task.png", &TaskList::importTaskList, SDL_FLIP_NONE, this));
-
 
 	this->smallerbox = new Rectangle(renderer, x + xmargin, y + ymargintop, w - (2 * xmargin), h - ymargintop, true, SDL_Color(150, 150, 150));
 	this->biggerbox = new Rectangle(renderer, x, y, w, h, true, SDL_Color(210, 210, 210));
@@ -247,6 +237,8 @@ TaskList::~TaskList() {
 }
 
 bool TaskList::exportCurrentTaskList() {
+	//if error and no selected dont export
+	if (this->checkInvalidThenDisplayErr() != 6) return false;
 	std::wstring path = Main::openFileExplorerSave({ {L".task Files",L"*.task"} });
 	if (path == L"") return false;
 	std::ofstream file(path);
@@ -258,21 +250,28 @@ bool TaskList::importTaskList() {
 	std::wstring path = Main::openFileExplorerLoad({ {L".task Files",L"*.task"} });
 	std::ifstream file(path);
 	std::string buffer;
-	while (std::getline(file, buffer)) {
-		std::vector<std::string> split = Utils::split(buffer, ',');
-		if (split.size() < 5) {
-			std::cout << "invalid size\n";
-			return false;
+	try {
+		while (std::getline(file, buffer)) {
+			std::vector<std::string> split = Utils::split(buffer, ',');
+			if (split.size() < 5) {
+				throw std::exception("Invalid task params");
+			}
+			else {
+				TaskObject* t = this->addTask();
+				t->setName(split[0]);
+				t->setFilePathStr(split[1]);
+				t->setExtraArgs(split[2]);
+				t->setFrequency(split[3]);
+				t->setWhenToRun(split[4]);
+				if (t->getWhenToRun() != "Immediately") t->setTime(split[5]);
+			}
 		}
-		else {
-			TaskObject* t=this->addTask();
-			t->setName(split[0]);
-			t->setFilePathStr(split[1]);
-			t->setExtraArgs(split[2]);
-			t->setFrequency(split[3]);
-			t->setWhenToRun(split[4]);
-			if (t->getWhenToRun() != "Immediately") t->setTime(split[5]);
-		}
+	}
+	catch (std::exception e) {
+		std::string output = "Unable to import tasks\n\nThe following error occured:\n";
+		output += e.what();
+		Main::windowsErrMessageBoxOk("Errors occured while loading file", output);
+		return false;
 	}
 	return true;
 }
@@ -287,3 +286,35 @@ std::string TaskList::convertToExportableFormat() {
 	return ss.str();
 }
 
+int TaskList::checkInvalidThenDisplayErr() {
+	bool err = false;
+	std::vector<std::string> errs = {};
+	if (this->tasks.size() > 0) {
+		for (auto& task : this->tasks) {
+			std::vector<std::string> res = task->checkValidityOfTask();
+			if (res.size() > 0) {
+				err = true;
+				std::string taskName = task->getTaskName();
+				if (taskName == "") taskName = "(No Name)";
+				errs.push_back(taskName);
+				errs.push_back("\n");
+				for (std::string singleError : res) {
+					errs.push_back(singleError);
+					errs.push_back("\n");
+				}
+			}
+		}
+	}
+	else {
+		errs.push_back("No Tasks Added");
+		err = true;
+	}
+
+	if (err) {
+		std::string output = "Errors were present in the following Tasks:\n";
+		for (std::string str : errs) output += str;
+		output += "\nContinue?";
+		return Main::windowsErrMessageBoxOkCancel("Errors in Tasks", output);
+	}
+	else return 0;
+}
