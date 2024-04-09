@@ -84,7 +84,9 @@ void TaskList::render() {
 		}
 		taskNum++;
 	}
-	for (Button*b : this->buttons) b->render();
+	for (int i = 0; i < 4; i++) buttons[i]->render();
+	if (this->posFirstTaskToRender > 0) buttons[4]->render();
+	if (this->posFirstTaskToRender + this->tasksOnScreen < this->tasks.size()) buttons[5]->render();
 		
 
 }
@@ -109,7 +111,10 @@ void TaskList::update() {
 
 	if (selectedTask != nullptr && !selectedTask->getFocused()) this->moveTask(selectedTaskNum, whereToMoveTask);
 	this->handleKBInput();
-	for (Button* b : this->buttons) b->update();
+	for (int i = 0; i < 4;i++) buttons[i]->update();
+	if (this->posFirstTaskToRender > 0) buttons[4]->update();
+	if (this->posFirstTaskToRender+this->tasksOnScreen < this->tasks.size()) buttons[5]->update();
+
 
 }
 
