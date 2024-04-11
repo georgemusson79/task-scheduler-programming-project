@@ -166,7 +166,7 @@ TaskObject::TaskObject(SDL_Renderer* renderer, int x, int y, int w, int h) : Dra
 	this->timeInput = new TimeInputBox(renderer, 0, 0, charWidth * 5, charHeight, SDL_Color{ 0,0,0 }, SDL_Color(255, 255, 255), SDL_Color(255, 255, 255));
 
 	this->frequencyHeading = Label::createBasicLabel(renderer, "Repeat: ", 0, 0, charWidth, charHeight, textColor);
-	this->frequency = new DropDownMenu(renderer, 0, 0, charWidth * 20, charHeight, { "Only once","Daily","Weekly","Monthly","Yearly" });
+	this->frequency = new DropDownMenu(renderer, 0, 0, charWidth * 20, charHeight, { "Only once","Hourly","Daily","Weekly" });
 
 	this->setPos({ x, y });
 	this->setDims(w, h);

@@ -62,7 +62,7 @@ std::vector<std::string> Task::isValid() {
 	}
 
 	//ensure that the frequency set is valid
-	std::array<std::string, 5> frequencyVallidOpts = { "Only once","Daily","Weekly","Monthly","Yearly" };
+	std::array<std::string, 5> frequencyVallidOpts = { "Only once","Hourly","Daily","Weekly" };
 	if (std::find(frequencyVallidOpts.begin(), frequencyVallidOpts.end(), this->frequency) == frequencyVallidOpts.end()) err.push_back("Frequency Invalid Option");
 
 
