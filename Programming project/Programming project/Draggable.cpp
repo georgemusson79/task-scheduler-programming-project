@@ -20,7 +20,7 @@ Draggable::Draggable(SDL_Renderer* renderer, int x, int y, int w, int h, std::st
 }
 
 Draggable::Draggable(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color color, SDL_Color borderColor, SDL_Rect* movementBounds, MovementLimitations movementLimits, SDL_RendererFlip flip) : Renderable(renderer) {
-	this->bg = new Rectangle(renderer, x, y, w, h, true, color);
+	this->bg = new RenderableRect(renderer, x, y, w, h, true, color);
 	this->renderScrDims = { x,y,w,h };
 	this->movementLimits = movementLimits;
 	this->renderPriority = 200;

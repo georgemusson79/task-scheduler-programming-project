@@ -204,8 +204,8 @@ TaskList::TaskList(SDL_Renderer* renderer,int x, int y, int w, int h,int tasksOn
 	this->buttons.push_back(new Button(renderer, buttonX, buttonY, buttonWidth * 1.2, buttonHeight, "execute task.png", &TaskList::executeTasks, SDL_FLIP_NONE, this));
 
 
-	this->smallerbox = new Rectangle(renderer, x + xmargin, y + ymargintop, w - (2 * xmargin), h - ymargintop, true, SDL_Color(150, 150, 150));
-	this->biggerbox = new Rectangle(renderer, x, y, w, h, true, SDL_Color(210, 210, 210));
+	this->smallerbox = new RenderableRect(renderer, x + xmargin, y + ymargintop, w - (2 * xmargin), h - ymargintop, true, SDL_Color(150, 150, 150));
+	this->biggerbox = new RenderableRect(renderer, x, y, w, h, true, SDL_Color(210, 210, 210));
 	
 
 	int boxCenter = this->smallerbox->getPos().x + (this->smallerbox->getDims().x / 2);
@@ -253,11 +253,11 @@ bool TaskList::exportCurrentTaskList() {
 	return true;
 }
 
-bool TaskList::importTaskList() {
-	std::wstring path = Main::openFileExplorerLoad({ {L".task Files",L"*.task"} });
-	std::ifstream file(path);
+bool TaskList::importTaskListFromPath(std::wstring path) {
 	std::string buffer;
 	bool isTasksSection = false;
+	std::ifstream file(path);
+
 	try {
 		while (std::getline(file, buffer)) {
 
@@ -269,8 +269,9 @@ bool TaskList::importTaskList() {
 			}
 
 
-			if (isTasksSection && buffer!="Tasks") {
+			if (isTasksSection && buffer != "Tasks") {
 				std::vector<std::string> split = Utils::split(buffer, ',');
+				if (split.size() == 0) continue; //skip blank lines
 				if (split.size() < 5) {
 					throw std::exception("Invalid task params");
 				}
@@ -295,11 +296,18 @@ bool TaskList::importTaskList() {
 	return false;
 }
 
+bool TaskList::importTaskList() {
+	std::wstring path = Main::openFileExplorerLoad({ {L".task Files",L"*.task"} });
+	std::ifstream file(path);
+	return TaskList::importTaskListFromPath(path);
+}
+
 std::string TaskList::convertToExportableFormat() {
 	std::stringstream ss;
 	for (auto task : this->tasks) {
 		ss << task->getTaskName() << "," << task->getProgramPath() << "," << task->getExtraArgs() << "," << task->getFrequency() << "," << task->getWhenToRun();
 		if (task->getWhenToRun() != "Immediately") ss << task->getInputtedTime();
+		ss << "\n";
 	}
 	return ss.str();
 }
@@ -336,7 +344,7 @@ int TaskList::checkInvalidThenDisplayErr() {
 		output += "\nContinue?";
 		return Main::windowsErrMessageBoxOkCancel("Errors in Tasks", output);
 	}
-	else return 0;
+	else return 6;
 }
 
 void TaskList::executeTasks() {
@@ -364,28 +372,25 @@ void TaskList::execTasks(std::vector<Task> tasks, bool raiseErrorOnFail, std::st
 		}
 	}
 
-	std::vector<Task> immediatelyRun = {};
 	for (Task t : tasks) {
 		if (t.whenToRun == "Immediately") {
-			immediatelyRun.push_back(t);
-			auto taskIt = std::find(tasks.begin(), tasks.end(), t);
+			Utils::DateAndTime now = Utils::getCurrentDateAndTime();
+			t.time = now.time;
+			t.date = now.date;
 		}
 	}
 
 	//sort items so that the soonest task is first
 	std::sort(tasks.begin(), tasks.end(), [](Task a, Task b) {
-		std::time_t aTime = Main::strTimeToTime(a.time);
-		std::time_t bTime = Main::strTimeToTime(b.time);
+		std::time_t aTime = a.timeAndDateTotime_t();
+		std::time_t bTime = b.timeAndDateTotime_t();
 		return aTime < bTime;
 		});
 
 
 
 #//execute 
-	for (auto t : immediatelyRun) {
-		t.execute(raiseErrorOnFail);
-		if (!pathToTaskFile.empty()) TaskList::addCompletedTaskToFile(pathToTaskFile, t);
-	}
+
 
 	for (auto t : tasks) {
 		t.execute(raiseErrorOnFail);

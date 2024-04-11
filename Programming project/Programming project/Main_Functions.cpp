@@ -10,6 +10,7 @@
 #include "simple_renderables.h"
 #include "Main_Functions.h"
 #include "Vector2.h"
+#include "task_objects.h"
 #include "Cursor.h"
 
 Vector2 Main::getDisplayDims() {
@@ -200,3 +201,14 @@ std::time_t Main::strTimeToTime(std::string strTime) {
 
 	return time;
 }
+
+
+void Main::handleProgramArgs(std::vector<std::string> args,TaskList* tasklist) {
+	bool executeImportedTasks = false;
+	for (int i = 0; i < args.size(); i++) {
+		if (args[i] == "--import_taskfile" && i + 1 < args.size()) tasklist->importTaskListFromPath(Utils::stringTowstring(args[i + 1]));
+		if (args[i] == "--execute") executeImportedTasks = true;
+	}
+	if (executeImportedTasks) tasklist->executeTasks();
+}
+

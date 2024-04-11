@@ -86,7 +86,7 @@ void TaskObject::update() {
 	if (cursorIntersects && clicked && this->getFocused()) this->highlighted = true;
 	if (clicked && !cursorIntersects) this->highlighted = false;
 
-	Rectangle* bg = dynamic_cast<Rectangle*>(this->bg);
+	RenderableRect* bg = dynamic_cast<RenderableRect*>(this->bg);
 	if (this->highlighted) bg->borderColor = { 0,255,0 };
 	else bg->borderColor = { 0,0,0 };
 }
@@ -213,7 +213,7 @@ void TaskObject::setWhenToRun(std::string item) {
 
 void TaskObject::setFilePath() {
 	std::wstring data = Main::openFileExplorerLoad();
-
+	if (data.empty()) return;
 	this->filePath->setText(std::string(data.begin(),data.end()));
 	this->filePath->setPosFirstCharToRender(0);
 }
@@ -223,7 +223,7 @@ void TaskObject::setName(std::string text) {
 }
 
 Task TaskObject::convertToRunnableTask() {
-	std::string time = (this->getWhenToRun() != "Immediately") ? this->getInputtedTime() : "";
+	std::string time = (this->getWhenToRun() != "Immediately") ? this->getInputtedTime() : Utils::getCurrentDateAndTime().time;
 	 Task t(this->getTaskName(), this->getFrequency(), this->getProgramPath(), this->getExtraArgs(), this->getWhenToRun(), time);
 	 return t;
 }

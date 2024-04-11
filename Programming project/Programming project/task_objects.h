@@ -43,6 +43,7 @@ public:
 	};
 
 	std::string convertToExportableFormat();
+	std::time_t timeAndDateTotime_t();
 };
 
 class TaskObject : public Draggable {
@@ -109,6 +110,8 @@ public:
 
 class TaskList : public Renderable {
 protected:
+	RenderableRect* biggerbox = nullptr;
+	RenderableRect* smallerbox = nullptr;
 	//get where a task should be on the screen, takes an array index relative to this->tasks as input
 	TaskObject* selectedTask = nullptr;
 	int selectedTaskPos = 0;
@@ -124,8 +127,6 @@ protected:
 	float posFirstTaskToRender = 0;
 	int tasksOnScreen;
 	std::vector<TaskObject*> tasks = {};
-	Rectangle* biggerbox = nullptr;
-	Rectangle* smallerbox = nullptr;
 	void moveTask(int first, int second);
 	void handleKBInput();
 	void scrollDown();
@@ -152,7 +153,7 @@ public:
 	bool exportCurrentTaskList();
 	std::string convertToExportableFormat();
 	bool importTaskList();
-
+	bool importTaskListFromPath(std::wstring path);
 
 	void executeTasks();
 };

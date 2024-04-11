@@ -78,5 +78,12 @@ namespace Utils {
 	int toInt(char c);
 	Utils::DateAndTime timeToDateTime(std::tm time);
 	std::tm DateTimeToTm(Utils::DateAndTime time);
-
+	Utils::DateAndTime getCurrentDateAndTime();
+	std::wstring stringTowstring(std::string str);
+	template <typename T>
+	std::vector<T> convertCArrayToVector(T arr[], int numElements) {
+		std::vector<T> v = {};
+		for (int i = 0; i < numElements; i++) v.push_back(arr[i]);
+		return v;
+	}
 }

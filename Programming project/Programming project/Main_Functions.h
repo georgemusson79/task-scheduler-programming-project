@@ -6,6 +6,7 @@
 #include <chrono>
 //Main_functions.h
 struct Vector2;
+class TaskList;
 class Renderable;
 
 struct WindowsResource {
@@ -52,4 +53,5 @@ namespace Main {
 	
 	*/
 	std::time_t strTimeToTime(std::string strTime);
+	void handleProgramArgs(std::vector<std::string> srgs,TaskList* tasklist);
 }

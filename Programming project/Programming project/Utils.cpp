@@ -1,5 +1,8 @@
+#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 #include "Utils.h"
 #include <sstream>
+#include <locale>
+#include <codecvt>
 
 namespace Utils {
 
@@ -65,5 +68,17 @@ namespace Utils {
 		return tm;
 	}
 
+	DateAndTime getCurrentDateAndTime() {
+		std::time_t currentTime = std::time(nullptr);
+		std::tm* localTime = std::localtime(&currentTime);
+		return Utils::timeToDateTime(*localTime);
+	}
+
+	std::wstring stringTowstring(std::string str) {
+		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t> converter;
+		std::wstring wstr = converter.from_bytes(str);
+		return wstr;
+	}
 
 }
+

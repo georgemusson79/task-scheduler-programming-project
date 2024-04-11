@@ -4,7 +4,7 @@
 #include <memory>
 #include <iterator>
 
-DropDownMenuItem::DropDownMenuItem(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color color, SDL_Color highlightColor, std::string text, DropDownMenu* parent) : Rectangle(renderer, x, y, w, h, true, color) {
+DropDownMenuItem::DropDownMenuItem(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color color, SDL_Color highlightColor, std::string text, DropDownMenu* parent) : RenderableRect(renderer, x, y, w, h, true, color) {
 	this->highlightColor = highlightColor;
 	this->xmargin = this->renderScrDims.w * 0.2;
 	this->ymargin = this->renderScrDims.h * 0.1;
@@ -23,7 +23,7 @@ void DropDownMenuItem::setText(std::string text) {
 
 
 void DropDownMenuItem::render() {
-	Rectangle::render();
+	RenderableRect::render();
 	this->label->render();
 }
 
@@ -59,14 +59,14 @@ bool DropDownMenuItem::getIsClickedOnThis() {
 }
 
 bool DropDownMenuItem::setPos(Vector2 pos) {
-	Rectangle::setPos(pos);
+	RenderableRect::setPos(pos);
 	this->label->setPos(pos.x+this->xmargin,pos.y+this->ymargin);
 	return true;
 }
 bool DropDownMenuItem::setDims(Vector2 dims) {
 	this->xmargin = this->renderScrDims.w * 0.2;
 	this->ymargin = this->renderScrDims.h * 0.1;
-	Rectangle::setDims(dims);
+	RenderableRect::setDims(dims);
 	this->label->setDims(dims.x-(2*xmargin),dims.y-(2*ymargin));
 	this->setPos(this->getPos());
 	return true;

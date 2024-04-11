@@ -28,7 +28,7 @@ bool LabelFixedCharDims::setText(std::string text) {
 		int h = 0;
 		std::vector<std::string> lines = this->_splitText(text, this->charsPerLine);
 
-		//get biggest line width in pixels and use that as the width of the rendering rectangle
+		//get biggest line width in pixels and use that as the width of the rendering RenderableRect
 		for (auto line : lines) {
 			int w;
 			TTF_SizeText(this->font, line.c_str(), &w, &h);
@@ -45,8 +45,8 @@ bool LabelFixedCharDims::setText(std::string text) {
 		int extraLineCount = this->_splitTextByLine(text).size() - 1;
 		lineCount += extraLineCount;
 
-		int heightOfRectangle = this->heightOfChar * lineCount;
-		this->renderScrDims.h = heightOfRectangle;
+		int heightOfRenderableRect = this->heightOfChar * lineCount;
+		this->renderScrDims.h = heightOfRenderableRect;
 		return Label::setText(text);
 	}
 }

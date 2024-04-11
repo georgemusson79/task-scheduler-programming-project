@@ -89,7 +89,7 @@ void Label::setTextColor(SDL_Color color) {
 
 void Label::setBgColor(SDL_Color color) {
 	delete bg;
-	bg = new Rectangle(renderer, renderScrDims.x, renderScrDims.y, renderScrDims.w, renderScrDims.h, true, color);
+	bg = new RenderableRect(renderer, renderScrDims.x, renderScrDims.y, renderScrDims.w, renderScrDims.h, true, color);
 }
 
 bool Label::setPos(Vector2 pos) {

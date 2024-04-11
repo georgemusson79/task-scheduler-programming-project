@@ -140,7 +140,7 @@ public:
 	bool setPos(Vector2 pos) override;
 };
 
-class Rectangle : public Renderable {
+class RenderableRect : public Renderable {
 public:
 
 	bool renderWithBorder;
@@ -148,8 +148,8 @@ public:
 	bool fill;
 	SDL_Color colour;
 	void render();
-	//virtual ~Rectangle() {};
-	Rectangle(SDL_Renderer* renderer, int x, int y, int w, int h, bool fill, SDL_Color colour = { 255,255,255,255 },bool renderWithBorder=true, SDL_Color borderColor={0,0,0});
+	//virtual ~RenderableRect() {};
+	RenderableRect(SDL_Renderer* renderer, int x, int y, int w, int h, bool fill, SDL_Color colour = { 255,255,255,255 },bool renderWithBorder=true, SDL_Color borderColor={0,0,0});
 };
 
 //creates a read only block of text on the screen the size of renderingDims
@@ -325,7 +325,7 @@ public:
 	
 };
 
-class DropDownMenuItem : public Rectangle {
+class DropDownMenuItem : public RenderableRect {
 protected:
 	int xmargin;
 	int ymargin;

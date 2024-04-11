@@ -104,3 +104,9 @@ std::string Task::convertToExportableFormat() {
 	if (this->whenToRun != "Immediately") ss << this->time;
 	return ss.str();
 }
+
+std::time_t Task::timeAndDateTotime_t() {
+	Utils::DateAndTime time = { this->time,this->date };
+	std::tm tm=Utils::DateTimeToTm(time);
+	return std::mktime(&tm);
+}
