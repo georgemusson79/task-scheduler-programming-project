@@ -222,6 +222,12 @@ void TaskObject::setName(std::string text) {
 	this->taskName->setText(text);
 }
 
+Task TaskObject::convertToRunnableTask() {
+	std::string time = (this->getWhenToRun() != "Immediately") ? this->getInputtedTime() : "";
+	 Task t(this->getTaskName(), this->getFrequency(), this->getProgramPath(), this->getExtraArgs(), this->getWhenToRun(), time);
+	 return t;
+}
+
 std::string TaskObject::getTaskName() {
 	return this->taskName->getText();
 }

@@ -1,7 +1,9 @@
 ﻿//source.cpp
+#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <SDL.h>
 #include <SDL_ttf.h>
+#include <fstream>
 #include <thread>
 #include <fstream>
 #include "Main_Functions.h"
@@ -33,8 +35,9 @@ int main(int argc, char** argv) {
 
 	TaskList* taskList=Renderable::create <TaskList>(Main::renderer, x, 0, w, WINDOW_HEIGHT,5);
 	std::vector<std::string> items = { "item1", "item2", "item3" };
-
 	
+
+
 	SDL_Event e;
 	while (Main::running) {
 		Main::removeDestroyedObjects();

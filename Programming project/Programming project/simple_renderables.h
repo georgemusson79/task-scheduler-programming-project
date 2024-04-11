@@ -85,7 +85,6 @@ public:
 
 	virtual ~Renderable() {
 		tryRemoveFocus();
-		//std::cout << "renderable destroyed\n";
 	}
 
 	bool trySetFocus();

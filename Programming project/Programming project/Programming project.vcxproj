@@ -147,6 +147,7 @@
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Main_Functions.h" />
     <ClCompile Include="Sprite.cpp" />
+    <ClCompile Include="Task.cpp" />
     <ClCompile Include="TaskList.cpp" />
     <ClCompile Include="taskObject.cpp" />
     <ClCompile Include="TextField.cpp" />

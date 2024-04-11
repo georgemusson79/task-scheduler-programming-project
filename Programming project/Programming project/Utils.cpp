@@ -37,4 +37,33 @@ namespace Utils {
 		return v;
 	}
 	
+	Utils::DateAndTime timeToDateTime(std::tm time) {
+		std::string timestr = "";
+		std::string datestr = "";
+		timestr += std::to_string(time.tm_hour);
+		timestr += ":";
+		timestr += std::to_string(time.tm_min);
+
+		datestr += std::to_string(time.tm_mday);
+		datestr += "/";
+		datestr += std::to_string(time.tm_mon+1);
+		datestr += "/";
+		datestr += std::to_string(time.tm_year+1900);
+		return { timestr,datestr };
+	}
+
+	std::tm DateTimeToTm(Utils::DateAndTime time) {
+		std::tm tm = {};
+		std::vector<std::string> timesplit=Utils::split(time.time, ':');
+		tm.tm_hour = std::stoi(timesplit[0]);
+		tm.tm_min = std::stoi(timesplit[1]);
+
+		std::vector<std::string> datesplit = Utils::split(time.date, '/');
+		tm.tm_mday = std::stoi(datesplit[0]);
+		tm.tm_mon = std::stoi(datesplit[1])-1;
+		tm.tm_year = std::stoi(datesplit[2])-1900;
+		return tm;
+	}
+
+
 }

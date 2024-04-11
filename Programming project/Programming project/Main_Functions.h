@@ -3,6 +3,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <chrono>
 //Main_functions.h
 struct Vector2;
 class Renderable;
@@ -14,7 +15,7 @@ struct WindowsResource {
 
 namespace Main {
 
-
+	inline bool tasksExecutingInSeperateThread = false;
 	inline SDL_Color bgColor = { 255,255,255 };
 	inline bool running = true; //if false close the program
 	inline std::vector<Renderable*> renderables;
@@ -43,4 +44,12 @@ namespace Main {
 	WindowsResource loadWindowsResource(int id);
 	int windowsErrMessageBoxOkCancel(std::string title, std::string msg);
 	int windowsErrMessageBoxOk(std::string title, std::string msg);
+	std::string getWindowsErrorMsg(long code);
+
+	/* Takes a 4 char string and converts it to a time_t obj
+	* \param strTime: a 4 char string
+	* \return a time_t object of the time
+	
+	*/
+	std::time_t strTimeToTime(std::string strTime);
 }

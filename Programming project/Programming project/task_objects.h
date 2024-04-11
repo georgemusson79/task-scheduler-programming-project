@@ -1,7 +1,49 @@
 #pragma once
 #include "DateAndTime.h"
 #include "simple_renderables.h"
+#include <chrono>
 #define MAX_PATH          260
+
+class Task {
+public:
+	std::string taskName;
+	std::string time = "";
+	std::string frequency;
+	std::string fileName;
+	std::string extraArgs;
+	std::string whenToRun;
+	std::string date;
+
+	Task(std::string taskName,
+		std::string frequency,
+		std::string fileName,
+		std::string extraArgs,
+		std::string whenToRun,
+		std::string time);
+
+	Task(std::string taskName,
+		std::string frequency,
+		std::string fileName,
+		std::string extraArgs,
+		std::string whenToRun,
+		std::string time,
+		std::string date);
+
+	std::vector<std::string> isValid();
+	bool execute(bool raiseErrorOnFail);
+	
+
+	bool operator==(const Task& other) const {
+		return taskName == other.taskName &&
+			time == other.time &&
+			frequency == other.frequency &&
+			fileName == other.fileName &&
+			extraArgs == other.extraArgs &&
+			whenToRun == other.whenToRun;
+	};
+
+	std::string convertToExportableFormat();
+};
 
 class TaskObject : public Draggable {
 private:
@@ -48,6 +90,7 @@ public:
 	bool setDims(int x, int y) override;
 	void setFilePath();
 
+	Task convertToRunnableTask();
 	void setFilePathStr(std::string path);
 	void setExtraArgs(std::string args);
 	void setTime(std::string time);
@@ -89,6 +132,14 @@ protected:
 	void scrollUp();
 	int checkInvalidThenDisplayErr();
 public:
+	bool raiseErrorOnFail = true; //if true, will raise an error while executeTasks is called if there is a fail
+	/* Execute a task in a seperate thread
+	* \param tasks: A list of the tasks to be executed
+	* \param raiseErrorOnFail: display a windows error message if the task was unable to execute for whatever reason
+	* \param taskStatus: a pointer to a vector containing the task name and completion status that will update when the task is complete
+	*/
+	static void execTasks(std::vector<Task> tasks, bool raiseErrorOnFail, std::string pathToTaskFile);
+	static bool addCompletedTaskToFile(std::string pathToTaskFile, Task t);
 
 
 	TaskList(SDL_Renderer* renderer, int x, int y, int w, int h, int tasksOnScreen = 4);
@@ -101,4 +152,7 @@ public:
 	bool exportCurrentTaskList();
 	std::string convertToExportableFormat();
 	bool importTaskList();
+
+
+	void executeTasks();
 };

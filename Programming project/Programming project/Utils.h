@@ -1,11 +1,23 @@
 #pragma once
+#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <SDL.h>
 #include <vector>
 #include <iterator>
 #include <algorithm>
+#include <chrono>
 #include "Vector2.h"
+
+
+
+
+
 namespace Utils {
+	//date and time as strings
+	struct DateAndTime {
+		std::string time;
+		std::string date;
+	};
 
 	template<typename T>
 	std::vector<T> getSubArray(std::vector<T>& array, int first, int amount) {
@@ -64,4 +76,7 @@ namespace Utils {
 	
 	std::vector<std::string> split(std::string str,char delimiter = '\n');
 	int toInt(char c);
+	Utils::DateAndTime timeToDateTime(std::tm time);
+	std::tm DateTimeToTm(Utils::DateAndTime time);
+
 }

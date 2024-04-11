@@ -8,6 +8,7 @@
 #include <fstream>
 #include <sstream>
 #include <iterator>
+#include <thread>
 
 std::string TaskList::getNameNextTask() {
 	return "Task #" + std::to_string(this->tasks.size() + 1);
@@ -76,17 +77,14 @@ void TaskList::render() {
 			this->selectedTaskPos = this->getNearestIndexFromYPos(task->getPos().y);
 			if (this->selectedTaskPos >= tasks.size()) this->selectedTaskPos = tasks.size()-1;
 			int indexToPxPos = this->getTaskPixelPosition(this->selectedTaskPos).y;
-			std::cout << this->selectedTaskPos << "\n";
-			if (this->selectedTaskPos==this->posFirstTaskToRender+1) {
-				std::cout << "here";
-			}
+
 			SDL_RenderDrawLine(this->renderer, this->biggerbox->getPos().x, indexToPxPos, this->biggerbox->getPos().x+ this->biggerbox->getDims().x, indexToPxPos);
 		}
 		taskNum++;
 	}
-	for (int i = 0; i < 4; i++) buttons[i]->render();
-	if (this->posFirstTaskToRender > 0) buttons[4]->render();
-	if (this->posFirstTaskToRender + this->tasksOnScreen < this->tasks.size()) buttons[5]->render();
+	for (int i = 0; i < 5; i++) buttons[i]->render();
+	if (this->posFirstTaskToRender > 0) buttons[5]->render();
+	if (this->posFirstTaskToRender + this->tasksOnScreen < this->tasks.size()) buttons[6]->render();
 		
 
 }
@@ -111,9 +109,9 @@ void TaskList::update() {
 
 	if (selectedTask != nullptr && !selectedTask->getFocused()) this->moveTask(selectedTaskNum, whereToMoveTask);
 	this->handleKBInput();
-	for (int i = 0; i < 4;i++) buttons[i]->update();
-	if (this->posFirstTaskToRender > 0) buttons[4]->update();
-	if (this->posFirstTaskToRender+this->tasksOnScreen < this->tasks.size()) buttons[5]->update();
+	for (int i = 0; i < 5;i++) buttons[i]->update();
+	if (this->posFirstTaskToRender > 0) buttons[5]->update();
+	if (this->posFirstTaskToRender+this->tasksOnScreen < this->tasks.size()) buttons[6]->update();
 
 
 }
@@ -176,8 +174,6 @@ void TaskList::moveTask(int first, int second) {
 		auto secondIt = this->tasks.begin() + second;
 		Utils::moveItem(this->tasks, first, second);
 
-
-		for (auto e : this->tasks) std::cout << e->getTaskName() << "\n";
 	}
 	this->updateTaskPositions();
 }
@@ -204,6 +200,9 @@ TaskList::TaskList(SDL_Renderer* renderer,int x, int y, int w, int h,int tasksOn
 	this->buttons.push_back(new Button(renderer, buttonX, buttonY, buttonWidth*1.2, buttonHeight, "export task.png", &TaskList::exportCurrentTaskList, SDL_FLIP_NONE, this));
 	buttonX += (buttonWidth * 1.2) + gapBetweenButtons;
 	this->buttons.push_back(new Button(renderer, buttonX, buttonY, buttonWidth * 1.2, buttonHeight, "import task.png", &TaskList::importTaskList, SDL_FLIP_NONE, this));
+	buttonX += (buttonWidth * 1.2) + gapBetweenButtons;
+	this->buttons.push_back(new Button(renderer, buttonX, buttonY, buttonWidth * 1.2, buttonHeight, "execute task.png", &TaskList::executeTasks, SDL_FLIP_NONE, this));
+
 
 	this->smallerbox = new Rectangle(renderer, x + xmargin, y + ymargintop, w - (2 * xmargin), h - ymargintop, true, SDL_Color(150, 150, 150));
 	this->biggerbox = new Rectangle(renderer, x, y, w, h, true, SDL_Color(210, 210, 210));
@@ -247,7 +246,10 @@ bool TaskList::exportCurrentTaskList() {
 	std::wstring path = Main::openFileExplorerSave({ {L".task Files",L"*.task"} });
 	if (path == L"") return false;
 	std::ofstream file(path);
+	file << "Tasks\n";
 	file << this->convertToExportableFormat();
+	file << "\n";
+	file << "EndTasks\n";
 	return true;
 }
 
@@ -255,20 +257,32 @@ bool TaskList::importTaskList() {
 	std::wstring path = Main::openFileExplorerLoad({ {L".task Files",L"*.task"} });
 	std::ifstream file(path);
 	std::string buffer;
+	bool isTasksSection = false;
 	try {
 		while (std::getline(file, buffer)) {
-			std::vector<std::string> split = Utils::split(buffer, ',');
-			if (split.size() < 5) {
-				throw std::exception("Invalid task params");
+
+			//determine the start and end of the tasks
+			if (buffer == "Tasks") isTasksSection = true;
+			if (buffer == "EndTasks") {
+				isTasksSection = false;
+				return true;
 			}
-			else {
-				TaskObject* t = this->addTask();
-				t->setName(split[0]);
-				t->setFilePathStr(split[1]);
-				t->setExtraArgs(split[2]);
-				t->setFrequency(split[3]);
-				t->setWhenToRun(split[4]);
-				if (t->getWhenToRun() != "Immediately") t->setTime(split[5]);
+
+
+			if (isTasksSection && buffer!="Tasks") {
+				std::vector<std::string> split = Utils::split(buffer, ',');
+				if (split.size() < 5) {
+					throw std::exception("Invalid task params");
+				}
+				else {
+					TaskObject* t = this->addTask();
+					t->setName(split[0]);
+					t->setFilePathStr(split[1]);
+					t->setExtraArgs(split[2]);
+					t->setFrequency(split[3]);
+					t->setWhenToRun(split[4]);
+					if (t->getWhenToRun() != "Immediately") t->setTime(split[5]);
+				}
 			}
 		}
 	}
@@ -278,7 +292,7 @@ bool TaskList::importTaskList() {
 		Main::windowsErrMessageBoxOk("Errors occured while loading file", output);
 		return false;
 	}
-	return true;
+	return false;
 }
 
 std::string TaskList::convertToExportableFormat() {
@@ -286,7 +300,6 @@ std::string TaskList::convertToExportableFormat() {
 	for (auto task : this->tasks) {
 		ss << task->getTaskName() << "," << task->getProgramPath() << "," << task->getExtraArgs() << "," << task->getFrequency() << "," << task->getWhenToRun();
 		if (task->getWhenToRun() != "Immediately") ss << task->getInputtedTime();
-		ss << "\n";
 	}
 	return ss.str();
 }
@@ -296,6 +309,7 @@ int TaskList::checkInvalidThenDisplayErr() {
 	std::vector<std::string> errs = {};
 	if (this->tasks.size() > 0) {
 		for (auto& task : this->tasks) {
+
 			std::vector<std::string> res = task->checkValidityOfTask();
 			if (res.size() > 0) {
 				err = true;
@@ -304,6 +318,7 @@ int TaskList::checkInvalidThenDisplayErr() {
 				errs.push_back(taskName);
 				errs.push_back("\n");
 				for (std::string singleError : res) {
+
 					errs.push_back(singleError);
 					errs.push_back("\n");
 				}
@@ -322,4 +337,95 @@ int TaskList::checkInvalidThenDisplayErr() {
 		return Main::windowsErrMessageBoxOkCancel("Errors in Tasks", output);
 	}
 	else return 0;
+}
+
+void TaskList::executeTasks() {
+	if (Main::tasksExecutingInSeperateThread) {
+		Main::windowsErrMessageBoxOk("Unable to start tasks", "A set of tasks is already executing, restart the program to execute another task list.");
+		return;
+	}
+	int res = this->checkInvalidThenDisplayErr();
+	if (res == 6 || res == 0) {
+		std::vector<Task> tasksToRun = {};
+		for (auto task : this->tasks) tasksToRun.push_back(task->convertToRunnableTask());
+		std::thread t(TaskList::execTasks, tasksToRun, raiseErrorOnFail, "");
+		t.detach();
+	}
+}
+
+void TaskList::execTasks(std::vector<Task> tasks, bool raiseErrorOnFail, std::string pathToTaskFile) {
+	Main::tasksExecutingInSeperateThread = true;
+	if (!pathToTaskFile.empty()) {
+		std::fstream file(pathToTaskFile, std::ios::in | std::ios::out);
+		if (file.fail()) {
+			Main::windowsErrMessageBoxOk("Unable to run tasks", "Unable to run tasks: file could not be opened");
+			Main::tasksExecutingInSeperateThread = false;
+			return;
+		}
+	}
+
+	std::vector<Task> immediatelyRun = {};
+	for (Task t : tasks) {
+		if (t.whenToRun == "Immediately") {
+			immediatelyRun.push_back(t);
+			auto taskIt = std::find(tasks.begin(), tasks.end(), t);
+		}
+	}
+
+	//sort items so that the soonest task is first
+	std::sort(tasks.begin(), tasks.end(), [](Task a, Task b) {
+		std::time_t aTime = Main::strTimeToTime(a.time);
+		std::time_t bTime = Main::strTimeToTime(b.time);
+		return aTime < bTime;
+		});
+
+
+
+#//execute 
+	for (auto t : immediatelyRun) {
+		t.execute(raiseErrorOnFail);
+		if (!pathToTaskFile.empty()) TaskList::addCompletedTaskToFile(pathToTaskFile, t);
+	}
+
+	for (auto t : tasks) {
+		t.execute(raiseErrorOnFail);
+		if (!pathToTaskFile.empty()) TaskList::addCompletedTaskToFile(pathToTaskFile, t);
+
+	}
+	Main::tasksExecutingInSeperateThread = false;
+
+	
+
+}
+
+
+
+bool TaskList::addCompletedTaskToFile(std::string pathToTaskFile, Task t) {
+	std::fstream file(pathToTaskFile,std::ios::in|std::ios::out);
+	if (file.fail()) return false;
+	bool startOfCompleteTasksFound = false;
+	int pos = -1;
+	bool endOfCompleteTasksFound = false;
+	bool taskAdded = false;
+
+	std::string fullFile = "";
+	std::string line;
+	while (std::getline(file, line)) {
+		bool addLine = true;
+		if (line == "CompletedTasks") startOfCompleteTasksFound = true;
+		
+		if (line == "EndOfCompletedTasks") {
+			 if (!startOfCompleteTasksFound) addLine = false; //delete this line if there is an end but no start
+			 else endOfCompleteTasksFound = true;
+		}
+		
+		if (startOfCompleteTasksFound && !taskAdded) {
+			fullFile += t.convertToExportableFormat() + "\n";
+			taskAdded = true;
+		}
+		if (addLine) fullFile += line + "\n";
+	}
+	if (!endOfCompleteTasksFound) fullFile += "EndOfCompletedTasks";
+	file.close();
+	return true;
 }

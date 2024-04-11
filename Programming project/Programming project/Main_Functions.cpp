@@ -1,4 +1,5 @@
 //main_functions.cpp
+#define _CRT_SECURE_NO_WARNINGS
 #include <SDL.h>
 #include <Windows.h>
 #include <vector>
@@ -161,3 +162,41 @@ int Main::windowsErrMessageBoxOk(std::string title, std::string msg) {
 	return MessageBoxA(NULL, msg.c_str(), title.c_str(), MB_ICONERROR | MB_OK);
 }
 
+std::string Main::getWindowsErrorMsg(long code) {
+	DWORD errCode = (DWORD)code;
+	LPSTR buffer = nullptr;
+
+	FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER |
+		FORMAT_MESSAGE_FROM_SYSTEM |
+		FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL,
+		errCode,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		reinterpret_cast<LPSTR>(&buffer),
+		0,
+		NULL
+	);
+
+	std::string str = buffer;
+	LocalFree(buffer);
+	return str;
+}
+
+std::time_t Main::strTimeToTime(std::string strTime) {
+	if (strTime.size() != 4) return std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	int hours = std::stoi(strTime.substr(0, 2));
+	int minutes = std::stoi(strTime.substr(2, 2));
+	std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	std::tm tm = *std::localtime(&now);
+	tm.tm_isdst = 1;
+	tm.tm_hour = hours;
+	tm.tm_min = minutes;
+	tm.tm_sec = 0;
+	std::time_t time = std::mktime(&tm);
+	if (time < now) {
+		tm.tm_mday++;
+		time=std::mktime(&tm);
+	}
+
+	return time;
+}
