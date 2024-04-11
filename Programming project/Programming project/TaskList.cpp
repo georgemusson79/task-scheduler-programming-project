@@ -353,6 +353,7 @@ void TaskList::executeTasks() {
 		return;
 	}
 	int res = this->checkInvalidThenDisplayErr();
+	//res==6 means that the ok button was pressed res==0 means there were no errors
 	if (res == 6 || res == 0) {
 		std::vector<Task> tasksToRun = {};
 		for (auto task : this->tasks) tasksToRun.push_back(task->convertToRunnableTask());
