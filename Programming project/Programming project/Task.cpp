@@ -73,17 +73,42 @@ bool Task::execute(bool raiseErrorOnFail) {
 	std::vector<std::string> errs = this->isValid();
 	bool valid = (errs.size() == 0);
 	if (valid) {
-		if (this->whenToRun != "Immediately") {
-			std::time_t time = Main::strTimeToTime(this->time);
-			std::chrono::system_clock::time_point tp = std::chrono::system_clock::from_time_t(time);
-			std::this_thread::sleep_until(tp);
+		std::time_t time = Main::strTimeToTime(this->time);
+		std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+		std::tm timetm2= *std::localtime(&time);
+		Utils::DateAndTime dat = Utils::timeToDateTime(timetm2);
+		if (this->whenToRun != "Immediately" && time<now) {
+			time += 60 * 60 * 24; //add a day if the time has already passed but the task isnt supposed to run immediately
 		}
+
+		std::chrono::system_clock::time_point tp = std::chrono::system_clock::from_time_t(time);
+		std::this_thread::sleep_until(tp);
+
 		HINSTANCE res=ShellExecuteA(NULL, "open", this->fileName.c_str(), this->extraArgs.c_str(), NULL, SW_SHOW);
 		if ((INT_PTR)res < 32 && raiseErrorOnFail) {
 			std::string error=Main::getWindowsErrorMsg(GetLastError());
 			Main::windowsErrMessageBoxOk("An error has occured", error);
 			return false;
 		}
+
+		if (this->frequency != "Only once") {
+			std::tm time2 = *std::localtime(&time);
+			Utils::DateAndTime dt = Utils::timeToDateTime(time2);
+
+			//if task is set to run repeatedly, increase its next run time by the frequency then add it back into tasks
+			if (this->frequency == "Hourly") time += 60*60; //add one hour to time
+			else if (this->frequency == "Daily") time += 24 * 60 * 60; //add one day to time
+			else if (this->frequency == "Weekly") time += 24 * 60 * 60 * 7; //add one week to time
+			std::tm timeTm = *std::localtime(&time);
+			Utils::DateAndTime timestr = Utils::timeToDateTime(timeTm);
+			this->time = Utils::eraseCharFromString(timestr.time, ':'); //set time without the semicolon
+			this->date = timestr.date;
+			this->whenToRun = "At set time";
+			std::cout << this->time << " " << this->date << "\n";
+		}
+
+
+
 	}
 	else if (raiseErrorOnFail) {
 		std::string errorStr = "An error has occured while attempting to run the file:\n";
@@ -94,6 +119,7 @@ bool Task::execute(bool raiseErrorOnFail) {
 		Main::windowsErrMessageBoxOk("An error has occured", errorStr);
 		return false;
 	}
+
 	return true;
 
 }

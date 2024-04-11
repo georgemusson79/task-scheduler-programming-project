@@ -1,4 +1,4 @@
-
+#define _CRT_SECURE_NO_WARNINGS
 
 #include "task_objects.h"
 #include "Collision.h"
@@ -381,26 +381,33 @@ void TaskList::execTasks(std::vector<Task> tasks, bool raiseErrorOnFail, std::st
 		}
 	}
 
-	//sort items so that the soonest task is first
+	//sort items so that the soonest task is last
 	std::sort(tasks.begin(), tasks.end(), [](Task a, Task b) {
 		std::time_t aTime = a.timeAndDateTotime_t();
 		std::time_t bTime = b.timeAndDateTotime_t();
-		return aTime < bTime;
+		return aTime > bTime;
 		});
 
 
 
 #//execute 
 
-
-	for (auto t : tasks) {
+	while (tasks.size() > 0) {
+		Task t = *(tasks.end() - 1);
+		tasks.pop_back();
 		t.execute(raiseErrorOnFail);
 		if (!pathToTaskFile.empty()) TaskList::addCompletedTaskToFile(pathToTaskFile, t);
 
+		if (t.frequency != "Only once") tasks.push_back(t);
+
+		std::sort(tasks.begin(), tasks.end(), [](Task a, Task b) {
+			std::time_t aTime = a.timeAndDateTotime_t();
+			std::time_t bTime = b.timeAndDateTotime_t();
+			return aTime > bTime;
+			});
+
 	}
 	Main::tasksExecutingInSeperateThread = false;
-
-	
 
 }
 

@@ -194,10 +194,7 @@ std::time_t Main::strTimeToTime(std::string strTime) {
 	tm.tm_min = minutes;
 	tm.tm_sec = 0;
 	std::time_t time = std::mktime(&tm);
-	if (time < now) {
-		tm.tm_mday++;
-		time=std::mktime(&tm);
-	}
+
 
 	return time;
 }

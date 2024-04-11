@@ -104,4 +104,6 @@ namespace Utils {
 		for (int i = 0; i < numElements; i++) v.push_back(arr[i]);
 		return v;
 	}
+
+	std::string eraseCharFromString(std::string str, char ch);
 }

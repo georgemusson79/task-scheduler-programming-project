@@ -43,12 +43,17 @@ namespace Utils {
 	Utils::DateAndTime timeToDateTime(std::tm time) {
 		std::string timestr = "";
 		std::string datestr = "";
+		//pad time and date with zeros
+		if (time.tm_hour < 10) timestr += "0";
 		timestr += std::to_string(time.tm_hour);
 		timestr += ":";
+		if (time.tm_min < 10) timestr += "0";
 		timestr += std::to_string(time.tm_min);
 
+		if (time.tm_mday < 10) datestr += "0";
 		datestr += std::to_string(time.tm_mday);
 		datestr += "/";
+		if (time.tm_mon+1 < 10) datestr += "0";
 		datestr += std::to_string(time.tm_mon+1);
 		datestr += "/";
 		datestr += std::to_string(time.tm_year+1900);
@@ -78,6 +83,11 @@ namespace Utils {
 		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t> converter;
 		std::wstring wstr = converter.from_bytes(str);
 		return wstr;
+	}
+
+	std::string eraseCharFromString(std::string str, char ch) {
+		str.erase(std::remove_if(str.begin(), str.end(), [ch](char c) { return c == ch; }), str.end());
+		return str;
 	}
 
 }
