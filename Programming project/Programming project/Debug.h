@@ -13,7 +13,7 @@ namespace Debug {
 	inline int FPSCheckInterval = 5000; //Time in milliseconds between fps outputs to console
 	inline bool outputFPS = true;
 	inline bool vsync = true;
-	inline bool debugModeEnabled = true;
+	inline bool debugModeEnabled = false;
 	extern const std::unordered_map<SDL_Scancode, void(*)()> keyToDebugFunc; //map of keyboard presses to their respective debug functions to call when clicked
 	
 	//Calculates FPS and outputs results every FPSCheckInterval assuming outputFPS is true

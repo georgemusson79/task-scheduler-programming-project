@@ -77,7 +77,8 @@ void TaskObject::update() {
 	this->whenToDoTask->update();
 	this->frequency->update();
 	if (this->whenToDoTask->getSelectedItem() == "At set time") this->timeInput->update(); //only display the time input if the user wants to run the task at a specific time
-	Draggable::update();
+	bool browseButtonClicked = (Collision::collidesWith(this->filePathBrowse->getRenderingDims(), Cursor::getPos()) && Cursor::isLeftClicked());
+	if (!browseButtonClicked) Draggable::update();
 
 
 	const bool alreadyClicked = clicked;

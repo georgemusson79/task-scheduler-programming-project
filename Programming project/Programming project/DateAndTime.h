@@ -4,6 +4,7 @@
 #include <array>
 #include <string>
 
+//a textbox that only supports numerical input, biggest inputtable number can be set
 class NumericTextbox : public TextField {
 public:
 	int maxNumericValue;
@@ -13,7 +14,7 @@ public:
 };
 
 
-
+//4 textboxes that allow the input for a time in 24hr clock format
 class TimeInputBox : public Renderable {
 private:
 	enum TimeSlots {

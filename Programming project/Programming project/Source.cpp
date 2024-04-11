@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
 		Main::removeDestroyedObjects();
 		Main::handleEvents(e);
 		Main::updateRenderables();
-		Debug::handleKBInput();
+		if (Debug::debugModeEnabled) Debug::handleKBInput(); //unused outside of development
 	}
 	return 0;
 }

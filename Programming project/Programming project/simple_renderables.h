@@ -59,7 +59,9 @@ public:
 	//Render object to screen
 	virtual void render() = 0;
 
-	//Create an object that inherits Renderable and push it to Main::renderables, returning a pointer to the created object
+	/*Create an object that inherits Renderable and push it to Main::renderables
+	* \return a pointer to the created object
+	*/
 	template <typename RenderableObj, typename... Args>
 	static RenderableObj* create(Args...args) {
 		static_assert(std::is_constructible_v<RenderableObj, Args...>, "Unable to construct class with current arguments"); //assert that class can be created with args
@@ -75,6 +77,7 @@ public:
 		return obj;
 	}
 
+
 	int getRenderPriority() {
 		return renderPriority;
 	}
@@ -87,9 +90,12 @@ public:
 		tryRemoveFocus();
 	}
 
+	//if an object is clicked on this is ussually called
 	bool trySetFocus();
+	//when the cursor is not clicked on an object this is usually called for all objects not being clicked
 	bool tryRemoveFocus();
 
+	//signifies that an object is to be removed from Main::renderables
 	void destroy();
 	bool toBeDestroyed();
 
@@ -110,6 +116,7 @@ public:
 	Sprite(SDL_Renderer* renderer, int x, int y, int w, int h, std::string pathToImg, SDL_RendererFlip flip = SDL_FLIP_NONE);
 	SDL_Texture* getTexture();
 	void render() override;
+	//set image to be rendered to screen
 	void setImg(std::string pathToImg);
 	std::string getPathToImg();
 	~Sprite();
@@ -129,7 +136,7 @@ public:
 	MovementLimitations movementLimits;
 	SDL_Rect movementBounds; //area the object can be moved inside
 
-
+	//create an object that can be dragged by the cursor when clicked
 	Draggable(SDL_Renderer* renderer, int x, int y, int w, int h, std::string pathToImg, SDL_Rect* movementBounds = nullptr, MovementLimitations movementLimits = ANYWHERE, SDL_RendererFlip flip = SDL_FLIP_NONE);
 	Draggable(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color color, SDL_Color borderColor, SDL_Rect* movementBounds = nullptr, MovementLimitations movementLimits = ANYWHERE, SDL_RendererFlip flip = SDL_FLIP_NONE);
 
@@ -148,7 +155,12 @@ public:
 	bool fill;
 	SDL_Color colour;
 	void render();
-	//virtual ~RenderableRect() {};
+	/*
+	create a rectangle that can be drawn on screen
+	\param fill: if true, the rectangle will be filled to colour
+	\param renderWithBorder if true, the outer edges will be drawn to borderColor
+	*/
+
 	RenderableRect(SDL_Renderer* renderer, int x, int y, int w, int h, bool fill, SDL_Color colour = { 255,255,255,255 },bool renderWithBorder=true, SDL_Color borderColor={0,0,0});
 };
 
@@ -175,6 +187,8 @@ public:
 	bool setRenderingDims(int x, int y, int w, int h) override;
 	virtual bool setText(std::string text);
 	virtual void setFont(std::string fontPath, int fontSz = 40);
+	
+	//create a read only text object
 	Label(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, std::string pathToBg, int charsPerLine = 0, std::string pathToFont = "");
 	Label(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, int charsPerLine = 0, std::string pathToFont = "");
 	Label(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, int charsPerLine = 0, std::string pathToFont = "");
@@ -195,6 +209,7 @@ public:
 	virtual void setTextColor(SDL_Color color);
 	void setBgColor(SDL_Color color);
 	void updateBgImage(std::string pathToBg);
+
 	virtual void setCharactersPerLine(int chars);
 
 };
@@ -227,7 +242,7 @@ protected:
 	int _timeSinceLastFnKeyPress = 0;
 
 
-	long maxAllowedCharacters = 99999999999999;
+	long maxAllowedCharacters = 99999999999999; //number of characters that can be entered into the textbox
 	std::string renderedText = "";
 	int typingCursorPos = 0; //what character the typing cursor will be rendered next to on the screem, this can be any value from 0 to numCharsToDisplay
 	SDL_Color cursorColor = { 0,0,0,255 };
@@ -241,17 +256,25 @@ protected:
 	//called in all textfield constructors
 	void _construct(int maxCharsToDisplay, std::string* textKeys, AllowedChars allowedChars, AllowedCase allowedCase);
 	void _updateRenderedText();
+
+	//handle when a functional key such as delete or backspace is pressed once
 	void handleFnKeysSinglePress();
+	//handle when a functional key such as delete or backspace is held
 	void handleFnKeysHeldDown();
 	//update keysPressed with the keys pressed this frame and keysPressedBefore with keys pressed last frame
 	void _updateKeysPressed();
 	void _moveCursorLeft(int times = 1);
 	void _moveCursorRight(int times = 1);
+	//place a marker into the textbox to indicate where text will appear
 	void _generateTypingCursor();
+
+	//insert text keys into the textbox and handle functional keys like delete or backspace
 	void _handleKBInput();
 	void _addTextAtCursorPos(std::string text);
+	//Get the number of characters rendered in the textbox
 	int _calculateRenderedTextSize();
 
+	//paste text from the clipboard into the textbox
 	void _paste();
 
 	//unused
@@ -280,7 +303,10 @@ public:
 	bool setText(std::string text) override;
 	void setCursorPos(int pos);
 	bool insertText(int position, std::string text);
+
+	//deletes the character behind the cursor and moves the cursor back 1
 	bool backspace(int pos);
+	//deletes the characters in front of the cursor otherwise does a backspace
 	bool del(int pos);
 
 	std::string getRenderedText();
@@ -295,6 +321,7 @@ class LabelFixedCharDims : public Label {
 protected:
 	int heightOfChar;
 	std::vector<std::string> _splitTextByLine(std::string text);
+	//identical to Utils::split
 	std::vector<std::string> _splitText(std::string text, int interval);
 public:
 	LabelFixedCharDims(SDL_Renderer* renderer, int x, int y, int heightOfChar, std::string text, SDL_Color textColor, std::string pathToBg, int charsPerLine = 0, std::string pathToFont = "");

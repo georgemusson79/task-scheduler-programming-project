@@ -11,7 +11,7 @@
 
 
 
-
+//A set of utility functions designed to be useable outside of this program
 namespace Utils {
 	//date and time as strings
 	struct DateAndTime {
@@ -19,12 +19,20 @@ namespace Utils {
 		std::string date;
 	};
 
+	/*
+* Creates an vector where the first element is the first position and the last is the first position + amount
+* \param array: array to get a part of
+* \param first: first position of the array, if less than 0 start at 0
+* \param amount: number of elements to get, if greater than array.size(), becomes array.size()
+* \return returns a new array of the same type as the input array, if first is greater than array.size return an empty array
+*/
 	template<typename T>
 	std::vector<T> getSubArray(std::vector<T>& array, int first, int amount) {
 		std::vector<T> res = {};
 		if (first < 0) first = 0;
 		if (amount <= 0) return {};
 		if (amount + first > array.size()) amount = array.size();
+		if (first > array.size()) return {};
 
 		
 		for (int i = first; i < first+amount; i++) {
@@ -33,10 +41,13 @@ namespace Utils {
 		}
 		return res;
 	}
-
+	//Makes a string uppercase
 	std::string toUpper(std::string str);
+	//Makes a string lower case
 	std::string toLower(std::string str);
+	//Get x, y, width and height of a window as an SDL_Rect
 	SDL_Rect getWindowBounds(SDL_Window* window);
+	//get width and height of an SDL_Texture
 	Vector2 getTextureDims(SDL_Texture* t);
 
 	/*
@@ -74,6 +85,13 @@ namespace Utils {
 		}
 	}
 	
+
+	/*
+	* Splits a string into a vector
+	* \param str: the string to be split
+	* \param delimiter: the character to split at
+	* \return Returns a vector of strings
+	*/
 	std::vector<std::string> split(std::string str,char delimiter = '\n');
 	int toInt(char c);
 	Utils::DateAndTime timeToDateTime(std::tm time);

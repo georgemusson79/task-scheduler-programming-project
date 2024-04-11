@@ -14,6 +14,10 @@ struct WindowsResource {
 	int szData;
 };
 
+
+/*
+Contains global variables and utility functions that only work in the context of this program
+*/
 namespace Main {
 
 	inline bool tasksExecutingInSeperateThread = false;
@@ -39,19 +43,33 @@ namespace Main {
 	//Open File Explorer for saving files
 	std::wstring openFileExplorerLoad(std::vector<std::pair<std::wstring, std::wstring>> allowedFiles = { {L"All files",L"*.*"} }, bool multiselect = false); //creates a file explorer window for loading files
 
+	//clears the screen to bgColor
 	void clearScreenDrawBackground();
+
+	//delete any objects in Main::renderables with delete=true
 	void removeDestroyedObjects();
 
+	//load a windows resource into memory (unused, does not work)
 	WindowsResource loadWindowsResource(int id);
+	//generate a windows message with an error symbol and an ok and cancel button
 	int windowsErrMessageBoxOkCancel(std::string title, std::string msg);
+	//generate a windows message with an error symbol and an ok button
 	int windowsErrMessageBoxOk(std::string title, std::string msg);
+	//convert windows error code to a message of what it is
 	std::string getWindowsErrorMsg(long code);
 
 	/* Takes a 4 char string and converts it to a time_t obj
 	* \param strTime: a 4 char string
 	* \return a time_t object of the time
-	
 	*/
 	std::time_t strTimeToTime(std::string strTime);
-	void handleProgramArgs(std::vector<std::string> srgs,TaskList* tasklist);
+
+	/*
+	Handles command line arguments
+	So far the only commnads are --insert_taskfile followed by a path to a .task file for importing tasks on start up
+	The second command is --execute for running the imported tasks on startup
+	\param args: a list of arguments as a vector of strings
+	\param taskList: a pointer to the main TaskList object
+	*/
+	void handleProgramArgs(std::vector<std::string> args,TaskList* tasklist);
 }

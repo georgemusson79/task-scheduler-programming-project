@@ -46,6 +46,8 @@ public:
 	std::time_t timeAndDateTotime_t();
 };
 
+
+//GUI object containing a number of text boxes and drop down menus for inputting the options for when to run
 class TaskObject : public Draggable {
 private:
 
@@ -89,18 +91,32 @@ public:
 	~TaskObject();
 	void setName(std::string text);
 	bool setDims(int x, int y) override;
+
+	//opens a file explorer window allowing the user to select a file whose path will be put into the filepath textbox
 	void setFilePath();
 
 	Task convertToRunnableTask();
+
+	//path will be put into the filepath textbox
 	void setFilePathStr(std::string path);
+
+	//fill the extra args textbox with specified args
 	void setExtraArgs(std::string args);
+
+	//fill the InputTime box with the specified time as long as it's valid
 	void setTime(std::string time);
+
+	//set the frequency drop down menu to the titem as long as it's valid
 	void setFrequency(std::string item);
+	//set the whenToRun drop down menu to the titem as long as it's valid
+
 	void setWhenToRun(std::string item);
 
 	void render() override;
 	void update() override;
 	bool setPos(Vector2 pos) override;
+
+	//get if cursor has clicked on this
 	bool getHightlighted() {
 		return this->highlighted;
 	}
@@ -108,6 +124,7 @@ public:
 };
 
 
+//gui object containing a list of task objects as well as methods for executing tasks
 class TaskList : public Renderable {
 protected:
 	RenderableRect* biggerbox = nullptr;
@@ -117,29 +134,42 @@ protected:
 	int selectedTaskPos = 0;
 
 	Vector2 getTaskPixelPosition(int pos);
+	//convert the pixel position of a task into an array index relating to this->tasks
 	int getNearestIndexFromYPos(int yPos);
+	//get task height in pixels
 	int getTaskHeight() {
 		return this->smallerbox->getDims().x / this->tasksOnScreen;
 	}
 	std::string nextTaskName = "Task #1";
+	//get what the next task will be called, as more tasks are added they will go up Task #1, Task #2, Task #3 etc..;
 	std::string getNameNextTask();
 	std::vector<Button*> buttons = {};
 	float posFirstTaskToRender = 0;
 	int tasksOnScreen;
 	std::vector<TaskObject*> tasks = {};
+
+	//move a task into another part of the this->tasks array
 	void moveTask(int first, int second);
+
+	//handle keyboard input, if delete is pressed while a task is selected itll be deleted
 	void handleKBInput();
+
+	//if there are more tasks than can be rendered to screen the displayed tasks will go up/down onto/off the screen
 	void scrollDown();
 	void scrollUp();
+
+	//if the tasks have problems, such as no file name, a file path that doesnt exist or no time set this will display a windows error message explaining what happened
 	int checkInvalidThenDisplayErr();
 public:
 	bool raiseErrorOnFail = true; //if true, will raise an error while executeTasks is called if there is a fail
-	/* Execute a task in a seperate thread
+	/* Executes tasks, should only be called as a seperate thread
 	* \param tasks: A list of the tasks to be executed
 	* \param raiseErrorOnFail: display a windows error message if the task was unable to execute for whatever reason
-	* \param taskStatus: a pointer to a vector containing the task name and completion status that will update when the task is complete
+	* \param pathToTaskFile: reads and writes task information to a file (unused)
 	*/
 	static void execTasks(std::vector<Task> tasks, bool raiseErrorOnFail, std::string pathToTaskFile);
+
+	//if a task is finished write it to the file under CompletedTasks (unused)
 	static bool addCompletedTaskToFile(std::string pathToTaskFile, Task t);
 
 
@@ -147,13 +177,17 @@ public:
 	~TaskList();
 	TaskObject* addTask();
 	void removeTaskFromEnd();
+	//reset the pixel positions of each task according to their position in this->tasks
 	void updateTaskPositions();
 	void render() override;
 	void update() override;
 	bool exportCurrentTaskList();
+	//converts the tasks to a string of their information, each task is seperated by a newlines
 	std::string convertToExportableFormat();
+	//open file explorer for the user to select a path then calls importTaskListFromPath
 	bool importTaskList();
+	//opens the file at specified path and converts the strings into task objects before displaying them in the tasklist
 	bool importTaskListFromPath(std::wstring path);
-
+	//checks tasks are valid then calls TaskList::execTasks in a seperate thread
 	void executeTasks();
 };
