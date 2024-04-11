@@ -1,6 +1,7 @@
 ﻿#include "Main_Functions.h"
 #include "simple_renderables.h"
 #include <SDL_ttf.h>
+#include "Collision.h"
 
 bool Label::setText(std::string text) {
 	SDL_DestroyTexture(textTexture);
@@ -75,6 +76,7 @@ void Label::render() {
 	if (this->textTexture != nullptr) {
 		SDL_RenderCopy(renderer, textTexture, NULL, &this->renderScrDims);
 	}
+	if (this->drawBorder) this->_drawBorderAroundLabel();
 }
 
 void Label::setCharactersPerLine(int chars) {
@@ -145,4 +147,13 @@ Label* Label::createBasicLabel(SDL_Renderer* renderer, std::string text, int x, 
 	Label* l = new Label(renderer, x, y, width, charH, textColor, 0, pathToFont);
 	l->setText(text);
 	return l;
+}
+void Label::_drawBorderAroundLabel() {
+	SDL_Color oldColor=Utils::setRenderDrawColor(renderer, this->borderColor);
+	std::array<Vector2,4> corners=Collision::getCorners(this->getRenderingDims());
+	for (int i = 0; i < corners.size(); i++) {
+		Vector2 next = (i == corners.size() - 1) ? corners[0] : corners[i + 1];
+		SDL_RenderDrawLine(renderer, corners[i].x, corners[i].y, next.x, next.y);
+	}
+	Utils::setRenderDrawColor(renderer, oldColor);
 }

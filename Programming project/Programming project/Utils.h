@@ -106,4 +106,7 @@ namespace Utils {
 	}
 
 	std::string eraseCharFromString(std::string str, char ch);
+
+	//return the previous color and set the new color for drawing for the renderer
+	SDL_Color setRenderDrawColor(SDL_Renderer* renderer, SDL_Color color);
 }

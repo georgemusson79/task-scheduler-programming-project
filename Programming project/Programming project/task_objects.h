@@ -127,6 +127,7 @@ public:
 //gui object containing a list of task objects as well as methods for executing tasks
 class TaskList : public Renderable {
 protected:
+
 	RenderableRect* biggerbox = nullptr;
 	RenderableRect* smallerbox = nullptr;
 	//get where a task should be on the screen, takes an array index relative to this->tasks as input
@@ -153,7 +154,6 @@ protected:
 
 	//handle keyboard input, if delete is pressed while a task is selected itll be deleted
 	void handleKBInput();
-
 	//if there are more tasks than can be rendered to screen the displayed tasks will go up/down onto/off the screen
 	void scrollDown();
 	void scrollUp();
@@ -172,6 +172,7 @@ public:
 	//if a task is finished write it to the file under CompletedTasks (unused)
 	static bool addCompletedTaskToFile(std::string pathToTaskFile, Task t);
 
+	bool setPos(int x, int y) override;
 
 	TaskList(SDL_Renderer* renderer, int x, int y, int w, int h, int tasksOnScreen = 4);
 	~TaskList();

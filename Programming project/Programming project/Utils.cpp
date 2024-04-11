@@ -90,5 +90,14 @@ namespace Utils {
 		return str;
 	}
 
+	SDL_Color setRenderDrawColor(SDL_Renderer* renderer, SDL_Color color) {
+		Uint8 r, g, b, a;
+		SDL_GetRenderDrawColor(renderer,&r, &g, &b, &a);
+		SDL_Color c = {r, g, b, a};
+		SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+		return c;
+	}
+
 }
+
 

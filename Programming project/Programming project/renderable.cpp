@@ -68,3 +68,23 @@ void Renderable::destroy() {
 bool Renderable::toBeDestroyed() {
 	return this->markForDeletion;
 }
+
+void Renderable::moveToAnimation(Vector2 where, int timeInFrames) {
+	this->whereTo = where;
+	this->timeToMove = timeInFrames;
+	this->isMoving = true;
+	Vector2 currentPos = this->getPos();
+	Vector2 distance = where - currentPos;
+	this->movementSpeed = { distance.x / timeInFrames,distance.y / timeInFrames };
+}
+
+void Renderable::_doMove() {
+	if (!this->isMoving) return;
+	if (this->getPos() != this->whereTo) {
+		Vector2 currentPos = this->getPos();
+		currentPos.x += movementSpeed.x;
+		currentPos.y += movementSpeed.y;
+		this->setPos(currentPos.x, currentPos.y);
+	}
+	else isMoving = false;
+}

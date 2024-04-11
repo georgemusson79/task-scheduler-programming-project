@@ -17,6 +17,20 @@ enum MovementLimitations {
 
 class Renderable {
 protected:
+	int timeToMove = 0;
+	bool isMoving = false;
+	Vector2 whereTo = { 0,0 };
+	Vector2 movementSpeed = { 0,0 };
+
+	/*runs if moveToAnimation is true, moves the object to the position
+	called every frame by Renderable::update()
+	not all objects support it
+
+	For this project only TaskList supports it as it is the only object that needs it
+	However it could be extended out to other objects, they just need to run either _doMove or Renderable::update()
+	*/
+	void _doMove();
+
 	bool markForDeletion = false;
 	bool focused = false;
 	int renderPriority = 0;
@@ -24,6 +38,11 @@ protected:
 	SDL_Rect renderScrDims = { 0,0,0,0 }; //dimensions for rendering the object to the screen 
 
 public:
+
+	/*prepare object for moving by telling the object the speed it should move at to get to its position
+	* Objects that dont support _doMove() (dont call Renderable::update()) wont respond to this
+	*/
+	void moveToAnimation(Vector2 where, int timeInFrames);
 	//Must be called by every class that inherits Renderable. Sets the renderer
 	Renderable(SDL_Renderer* renderer) : renderer(renderer) {}
 	std::string name;
@@ -54,7 +73,7 @@ public:
 	SDL_Rect getRenderingDims();
 
 	//Update object, called every frame
-	virtual void update() {}
+	virtual void update() { if (this->isMoving) this->_doMove(); }
 
 	//Render object to screen
 	virtual void render() = 0;
@@ -167,6 +186,7 @@ public:
 //creates a read only block of text on the screen the size of renderingDims
 class Label : public Renderable {
 protected:
+	void _drawBorderAroundLabel();
 	SDL_Color textColor;
 	SDL_Texture* textTexture = nullptr;
 	std::string rawText = "";
@@ -175,7 +195,8 @@ protected:
 	TTF_Font* font = NULL;
 	int charsPerLine;
 public:
-
+	bool drawBorder = false;
+	SDL_Color borderColor = { 0,0,0 };
 	//create a label with text all on one line but each character is the specified width and height for the generated text
 	static Label* createBasicLabel(SDL_Renderer* renderer, std::string text, int x, int y, int charW, int charH, SDL_Color textColor, std::string pathToBg, std::string pathToFont = "");
 	static Label* createBasicLabel(SDL_Renderer* renderer, std::string text, int x, int y, int charW, int charH, SDL_Color textColor, std::string pathToFont = "");

@@ -113,7 +113,7 @@ void TaskList::update() {
 	if (this->posFirstTaskToRender > 0) buttons[5]->update();
 	if (this->posFirstTaskToRender+this->tasksOnScreen < this->tasks.size()) buttons[6]->update();
 
-
+	Renderable::update();
 }
 
 int TaskList::getNearestIndexFromYPos(int yPos) {
@@ -179,6 +179,53 @@ void TaskList::moveTask(int first, int second) {
 }
 
 
+bool TaskList::setPos(int x, int y) {
+	this->renderScrDims.x = x;
+	this->renderScrDims.y = y;
+	int w = this->renderScrDims.w;
+	int h = this->renderScrDims.h;
+
+	int xmargin = w * 0.05;
+	int ymargintop = h * 0.15;
+	this->tasksOnScreen = tasksOnScreen;
+
+	int buttonWidth = w / 8;
+	int buttonHeight = ymargintop / 3;
+	int buttonY = y+ymargintop - buttonHeight - (h / 100);
+	int gapBetweenButtons = w / 80;
+	int buttonX = x + xmargin;
+
+	buttons[0]->setPos(buttonX, buttonY);
+	buttonX += buttonWidth + gapBetweenButtons;
+	buttons[1]->setPos(buttonX, buttonY);
+	buttonX += (buttonWidth * 1.2) + gapBetweenButtons;
+	buttons[2]->setPos(buttonX, buttonY);
+	buttonX += (buttonWidth * 1.2) + gapBetweenButtons;
+	buttons[3]->setPos(buttonX, buttonY);
+	buttonX += (buttonWidth * 1.2) + gapBetweenButtons;
+	buttons[4]->setPos(buttonX, buttonY);
+
+	this->biggerbox->setPos({ x, y });
+	this->smallerbox->setPos({ x + xmargin, y + ymargintop });
+
+	int boxCenter = this->smallerbox->getPos().x + (this->smallerbox->getDims().x / 2);
+	int upDownButtonWidth = buttonWidth / 4;
+	int upDownButtonPosX = this->smallerbox->getDims().x + this->smallerbox->getPos().x;
+	buttons[5]->setPos(upDownButtonPosX, this->smallerbox->getPos().y);
+	buttons[6]->setPos(upDownButtonPosX, this->smallerbox->getPos().y + this->smallerbox->getDims().y - buttonHeight / 2);
+
+
+	for (TaskObject* t : this->tasks) {
+		t->movementBounds = { 0,0,9999999,99999999 }; //set the boundaries to a large value to prevent issues with moving
+		t->setPos({ this->smallerbox->getPos().x,t->getPos().y });
+		t->movementBounds = this->smallerbox->getRenderingDims();
+	}
+
+	this->updateTaskPositions();
+	return true;
+
+}
+
 
 TaskList::TaskList(SDL_Renderer* renderer,int x, int y, int w, int h,int tasksOnScreen) : Renderable(renderer) {
 	int xmargin = w * 0.05;
@@ -192,6 +239,7 @@ TaskList::TaskList(SDL_Renderer* renderer,int x, int y, int w, int h,int tasksOn
 	int gapBetweenButtons = w / 80;
 
 	int buttonX = x + xmargin;
+
 
 	this->buttons.push_back(new Button(renderer,buttonX, buttonY, buttonWidth, buttonHeight, "add task.png", &TaskList::addTask, SDL_FLIP_NONE, this));
 	buttonX += buttonWidth + gapBetweenButtons;
