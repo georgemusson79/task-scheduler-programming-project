@@ -104,7 +104,6 @@ bool Task::execute(bool raiseErrorOnFail) {
 			this->time = Utils::eraseCharFromString(timestr.time, ':'); //set time without the semicolon
 			this->date = timestr.date;
 			this->whenToRun = "At set time";
-			std::cout << this->time << " " << this->date << "\n";
 		}
 
 
@@ -126,7 +125,7 @@ bool Task::execute(bool raiseErrorOnFail) {
 
 std::string Task::convertToExportableFormat() {
 	std::stringstream ss;
-	ss << this->taskName << "," << this->fileName << "," << this->extraArgs << "," << this->frequency << "," << this->whenToRun;
+	ss << this->taskName << "::::" << this->fileName << "::::" << this->extraArgs << "::::" << this->frequency << "::::" << this->whenToRun;
 	if (this->whenToRun != "Immediately") ss << this->time;
 	return ss.str();
 }

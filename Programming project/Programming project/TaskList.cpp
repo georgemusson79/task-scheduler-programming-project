@@ -325,7 +325,7 @@ bool TaskList::importTaskListFromPath(std::wstring path) {
 
 
 			if (isTasksSection && buffer != "Tasks") {
-				std::vector<std::string> split = Utils::split(buffer, ',');
+				std::vector<std::string> split = Utils::split(buffer,"::::");
 				if (split.size() == 0) continue; //skip blank lines
 				if (split.size() < 5) {
 					throw std::exception("Invalid task params");
@@ -360,8 +360,8 @@ bool TaskList::importTaskList() {
 std::string TaskList::convertToExportableFormat() {
 	std::stringstream ss;
 	for (auto task : this->tasks) {
-		ss << task->getTaskName() << "," << task->getProgramPath() << "," << task->getExtraArgs() << "," << task->getFrequency() << "," << task->getWhenToRun();
-		if (task->getWhenToRun() != "Immediately") ss <<"," << task->getInputtedTime();
+		ss << task->getTaskName() << "::::" << task->getProgramPath() << "::::" << task->getExtraArgs() << "::::" << task->getFrequency() << "::::" << task->getWhenToRun();
+		if (task->getWhenToRun() != "Immediately") ss <<"::::" << task->getInputtedTime();
 		ss << "\n";
 	}
 	return ss.str();

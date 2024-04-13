@@ -32,12 +32,21 @@ namespace Utils {
 		return Vector2( w,h );
 	}
 
-	std::vector<std::string> split(std::string str,char delimiter) {
-		std::vector<std::string> v = {};
-		std::stringstream ss(str);
-		std::string buffer;
-		while (std::getline(ss, buffer, delimiter)) v.push_back(buffer);
-		return v;
+	std::vector<std::string> split(std::string str,std::string delimiter) {
+		std::vector<std::string> strings = {};
+		int startPos = 0;
+		int endPos = str.find(delimiter);
+		while (endPos != std::string::npos) {
+			strings.push_back(str.substr(startPos, endPos - startPos));
+			startPos = endPos + delimiter.length();
+			endPos = str.find(delimiter, startPos);
+		}
+		//only push back the rest of the string if the last characters are not the delimiter
+		std::string end = str.substr(startPos);
+		if (!end.empty()) {
+			strings.push_back(end);
+		}
+		return strings;
 	}
 	
 	Utils::DateAndTime timeToDateTime(std::tm time) {
@@ -62,11 +71,11 @@ namespace Utils {
 
 	std::tm DateTimeToTm(Utils::DateAndTime time) {
 		std::tm tm = {};
-		std::vector<std::string> timesplit=Utils::split(time.time, ':');
+		std::vector<std::string> timesplit=Utils::split(time.time, ":");
 		tm.tm_hour = std::stoi(timesplit[0]);
 		tm.tm_min = std::stoi(timesplit[1]);
 
-		std::vector<std::string> datesplit = Utils::split(time.date, '/');
+		std::vector<std::string> datesplit = Utils::split(time.date, "/");
 		tm.tm_mday = std::stoi(datesplit[0]);
 		tm.tm_mon = std::stoi(datesplit[1])-1;
 		tm.tm_year = std::stoi(datesplit[2])-1900;

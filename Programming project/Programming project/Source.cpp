@@ -44,7 +44,6 @@ int main(int argc, char* argv[]) {
 
 	SDL_Event e;
 	while (Main::running) {
-		std::cout << taskList->getPos().x << "\n";
 		Main::removeDestroyedObjects();
 		Main::handleEvents(e);
 		Main::updateRenderables();

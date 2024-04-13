@@ -92,7 +92,7 @@ namespace Utils {
 	* \param delimiter: the character to split at
 	* \return Returns a vector of strings
 	*/
-	std::vector<std::string> split(std::string str,char delimiter = '\n');
+	std::vector<std::string> split(std::string str,std::string delimiter = "\n");
 	int toInt(char c);
 	Utils::DateAndTime timeToDateTime(std::tm time);
 	std::tm DateTimeToTm(Utils::DateAndTime time);
