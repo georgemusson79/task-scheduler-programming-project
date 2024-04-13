@@ -50,7 +50,6 @@ public:
 //GUI object containing a number of text boxes and drop down menus for inputting the options for when to run
 class TaskObject : public Draggable {
 private:
-
 	Label* frequencyHeading = nullptr;
 	DropDownMenu* frequency = nullptr;
 
@@ -127,7 +126,7 @@ public:
 //gui object containing a list of task objects as well as methods for executing tasks
 class TaskList : public Renderable {
 protected:
-
+	Label* nextTaskToExecute = nullptr;
 	RenderableRect* biggerbox = nullptr;
 	RenderableRect* smallerbox = nullptr;
 	//get where a task should be on the screen, takes an array index relative to this->tasks as input
@@ -167,7 +166,7 @@ public:
 	* \param raiseErrorOnFail: display a windows error message if the task was unable to execute for whatever reason
 	* \param pathToTaskFile: reads and writes task information to a file (unused)
 	*/
-	static void execTasks(std::vector<Task> tasks, bool raiseErrorOnFail, std::string pathToTaskFile);
+	static void execTasks(std::vector<Task> tasks, bool raiseErrorOnFail, std::string pathToTaskFile,TaskList* tl=nullptr);
 
 	//if a task is finished write it to the file under CompletedTasks (unused)
 	static bool addCompletedTaskToFile(std::string pathToTaskFile, Task t);

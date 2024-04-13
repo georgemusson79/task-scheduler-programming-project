@@ -85,7 +85,7 @@ void TaskList::render() {
 	for (int i = 0; i < 5; i++) buttons[i]->render();
 	if (this->posFirstTaskToRender > 0) buttons[5]->render();
 	if (this->posFirstTaskToRender + this->tasksOnScreen < this->tasks.size()) buttons[6]->render();
-		
+	if (Main::tasksExecutingInSeperateThread) this->nextTaskToExecute->render();
 
 }
 
@@ -264,6 +264,13 @@ TaskList::TaskList(SDL_Renderer* renderer,int x, int y, int w, int h,int tasksOn
 
 
 
+	int margin = Main::WINDOW_WIDTH / 20;
+	int labelH = this->smallerbox->getDims().y/2;
+	int labelW = Main::WINDOW_WIDTH - this->renderScrDims.w - (2 * margin);
+	int labelY = this->smallerbox->getPos().y;
+	int labelX = this->renderScrDims.w + margin;
+	this->nextTaskToExecute = new Label(renderer, labelX, labelY, labelW, labelH, SDL_Color(0, 0, 0, 255), 0);
+	this->nextTaskToExecute->drawBorder = true;
 
 
 }
@@ -354,7 +361,7 @@ std::string TaskList::convertToExportableFormat() {
 	std::stringstream ss;
 	for (auto task : this->tasks) {
 		ss << task->getTaskName() << "," << task->getProgramPath() << "," << task->getExtraArgs() << "," << task->getFrequency() << "," << task->getWhenToRun();
-		if (task->getWhenToRun() != "Immediately") ss << task->getInputtedTime();
+		if (task->getWhenToRun() != "Immediately") ss <<"," << task->getInputtedTime();
 		ss << "\n";
 	}
 	return ss.str();
@@ -397,7 +404,7 @@ int TaskList::checkInvalidThenDisplayErr() {
 
 void TaskList::executeTasks() {
 	if (Main::tasksExecutingInSeperateThread) {
-		Main::windowsErrMessageBoxOk("Unable to start tasks", "A set of tasks is already executing, restart the program to execute another task list.");
+		Main::windowsErrMessageBoxOk("Unable to start tasks", "A set of tasks is already executing, restart the program or wait for the tasks to finish to execute another task list.");
 		return;
 	}
 	int res = this->checkInvalidThenDisplayErr();
@@ -405,12 +412,13 @@ void TaskList::executeTasks() {
 	if (res == 6 || res == 0) {
 		std::vector<Task> tasksToRun = {};
 		for (auto task : this->tasks) tasksToRun.push_back(task->convertToRunnableTask());
-		std::thread t(TaskList::execTasks, tasksToRun, raiseErrorOnFail, "");
+		//this->moveToAnimation({ 0,0 }, 300);
+		std::thread t(TaskList::execTasks, tasksToRun, raiseErrorOnFail, "",this);
 		t.detach();
 	}
 }
 
-void TaskList::execTasks(std::vector<Task> tasks, bool raiseErrorOnFail, std::string pathToTaskFile) {
+void TaskList::execTasks(std::vector<Task> tasks, bool raiseErrorOnFail, std::string pathToTaskFile,TaskList* tl) {
 	Main::tasksExecutingInSeperateThread = true;
 	if (!pathToTaskFile.empty()) {
 		std::fstream file(pathToTaskFile, std::ios::in | std::ios::out);
@@ -441,8 +449,20 @@ void TaskList::execTasks(std::vector<Task> tasks, bool raiseErrorOnFail, std::st
 #//execute 
 
 	while (tasks.size() > 0) {
+
+		if (tl != nullptr) {
+			std::string taskLabelText = "Tasks to execute:\n";
+			for (int i = 0; i < 5; i++) {
+				int pos = tasks.size() - 1 - i;
+				if (pos >= 0) taskLabelText += tasks[i].taskName + "\n";
+				else taskLabelText += "\n";
+			}
+			tl->nextTaskToExecute->setText(taskLabelText);
+		}
+
 		Task t = *(tasks.end() - 1);
 		tasks.pop_back();
+
 		t.execute(raiseErrorOnFail);
 		if (!pathToTaskFile.empty()) TaskList::addCompletedTaskToFile(pathToTaskFile, t);
 
@@ -453,6 +473,7 @@ void TaskList::execTasks(std::vector<Task> tasks, bool raiseErrorOnFail, std::st
 			std::time_t bTime = b.timeAndDateTotime_t();
 			return aTime > bTime;
 			});
+
 
 	}
 	Main::tasksExecutingInSeperateThread = false;

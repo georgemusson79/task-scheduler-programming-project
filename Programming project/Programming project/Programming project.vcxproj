@@ -150,6 +150,7 @@
     <ClCompile Include="Task.cpp" />
     <ClCompile Include="TaskList.cpp" />
     <ClCompile Include="taskObject.cpp" />
+    <ClCompile Include="templatefn.cpp" />
     <ClCompile Include="TextField.cpp" />
     <ClCompile Include="TimeAndDate.cpp" />
     <ClCompile Include="Utils.cpp" />

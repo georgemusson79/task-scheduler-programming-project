@@ -3,11 +3,13 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 #include <chrono>
+#include "simple_renderables.h"
 //Main_functions.h
 struct Vector2;
 class TaskList;
-class Renderable;
+
 
 struct WindowsResource {
 	void* data;
@@ -19,6 +21,11 @@ struct WindowsResource {
 Contains global variables and utility functions that only work in the context of this program
 */
 namespace Main {
+
+	inline int WINDOW_WIDTH;
+	inline int WINDOW_HEIGHT;
+
+
 
 	inline bool tasksExecutingInSeperateThread = false;
 	inline SDL_Color bgColor = { 255,255,255 };
@@ -72,4 +79,24 @@ namespace Main {
 	\param taskList: a pointer to the main TaskList object
 	*/
 	void handleProgramArgs(std::vector<std::string> args,TaskList* tasklist);
+
+
+	/*Create an object that inherits Renderable and push it to Main::renderables
+	* \param args: the arguments required for creating an instance of the specified class normally
+	* \return a pointer to the created object
+	*/
+	template <typename RenderableObj, typename... Args>
+	RenderableObj* create(Args...args) {
+		static_assert(std::is_constructible_v<RenderableObj, Args...>, "Unable to construct class with current arguments"); //assert that class can be created with args
+		static_assert(std::is_base_of_v<Renderable, RenderableObj>, "RenderableObj is not of type Renderable"); //assert that class base is Renderable
+		RenderableObj* obj = new RenderableObj(args...); //dynamically allocate object then append to Main::renderables
+		Main::renderables.push_back(obj);
+
+		//sort list by render priority, higher means it will render towards the top of the screen
+		std::sort(Main::renderables.begin(), Main::renderables.end(), [](Renderable* a, Renderable* b) {
+			return a->getRenderPriority() < b->getRenderPriority();
+			});
+
+		return obj;
+	}
 }

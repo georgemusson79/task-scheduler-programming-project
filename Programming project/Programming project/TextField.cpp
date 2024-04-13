@@ -15,7 +15,7 @@ void TextField::_construct(int maxCharsToDisplay, std::string* textKeys, Allowed
 	this->allowedChars = allowedChars;
 }
 
-TextField::TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, std::string pathToBg, int maxCharsToDisplay, AllowedChars allowedChars, AllowedCase allowedCase, std::string pathToFont, std::string* textKeys) : Label(renderer, x, y, w, h, textColor, pathToBg, 0, pathToFont) {
+TextField::TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, std::string pathToBg, int maxCharsToDisplay, std::string* textKeys, AllowedChars allowedChars, AllowedCase allowedCase, std::string pathToFont) : Label(renderer, x, y, w, h, textColor, pathToBg, 0, pathToFont) {
 	this->_construct(maxCharsToDisplay, textKeys, allowedChars, allowedCase);
 }
 
@@ -25,11 +25,11 @@ bool TextField::setDims(Vector2 dims) {
 	return true;
 }
 
-TextField::TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, int maxCharsToDisplay, AllowedChars allowedChars, AllowedCase allowedCase,std::string pathToFont, std::string* textKeys) : Label(renderer, x, y, w, h, textColor, bgColor, 0, pathToFont) {
+TextField::TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, int maxCharsToDisplay, std::string* textKeys, AllowedChars allowedChars, AllowedCase allowedCase,std::string pathToFont) : Label(renderer, x, y, w, h, textColor, bgColor, 0, pathToFont) {
 	this->_construct(maxCharsToDisplay, textKeys,allowedChars,allowedCase);
 }
 
-TextField::TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, int maxCharsToDisplay, AllowedChars allowedChars, AllowedCase allowedCase, std::string pathToFont, std::string* textKeys) : Label(renderer, x, y, w, h, textColor, 0, pathToFont) {
+TextField::TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, int maxCharsToDisplay, std::string* textKeys, AllowedChars allowedChars, AllowedCase allowedCase, std::string pathToFont) : Label(renderer, x, y, w, h, textColor, 0, pathToFont) {
 	this->_construct(maxCharsToDisplay, textKeys, allowedChars, allowedCase);
 }
 

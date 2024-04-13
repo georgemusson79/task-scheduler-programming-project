@@ -132,6 +132,7 @@ std::string Task::convertToExportableFormat() {
 }
 
 std::time_t Task::timeAndDateTotime_t() {
+	if (this->time.size() == 4) this->time.insert(this->time.begin() + 2, ':'); //insert a colon if there isnt one already
 	Utils::DateAndTime time = { this->time,this->date };
 	std::tm tm=Utils::DateTimeToTm(time);
 	return std::mktime(&tm);

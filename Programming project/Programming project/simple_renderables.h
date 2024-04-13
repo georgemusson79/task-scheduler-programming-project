@@ -8,7 +8,6 @@
 #include <SDL_ttf.h>
 
 #include "Utils.h"
-#include "Main_Functions.h"
 #include "Vector2.h"
 
 enum MovementLimitations {
@@ -78,23 +77,7 @@ public:
 	//Render object to screen
 	virtual void render() = 0;
 
-	/*Create an object that inherits Renderable and push it to Main::renderables
-	* \return a pointer to the created object
-	*/
-	template <typename RenderableObj, typename... Args>
-	static RenderableObj* create(Args...args) {
-		static_assert(std::is_constructible_v<RenderableObj, Args...>, "Unable to construct class with current arguments"); //assert that class can be created with args
-		static_assert(std::is_base_of_v<Renderable, RenderableObj>, "RenderableObj is not of type Renderable"); //assert that class base is Renderable
-		RenderableObj* obj = new RenderableObj(args...); //dynamically allocate object then append to Main::renderables
-		Main::renderables.push_back(obj);
 
-		//sort list by render priority, higher means it will render towards the top of the screen
-		std::sort(Main::renderables.begin(), Main::renderables.end(), [](Renderable* a, Renderable* b) {
-			return a->getRenderPriority() < b->getRenderPriority();
-			});
-
-		return obj;
-	}
 
 
 	int getRenderPriority() {
@@ -134,6 +117,7 @@ public:
 
 	Sprite(SDL_Renderer* renderer, int x, int y, int w, int h, std::string pathToImg, SDL_RendererFlip flip = SDL_FLIP_NONE);
 	SDL_Texture* getTexture();
+	//renders the object to renderer, called eevery frame
 	void render() override;
 	//set image to be rendered to screen
 	void setImg(std::string pathToImg);
@@ -158,7 +142,7 @@ public:
 	//create an object that can be dragged by the cursor when clicked
 	Draggable(SDL_Renderer* renderer, int x, int y, int w, int h, std::string pathToImg, SDL_Rect* movementBounds = nullptr, MovementLimitations movementLimits = ANYWHERE, SDL_RendererFlip flip = SDL_FLIP_NONE);
 	Draggable(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color color, SDL_Color borderColor, SDL_Rect* movementBounds = nullptr, MovementLimitations movementLimits = ANYWHERE, SDL_RendererFlip flip = SDL_FLIP_NONE);
-
+	//renders the object to renderer, called eevery frame
 	void render() override;
 	void update() override;
 	~Draggable();
@@ -173,6 +157,7 @@ public:
 	SDL_Color borderColor;
 	bool fill;
 	SDL_Color colour;
+	//renders the object to renderer, called eevery frame
 	void render();
 	/*
 	create a rectangle that can be drawn on screen
@@ -226,6 +211,7 @@ public:
 	}
 
 	bool setPos(Vector2 pos) override;
+	//renders the object to renderer, called eevery frame
 	virtual void render() override;
 	virtual void setTextColor(SDL_Color color);
 	void setBgColor(SDL_Color color);
@@ -306,10 +292,11 @@ protected:
 	int _getCursorPosinText();
 public:
 
-	TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, std::string pathToBg, int maxCharsToDisplay, AllowedChars allowedChars= AllowedChars::ANY,AllowedCase allowedCase=AllowedCase::ANY,std::string pathToFont = "", std::string* textKeys = &Main::textInputThisFrame);
-	TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, int maxCharsToDisplay, AllowedChars allowedChars = AllowedChars::ANY, AllowedCase allowedCase = AllowedCase::ANY, std::string pathToFont = "", std::string* textKeys = &Main::textInputThisFrame);
-	TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, int maxCharsToDisplay, AllowedChars allowedChars = AllowedChars::ANY, AllowedCase allowedCase = AllowedCase::ANY, std::string pathToFont = "", std::string* textKeys = &Main::textInputThisFrame);
+	TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, std::string pathToBg, int maxCharsToDisplay, std::string* textKeys, AllowedChars allowedChars= AllowedChars::ANY,AllowedCase allowedCase=AllowedCase::ANY,std::string pathToFont = "");
+	TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, SDL_Color bgColor, int maxCharsToDisplay, std::string* textKeys, AllowedChars allowedChars = AllowedChars::ANY, AllowedCase allowedCase = AllowedCase::ANY, std::string pathToFont = "");
+	TextField(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color textColor, int maxCharsToDisplay, std::string* textKeys, AllowedChars allowedChars = AllowedChars::ANY, AllowedCase allowedCase = AllowedCase::ANY, std::string pathToFont = "");
 	bool setDims(Vector2 dims) override;
+	//renders the object to renderer, called eevery frame
 	void render() override;
 	void update() override;
 
@@ -341,10 +328,14 @@ public:
 class LabelFixedCharDims : public Label {
 protected:
 	int heightOfChar;
+	//create a list of strings for every string on a new line
 	std::vector<std::string> _splitTextByLine(std::string text);
 	//identical to Utils::split
 	std::vector<std::string> _splitText(std::string text, int interval);
 public:
+	/*
+	* A read only label where the dimensions are specified by the height and width of the character 
+	*/
 	LabelFixedCharDims(SDL_Renderer* renderer, int x, int y, int heightOfChar, std::string text, SDL_Color textColor, std::string pathToBg, int charsPerLine = 0, std::string pathToFont = "");
 	LabelFixedCharDims(SDL_Renderer* renderer, int x, int y, int heightOfChar, std::string text, SDL_Color textColor, SDL_Color bgColor, int charsPerLine = 0, std::string pathToFont = "");
 	LabelFixedCharDims(SDL_Renderer* renderer, int x, int y, int heightOfChar, std::string text, SDL_Color textColor, int charsPerLine = 0, std::string pathToFont = "");
@@ -362,9 +353,16 @@ public:
 	bool setDims(Vector2 dims) override;
 	bool setPos(Vector2 pos) override;
 	bool setPos(int x, int y) override;
-	//dimensions here are the dimensions of each dropMenuItem
+	/*
+	* Create a drop down menu with a list a dropDownMenuItems
+	* By default only shows the top dropDownMenuItem but when clicked will show all of them
+	* \param x,y,w,h: Sets dimensions of the object dimensions here are the dimensions of each dropMenuItem
+	* \param text: a list of items to display in the drop down menu
+	* \param highlightColor: the colour of the dropDownMenuItem that the cursor is currently hovering over (if any)
+	*/
 	DropDownMenu(SDL_Renderer* renderer, int x, int y, int w, int h, std::vector<std::string> text,SDL_Color color=SDL_Color(255,255,255), SDL_Color highlightColor= SDL_Color(170, 255, 255));
 	~DropDownMenu();
+	//renders the object to renderer, called eevery frame
 	void render() override;
 	void update() override;
 	void setItem(int pos);
@@ -384,8 +382,14 @@ protected:
 	DropDownMenu* parent;
 public:
 	SDL_Color highlightColor;
+	/*
+	* Label that contains a string of text, contains functions for what to do when hovered over and when clicked, to be used in conjunction with dropDownMenu
+	* \param text: the text to be displayed in the box
+	* \param highlightColor: the colour of the dropDownMenuItem that the cursor is currently hovering over (if any)
+	*/
 	DropDownMenuItem(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color color, SDL_Color highlightColor, std::string text, DropDownMenu* parent);
 	~DropDownMenuItem();
+	//renders the object to renderer, called eevery frame
 	void render() override;
 	void update() override;
 	bool getIsClickedOnThis();
@@ -408,6 +412,13 @@ private:
 	bool alreadyClicked = false;
 
 public:
+	/*
+	* A button that will render an image to the screen and will call the specified function when clicked on
+	* \param pathToImg: the image that will be renderered to the screen
+	* \param function: the function that will be called when clicked, by default it is an empty function
+	* \param flip: flags to determine how the image should be flipped, by default it is not flipped
+	* \param arguments: arguments that the function requires
+	*/
 	template <typename Fn, typename... Args>
 	Button(SDL_Renderer* renderer, int x, int y, int w, int h, std::string pathToImg, Fn function = []() {}, SDL_RendererFlip flip = SDL_FLIP_NONE, Args... arguments) : Sprite(renderer, x, y, w, h, pathToImg, flip) {
 		this->name = "button";
@@ -415,10 +426,14 @@ public:
 		this->renderPriority = 100;
 	}
 
+
+	/*
+	* Sets the function for when the button is clicked
+	*\param function : the function that will be called when clicked
+	* \param arguments : arguments that the function requires, can be left blank
+	*/
 	template <typename Fn, typename... Args>
 	void setFunction(Fn function, Args... arguments) {
-		//if (function != []() {}) {
-		//	//static_assert(std::is_invocable_v<Fn, Args...>, "Function is not callable with provided arguments");
 		auto f = std::bind(function, arguments...);
 		fn = f;
 		//}
@@ -427,7 +442,8 @@ public:
 
 
 	void update() override;
-	virtual void onHover() {} //runs when the cursor is hovered over the button
+	//runs when the cursor is hovered over the button
+	virtual void onHover() {}
 	void onClick() {
 		this->fn();
 	}

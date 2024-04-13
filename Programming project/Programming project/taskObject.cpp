@@ -1,5 +1,6 @@
 #include "task_objects.h"
 #include "Collision.h"
+#include "Main_Functions.h"
 #include "Cursor.h"
 #include <filesystem>
 
@@ -146,24 +147,23 @@ TaskObject::TaskObject(SDL_Renderer* renderer, int x, int y, int w, int h) : Dra
 	SDL_Color textColor = { 0,0,0 };
 	SDL_Color textBoxBg = { 255, 255, 255 };
 
-	//this would be an array if i had more time
 
-	this->taskName = new TextField(renderer, x, y + (int)(h * 0.5), charWidth * 20, charHeight, textColor, textBoxBg, 20);
+	this->taskName = new TextField(renderer, x, y + (int)(h * 0.5), charWidth * 20, charHeight, textColor, textBoxBg,20,&Main::textInputThisFrame);
 	this->taskNameHeading = Label::createBasicLabel(renderer, "Task Name:", 0, 0, charWidth, charHeight, textColor);
 
-	this->filePath = new TextField(renderer, taskName->getPos().x + taskName->getDims().y + margin, taskName->getPos().y, charWidth * 20, charHeight, textColor, textBoxBg, 20);
+	this->filePath = new TextField(renderer, taskName->getPos().x + taskName->getDims().y + margin, taskName->getPos().y, charWidth * 20, charHeight, textColor, textBoxBg, 20, &Main::textInputThisFrame);
 	this->filePath->setMaxAllowedChars(MAX_PATH);
 	this->filePathHeading = Label::createBasicLabel(renderer, "Path to file:", 0, 0, charWidth, charHeight, textColor);
 	this->filePathBrowse = new Button(renderer, x, y, charWidth * 8, charHeight * 1.2, "browse.png", &TaskObject::setFilePath, SDL_FLIP_NONE, this);
 
 
 
-	this->extraArgs = new TextField(renderer, x, y, charWidth * 20, charHeight, textColor, textBoxBg, 20);
+	this->extraArgs = new TextField(renderer, x, y, charWidth * 20, charHeight, textColor, textBoxBg, 20, &Main::textInputThisFrame);
 	this->extraArgsHeading = Label::createBasicLabel(renderer, "Extra arguments:", 0, 0, charWidth, charHeight, textColor);
 
 	this->whenToDoTask = new DropDownMenu(renderer, x, y, charWidth * 20, charHeight, { "Immediately", "At set time" });
 	this->doTaskHeading = Label::createBasicLabel(renderer, "When To Do: ", 0, 0, charWidth, charHeight, textColor);
-	this->timeInput = new TimeInputBox(renderer, 0, 0, charWidth * 5, charHeight, SDL_Color{ 0,0,0 }, SDL_Color(255, 255, 255), SDL_Color(255, 255, 255));
+	this->timeInput = new TimeInputBox(renderer,&Main::textInputThisFrame, 0, 0, charWidth * 5, charHeight, SDL_Color{ 0,0,0 }, SDL_Color(255, 255, 255), SDL_Color(255, 255, 255));
 
 	this->frequencyHeading = Label::createBasicLabel(renderer, "Repeat: ", 0, 0, charWidth, charHeight, textColor);
 	this->frequency = new DropDownMenu(renderer, 0, 0, charWidth * 20, charHeight, { "Only once","Hourly","Daily","Weekly" });

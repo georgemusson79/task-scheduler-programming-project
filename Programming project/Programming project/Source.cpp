@@ -17,8 +17,7 @@
 #include "task_objects.h"
 
 int main(int argc, char* argv[]) {
-	int WINDOW_WIDTH;
-	int WINDOW_HEIGHT;
+
 
 	SDL_Init(SDL_INIT_EVERYTHING);
 	IMG_Init(IMG_INIT_PNG);
@@ -28,14 +27,14 @@ int main(int argc, char* argv[]) {
 
 	Vector2 scrDims = Main::getDisplayDims();
 	Main::window = SDL_CreateWindow("Task Scheduler", (0x1FFF0000u | (0)), SDL_WINDOWPOS_UNDEFINED, scrDims.x * 0.9, scrDims.y * 0.8, SDL_WINDOW_SHOWN);
-	SDL_GetWindowSize(Main::window, &WINDOW_WIDTH, &WINDOW_HEIGHT);
+	SDL_GetWindowSize(Main::window, &Main::WINDOW_WIDTH, &Main::WINDOW_HEIGHT);
 	Main::renderer = (Debug::vsync) ? SDL_CreateRenderer(Main::window, -1, SDL_RENDERER_PRESENTVSYNC) : SDL_CreateRenderer(Main::window, -1, SDL_RENDERER_ACCELERATED);
-	int w = WINDOW_WIDTH / 1.5;
-	int x = (WINDOW_WIDTH / 2) - (w / 2);
+	int w = Main::WINDOW_WIDTH / 1.5;
+	int x = (Main::WINDOW_WIDTH / 2) - (w / 2);
 	//x = 0;
 
 
-	TaskList* taskList = Renderable::create <TaskList>(Main::renderer, x, 0, w, WINDOW_HEIGHT, 5);
+	TaskList* taskList = Main::create <TaskList>(Main::renderer, 0, 0, w, Main::WINDOW_HEIGHT, 5);
 
 	std::vector<char*> args=Utils::convertCArrayToVector(argv, argc);
 	std::vector<std::string> argsstr = {};

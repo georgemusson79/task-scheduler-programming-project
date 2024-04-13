@@ -78,6 +78,9 @@
     <ClCompile Include="Task.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="templatefn.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Vector2.h">
