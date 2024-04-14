@@ -30,8 +30,8 @@ bool Label::setText(std::string text) {
 void Label::setFont(std::string fontPath, int fontSz) {
 	TTF_CloseFont(this->font);
 	if (fontPath == "") {
-		this->font = TTF_OpenFont("arial.ttf", fontSz);
-		this->fontPath = "arial.ttf";
+		this->font = TTF_OpenFont("assets/arial.ttf", fontSz);
+		this->fontPath = "assets/arial.ttf";
 		if (this->font == nullptr) std::cout << TTF_GetError() << "\n";
 	}
 	else {

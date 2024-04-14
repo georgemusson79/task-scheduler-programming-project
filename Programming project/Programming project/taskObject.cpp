@@ -154,7 +154,7 @@ TaskObject::TaskObject(SDL_Renderer* renderer, int x, int y, int w, int h) : Dra
 	this->filePath = new TextField(renderer, taskName->getPos().x + taskName->getDims().y + margin, taskName->getPos().y, charWidth * 20, charHeight, textColor, textBoxBg, 20, &Main::textInputThisFrame);
 	this->filePath->setMaxAllowedChars(MAX_PATH);
 	this->filePathHeading = Label::createBasicLabel(renderer, "Path to file:", 0, 0, charWidth, charHeight, textColor);
-	this->filePathBrowse = new Button(renderer, x, y, charWidth * 8, charHeight * 1.2, "browse.png", &TaskObject::setFilePath, SDL_FLIP_NONE, this);
+	this->filePathBrowse = new Button(renderer, x, y, charWidth * 8, charHeight * 1.2, "assets/browse.png", &TaskObject::setFilePath, SDL_FLIP_NONE, this);
 
 
 

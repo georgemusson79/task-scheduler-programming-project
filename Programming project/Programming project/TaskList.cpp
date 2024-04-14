@@ -258,15 +258,15 @@ TaskList::TaskList(SDL_Renderer* renderer,int x, int y, int w, int h,int tasksOn
 	int buttonX = x + xmargin;
 
 
-	this->buttons.push_back(new Button(renderer,buttonX, buttonY, buttonWidth, buttonHeight, "add task.png", &TaskList::addTask, SDL_FLIP_NONE, this));
+	this->buttons.push_back(new Button(renderer,buttonX, buttonY, buttonWidth, buttonHeight, "assets/add task.png", &TaskList::addTask, SDL_FLIP_NONE, this));
 	buttonX += buttonWidth + gapBetweenButtons;
-	this->buttons.push_back(new Button(renderer, buttonX, buttonY, buttonWidth*1.2, buttonHeight, "remove task.png", &TaskList::removeTaskFromEnd, SDL_FLIP_NONE, this));
+	this->buttons.push_back(new Button(renderer, buttonX, buttonY, buttonWidth*1.2, buttonHeight, "assets/remove task.png", &TaskList::removeTaskFromEnd, SDL_FLIP_NONE, this));
 	buttonX += (buttonWidth*1.2) + gapBetweenButtons;
-	this->buttons.push_back(new Button(renderer, buttonX, buttonY, buttonWidth*1.2, buttonHeight, "export task.png", &TaskList::exportCurrentTaskList, SDL_FLIP_NONE, this));
+	this->buttons.push_back(new Button(renderer, buttonX, buttonY, buttonWidth*1.2, buttonHeight, "assets/export task.png", &TaskList::exportCurrentTaskList, SDL_FLIP_NONE, this));
 	buttonX += (buttonWidth * 1.2) + gapBetweenButtons;
-	this->buttons.push_back(new Button(renderer, buttonX, buttonY, buttonWidth * 1.2, buttonHeight, "import task.png", &TaskList::importTaskList, SDL_FLIP_NONE, this));
+	this->buttons.push_back(new Button(renderer, buttonX, buttonY, buttonWidth * 1.2, buttonHeight, "assets/import task.png", &TaskList::importTaskList, SDL_FLIP_NONE, this));
 	buttonX += (buttonWidth * 1.2) + gapBetweenButtons;
-	this->buttons.push_back(new Button(renderer, buttonX, buttonY, buttonWidth * 1.2, buttonHeight, "execute task.png", &TaskList::executeTasks, SDL_FLIP_NONE, this));
+	this->buttons.push_back(new Button(renderer, buttonX, buttonY, buttonWidth * 1.2, buttonHeight, "assets/execute task.png", &TaskList::executeTasks, SDL_FLIP_NONE, this));
 
 
 	this->smallerbox = new RenderableRect(renderer, x + xmargin, y + ymargintop, w - (2 * xmargin), h - ymargintop, true, SDL_Color(150, 150, 150));
@@ -276,8 +276,8 @@ TaskList::TaskList(SDL_Renderer* renderer,int x, int y, int w, int h,int tasksOn
 	int boxCenter = this->smallerbox->getPos().x + (this->smallerbox->getDims().x / 2);
 	int upDownButtonWidth = buttonWidth / 4;
 	int upDownButtonPosX = this->smallerbox->getDims().x + this->smallerbox->getPos().x;
-	this->buttons.push_back(new Button(renderer, upDownButtonPosX, this->smallerbox->getPos().y, upDownButtonWidth, buttonHeight/2, "task up button.png", &TaskList::scrollUp, SDL_FLIP_NONE, this));
-	this->buttons.push_back(new Button(renderer, upDownButtonPosX, this->smallerbox->getPos().y+this->smallerbox->getDims().y-buttonHeight/2, upDownButtonWidth, buttonHeight / 2, "task up button.png", &TaskList::scrollDown, SDL_FLIP_VERTICAL, this));
+	this->buttons.push_back(new Button(renderer, upDownButtonPosX, this->smallerbox->getPos().y, upDownButtonWidth, buttonHeight/2, "assets/task up button.png", &TaskList::scrollUp, SDL_FLIP_NONE, this));
+	this->buttons.push_back(new Button(renderer, upDownButtonPosX, this->smallerbox->getPos().y+this->smallerbox->getDims().y-buttonHeight/2, upDownButtonWidth, buttonHeight / 2, "assets/task up button.png", &TaskList::scrollDown, SDL_FLIP_VERTICAL, this));
 
 
 
@@ -330,6 +330,7 @@ bool TaskList::importTaskListFromPath(std::wstring path) {
 	bool isTasksSection = false;
 	std::ifstream file(path);
 
+	bool invalidTasks = false;
 	try {
 		while (std::getline(file, buffer)) {
 
@@ -337,7 +338,7 @@ bool TaskList::importTaskListFromPath(std::wstring path) {
 			if (buffer == "Tasks") isTasksSection = true;
 			if (buffer == "EndTasks") {
 				isTasksSection = false;
-				return true;
+				break;
 			}
 
 
@@ -345,7 +346,8 @@ bool TaskList::importTaskListFromPath(std::wstring path) {
 				std::vector<std::string> split = Utils::split(buffer,"::::");
 				if (split.size() == 0) continue; //skip blank lines
 				if (split.size() < 5) {
-					throw std::exception("Invalid task params");
+					invalidTasks = true;
+					continue;
 				}
 				else {
 					TaskObject* t = this->addTask();
@@ -364,6 +366,10 @@ bool TaskList::importTaskListFromPath(std::wstring path) {
 		output += e.what();
 		Main::windowsErrMessageBoxOk("Errors occured while loading file", output);
 		return false;
+	}
+
+	if (invalidTasks) {
+		Main::windowsErrMessageBoxOk("Errors occured while loading file", "Unable to import tasks\n\nSome tasks were invalid and could not be imported\n");
 	}
 	return false;
 }
