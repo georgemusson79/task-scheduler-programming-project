@@ -45,11 +45,12 @@ std::vector<std::string> Task::isValid() {
 	if (std::find(whenToRunValidOpts.begin(), whenToRunValidOpts.end(), this->whenToRun) != whenToRunValidOpts.end()) {
 		if (this->whenToRun != "Immediately") {
 			bool timeValid = true;
-			if (time.size() < 4 || time.size() > 4) timeValid = false;
+			std::string tempTime = Utils::removeStr(time, ":");
+			if (tempTime.size()!=4) timeValid = false;
 			else {
 				//verify digits for inputted time are valid
 				int nums[4];
-				for (int i = 0; i < 4; i++) nums[i] = Utils::toInt(time[i]);
+				for (int i = 0; i < 4; i++) nums[i] = Utils::toInt(tempTime[i]);
 				if (nums[0] > 2) timeValid = false;
 				else if (nums[0] == 2 && nums[1] > 4) timeValid = false;
 			}
@@ -72,14 +73,10 @@ std::vector<std::string> Task::isValid() {
 bool Task::execute(bool raiseErrorOnFail) {
 	std::vector<std::string> errs = this->isValid();
 	bool valid = (errs.size() == 0);
+
+
 	if (valid) {
-		std::time_t time = Main::strTimeToTime(this->time);
-		std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-		std::tm timetm2= *std::localtime(&time);
-		Utils::DateAndTime dat = Utils::timeToDateTime(timetm2);
-		if (this->whenToRun != "Immediately" && time<now) {
-			time += 60 * 60 * 24; //add a day if the time has already passed but the task isnt supposed to run immediately
-		}
+		std::time_t time = this->timeAndDateTotime_t();
 
 		std::chrono::system_clock::time_point tp = std::chrono::system_clock::from_time_t(time);
 		std::this_thread::sleep_until(tp);
@@ -131,8 +128,12 @@ std::string Task::convertToExportableFormat() {
 }
 
 std::time_t Task::timeAndDateTotime_t() {
+	Utils::DateAndTime now=Utils::getCurrentDateAndTime();
+
 	if (this->time.size() == 4) this->time.insert(this->time.begin() + 2, ':'); //insert a colon if there isnt one already
+	if (this->date == "") this->date = now.date; //set data if one doesnt already exist
 	Utils::DateAndTime time = { this->time,this->date };
 	std::tm tm=Utils::DateTimeToTm(time);
+	tm.tm_isdst = 1;
 	return std::mktime(&tm);
 }

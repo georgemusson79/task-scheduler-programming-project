@@ -74,7 +74,7 @@ namespace Utils {
 		std::vector<std::string> timesplit=Utils::split(time.time, ":");
 		tm.tm_hour = std::stoi(timesplit[0]);
 		tm.tm_min = std::stoi(timesplit[1]);
-
+		tm.tm_isdst = 1;
 		std::vector<std::string> datesplit = Utils::split(time.date, "/");
 		tm.tm_mday = std::stoi(datesplit[0]);
 		tm.tm_mon = std::stoi(datesplit[1])-1;
@@ -107,6 +107,21 @@ namespace Utils {
 		return c;
 	}
 
+	std::string removeStr(std::string str, std::string remove) {
+		int pos = str.find(remove);
+		while (pos != std::string::npos) {
+			str.erase(pos, remove.size());
+			pos = str.find(remove);
+		}
+		return str;
+	}
+
+	std::time_t DateAndTimeTotime_t(Utils::DateAndTime dt) {
+		std::tm tm = Utils::DateTimeToTm(dt);
+		tm.tm_isdst = 1;
+		std::time_t t = std::mktime(&tm);
+		return t;
+	}
 }
 
 

@@ -41,6 +41,9 @@ int main(int argc, char* argv[]) {
 	for (char* arg : args) argsstr.push_back(std::string(arg));
 	Main::handleProgramArgs(argsstr, taskList);
 	
+	std::time_t time = Utils::DateAndTimeTotime_t({ "20:50","14/04/2024"});
+	std::tm* tm2 = std::localtime(&time);
+	std::cout << tm2->tm_hour << "\n";
 
 	SDL_Event e;
 	while (Main::running) {

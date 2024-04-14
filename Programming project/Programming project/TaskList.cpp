@@ -5,6 +5,7 @@
 #include "Utils.h"
 #include "Main_Functions.h"
 
+#include <string>
 #include <fstream>
 #include <sstream>
 #include <iterator>
@@ -427,8 +428,9 @@ void TaskList::executeTasks() {
 	//res==6 means that the ok button was pressed res==0 means there were no errors
 	if (res == 6 || res == 0) {
 		this->tasksToExecute = {};
-		for (auto task : this->tasks) this->tasksToExecute.push_back(task->convertToRunnableTask());
-		//TaskList::execTasks(this->tasksToExecute, raiseErrorOnFail);
+		for (auto task : this->tasks) {
+			if (task->checkValidityOfTask().size()==0) this->tasksToExecute.push_back(task->convertToRunnableTask()); //only valid tasks are added to the list of tasks to execute
+		}
 		std::thread t(TaskList::execTasks, &this->tasksToExecute, raiseErrorOnFail);
 		t.detach();
 	}
@@ -437,11 +439,26 @@ void TaskList::executeTasks() {
 void TaskList::execTasks(std::vector<Task>* tasks, bool raiseErrorOnFail) {
 	Main::tasksExecutingInSeperateThread = true;
 
-	for (Task t : *tasks) {
+	std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+
+
+	for (Task& t : *tasks) {
 		if (t.whenToRun == "Immediately") {
-			Utils::DateAndTime now = Utils::getCurrentDateAndTime();
-			t.time = now.time;
-			t.date = now.date;
+			Utils::DateAndTime nowStr = Utils::getCurrentDateAndTime();
+			t.time = nowStr.time;
+			t.date = nowStr.date;
+		}
+
+		else {
+			std::time_t time = Main::strTimeToTime(t.time);
+			if (t.whenToRun != "Immediately" && time < now) {
+				time += 60 * 60 * 24; //add a day if the time has already passed but the task isnt supposed to run immediately
+				std::tm timetm2 = *std::localtime(&time);
+				Utils::DateAndTime dat = Utils::timeToDateTime(timetm2);
+				t.time = dat.time;
+				t.date = dat.date;
+			}
+
 		}
 	}
 

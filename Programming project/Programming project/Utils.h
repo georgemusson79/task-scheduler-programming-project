@@ -109,4 +109,9 @@ namespace Utils {
 
 	//return the previous color and set the new color for drawing for the renderer
 	SDL_Color setRenderDrawColor(SDL_Renderer* renderer, SDL_Color color);
+
+	//remove all instances of a set of characters from a string
+	std::string removeStr(std::string str, std::string remove);
+
+	std::time_t DateAndTimeTotime_t(Utils::DateAndTime dt);
 }

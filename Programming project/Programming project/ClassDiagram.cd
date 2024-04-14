@@ -1,35 +1,35 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
   <Class Name="Task">
-    <Position X="79.25" Y="0.5" Width="1.5" />
+    <Position X="59.5" Y="1" Width="7.25" />
     <TypeIdentifier>
       <HashCode>EAABAAAAAAAECAAAAAAEAwAAACAAAACAAEAAAQAAQAA=</HashCode>
       <FileName>task_objects.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="TaskObject">
-    <Position X="53.5" Y="13" Width="4" />
+    <Position X="51" Y="13" Width="4" />
     <TypeIdentifier>
       <HashCode>AAAABBSBQAAMAAAAJBYQAggCQQIQQEjoCIRAIBBUBAA=</HashCode>
       <FileName>task_objects.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="TaskList">
-    <Position X="33.25" Y="9" Width="7.25" />
+    <Position X="33.25" Y="9" Width="4.75" />
     <TypeIdentifier>
-      <HashCode>MAAADACAFgQAIAAAoQEAAAhBJAYAAChAAEAABQB0AEE=</HashCode>
+      <HashCode>MAIADACAFgQAIAAAoQEAEAhBJAYAAChAAEAABQB0AEE=</HashCode>
       <FileName>task_objects.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="NumericTextbox">
-    <Position X="1.5" Y="28" Width="11" />
+    <Position X="1.25" Y="28" Width="11" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAEAAAAAAQEACAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>DateAndTime.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="TimeInputBox">
-    <Position X="62" Y="9" Width="9" />
+    <Position X="59.5" Y="9" Width="9" />
     <NestedTypes>
       <Enum Name="TimeInputBox::TimeSlots" Collapsed="true">
         <TypeIdentifier>
@@ -43,28 +43,28 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Renderable">
-    <Position X="38.75" Y="0.5" Width="4" />
+    <Position X="37.25" Y="0.5" Width="4" />
     <TypeIdentifier>
       <HashCode>AIAAAAKACAwQAgAAAAAAUEAAgYAOACBIAAMBQAAUhQA=</HashCode>
       <FileName>simple_renderables.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Sprite">
-    <Position X="42.25" Y="9" Width="6" />
+    <Position X="39.5" Y="9" Width="6" />
     <TypeIdentifier>
       <HashCode>AAAAAAEAAIAgEgAAAQAEAABAAAAAAAAQAAAgAAAQAAI=</HashCode>
       <FileName>simple_renderables.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Draggable">
-    <Position X="49.75" Y="9" Width="11.5" />
+    <Position X="47.25" Y="9" Width="11.5" />
     <TypeIdentifier>
       <HashCode>AAAGAACAAIAAAAIAAAABAAAAAAAAAAAAAAAggAAUAAA=</HashCode>
       <FileName>simple_renderables.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="RenderableRect">
-    <Position X="72" Y="9" Width="8.5" />
+    <Position X="69.5" Y="9" Width="8.5" />
     <TypeIdentifier>
       <HashCode>EAAAAAAAAAAAAAAAAAIAAAAAAAAAAAACAAgAAAAQAEA=</HashCode>
       <FileName>simple_renderables.h</FileName>
@@ -99,49 +99,49 @@
     </TypeIdentifier>
   </Class>
   <Class Name="DropDownMenuItem">
-    <Position X="71.75" Y="12.25" Width="9" />
+    <Position X="69.25" Y="12.25" Width="9" />
     <TypeIdentifier>
       <HashCode>CAAAAACCgAAEABhAAAAACECYQAAAAAAAAAAAAAAcBAA=</HashCode>
       <FileName>simple_renderables.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Button">
-    <Position X="41.25" Y="13.25" Width="7.75" />
+    <Position X="38.75" Y="13.25" Width="7.75" />
     <TypeIdentifier>
       <HashCode>AEAAAEAAAAAAAAAAAAAAAAAAAQAAAgAAAAAAAQAEAAI=</HashCode>
       <FileName>simple_renderables.h</FileName>
     </TypeIdentifier>
   </Class>
   <Struct Name="Vector2">
-    <Position X="81" Y="2" Width="1.5" />
+    <Position X="67" Y="1" Width="2.75" />
     <TypeIdentifier>
       <HashCode>AAAAAEAAAAABAAAAAAAAAQQAAEAAAAAAAABgAAAAAAA=</HashCode>
       <FileName>Vector2.h</FileName>
     </TypeIdentifier>
   </Struct>
   <Struct Name="Utils::DateAndTime">
-    <Position X="81" Y="0.5" Width="1.5" />
+    <Position X="70" Y="1" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAA=</HashCode>
       <FileName>Utils.h</FileName>
     </TypeIdentifier>
   </Struct>
   <Enum Name="MovementLimitations">
-    <Position X="82.75" Y="2" Width="1.5" />
+    <Position X="70" Y="4" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAACAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAA=</HashCode>
       <FileName>simple_renderables.h</FileName>
     </TypeIdentifier>
   </Enum>
   <Enum Name="AllowedChars">
-    <Position X="82.75" Y="3.5" Width="1.5" />
+    <Position X="70" Y="5.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAQAAAAAAAAABAAAAAgAIAAAAAAAAAAAAAA=</HashCode>
       <FileName>simple_renderables.h</FileName>
     </TypeIdentifier>
   </Enum>
   <Enum Name="AllowedCase">
-    <Position X="82.75" Y="0.5" Width="1.5" />
+    <Position X="70" Y="2.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>IAAAAAAAACAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>simple_renderables.h</FileName>
