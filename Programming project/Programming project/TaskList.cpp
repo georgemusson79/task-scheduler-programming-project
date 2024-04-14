@@ -67,12 +67,16 @@ void TaskList::updateTaskPositions() {
 void TaskList::render() {
 	this->biggerbox->render();
 	this->smallerbox->render();
+
+	//get only the tasks objects that will be rendered to the screen
 	std::vector<TaskObject*> renderedItems = Utils::getSubArray(this->tasks, this->posFirstTaskToRender, this->tasksOnScreen);
 	int taskNum = 0;
 	for (auto& task : renderedItems) {
 		bool isInsideBox = Collision::isInsideOf(this->smallerbox->getRenderingDims(), task->getRenderingDims());
 		if (isInsideBox) task->render();
 
+
+		//draw a line where the task object would snap to if it were dropped while being held
 		if (task->getFocused() && this->getTaskPixelPosition(taskNum) != task->getPos()) {
 			this->selectedTaskPos = this->getNearestIndexFromYPos(task->getPos().y);
 			if (this->selectedTaskPos >= tasks.size()) this->selectedTaskPos = tasks.size()-1;
@@ -82,10 +86,15 @@ void TaskList::render() {
 		}
 		taskNum++;
 	}
+
+	//update buttons on the top of the screen
 	for (int i = 0; i < 5; i++) buttons[i]->render();
+
+	//update up and down buttons on the right hand side of the task list
 	if (this->posFirstTaskToRender > 0) buttons[5]->render();
 	if (this->posFirstTaskToRender + this->tasksOnScreen < this->tasks.size()) buttons[6]->render();
-	if (Main::tasksExecutingInSeperateThread) this->nextTaskToExecute->render();
+	
+	if (Main::tasksExecutingInSeperateThread) this->nextTaskToExecute->render(); //render the label that displays tasks being executed
 
 }
 
@@ -109,9 +118,16 @@ void TaskList::update() {
 
 	if (selectedTask != nullptr && !selectedTask->getFocused()) this->moveTask(selectedTaskNum, whereToMoveTask);
 	this->handleKBInput();
+
+	//update buttons on the top of the screen
 	for (int i = 0; i < 5;i++) buttons[i]->update();
+
+	//update up and down buttons on the right hand side of the task list
 	if (this->posFirstTaskToRender > 0) buttons[5]->update();
 	if (this->posFirstTaskToRender+this->tasksOnScreen < this->tasks.size()) buttons[6]->update();
+
+	//handle what should be displayed in the label
+	if (Main::tasksExecutingInSeperateThread) this->updateLabelDisplayingExecutingTasks();
 
 	Renderable::update();
 }
@@ -410,26 +426,18 @@ void TaskList::executeTasks() {
 	int res = this->checkInvalidThenDisplayErr();
 	//res==6 means that the ok button was pressed res==0 means there were no errors
 	if (res == 6 || res == 0) {
-		std::vector<Task> tasksToRun = {};
-		for (auto task : this->tasks) tasksToRun.push_back(task->convertToRunnableTask());
-		//this->moveToAnimation({ 0,0 }, 300);
-		std::thread t(TaskList::execTasks, tasksToRun, raiseErrorOnFail, "",this);
+		this->tasksToExecute = {};
+		for (auto task : this->tasks) this->tasksToExecute.push_back(task->convertToRunnableTask());
+		//TaskList::execTasks(this->tasksToExecute, raiseErrorOnFail);
+		std::thread t(TaskList::execTasks, &this->tasksToExecute, raiseErrorOnFail);
 		t.detach();
 	}
 }
 
-void TaskList::execTasks(std::vector<Task> tasks, bool raiseErrorOnFail, std::string pathToTaskFile,TaskList* tl) {
+void TaskList::execTasks(std::vector<Task>* tasks, bool raiseErrorOnFail) {
 	Main::tasksExecutingInSeperateThread = true;
-	if (!pathToTaskFile.empty()) {
-		std::fstream file(pathToTaskFile, std::ios::in | std::ios::out);
-		if (file.fail()) {
-			Main::windowsErrMessageBoxOk("Unable to run tasks", "Unable to run tasks: file could not be opened");
-			Main::tasksExecutingInSeperateThread = false;
-			return;
-		}
-	}
 
-	for (Task t : tasks) {
+	for (Task t : *tasks) {
 		if (t.whenToRun == "Immediately") {
 			Utils::DateAndTime now = Utils::getCurrentDateAndTime();
 			t.time = now.time;
@@ -438,7 +446,7 @@ void TaskList::execTasks(std::vector<Task> tasks, bool raiseErrorOnFail, std::st
 	}
 
 	//sort items so that the soonest task is last
-	std::sort(tasks.begin(), tasks.end(), [](Task a, Task b) {
+	std::sort(tasks->begin(), tasks->end(), [](Task a, Task b) {
 		std::time_t aTime = a.timeAndDateTotime_t();
 		std::time_t bTime = b.timeAndDateTotime_t();
 		return aTime > bTime;
@@ -448,27 +456,16 @@ void TaskList::execTasks(std::vector<Task> tasks, bool raiseErrorOnFail, std::st
 
 #//execute 
 
-	while (tasks.size() > 0) {
+	while (tasks->size() > 0) {
 
-		if (tl != nullptr) {
-			std::string taskLabelText = "Tasks to execute:\n";
-			for (int i = 0; i < 5; i++) {
-				int pos = tasks.size() - 1 - i;
-				if (pos >= 0) taskLabelText += tasks[i].taskName + "\n";
-				else taskLabelText += "\n";
-			}
-			tl->nextTaskToExecute->setText(taskLabelText);
-		}
-
-		Task t = *(tasks.end() - 1);
-		tasks.pop_back();
-
+		//get task at the end of the list and remove it from the array
+		Task t = (*tasks)[tasks->size() - 1];
 		t.execute(raiseErrorOnFail);
-		if (!pathToTaskFile.empty()) TaskList::addCompletedTaskToFile(pathToTaskFile, t);
+		tasks->pop_back();
+		//add task back into the array if it is set to repeat
+		if (t.frequency != "Only once") tasks->push_back(t);
 
-		if (t.frequency != "Only once") tasks.push_back(t);
-
-		std::sort(tasks.begin(), tasks.end(), [](Task a, Task b) {
+		std::sort(tasks->begin(), tasks->end(), [](Task a, Task b) {
 			std::time_t aTime = a.timeAndDateTotime_t();
 			std::time_t bTime = b.timeAndDateTotime_t();
 			return aTime > bTime;
@@ -510,4 +507,14 @@ bool TaskList::addCompletedTaskToFile(std::string pathToTaskFile, Task t) {
 	if (!endOfCompleteTasksFound) fullFile += "EndOfCompletedTasks";
 	file.close();
 	return true;
+}
+
+void TaskList::updateLabelDisplayingExecutingTasks() {
+	std::string taskLabelText = "Tasks to execute:\n";
+	for (int i = 0; i < 5; i++) {
+		int pos = this->tasksToExecute.size() - 1 - i;
+		if (pos >= 0) taskLabelText += this->tasksToExecute[i].taskName + "\n";
+		else taskLabelText += "\n";
+	}
+	this->nextTaskToExecute->setText(taskLabelText);
 }

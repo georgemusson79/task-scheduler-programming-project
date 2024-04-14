@@ -69,9 +69,12 @@ private:
 	int charWidth;
 	int charHeight;
 	int margin; //distance between textboxes
-	bool isInPlace = false;
-	bool highlighted = false;
+	bool isInPlace = false; //when this is true it means that the box has snapped into a spot in a task list
+	bool highlighted = false; //when this is true the box will be highlighted green
 	void _create();
+
+	
+
 public:
 
 	/*
@@ -125,7 +128,7 @@ public:
 
 //gui object containing a list of task objects as well as methods for executing tasks
 class TaskList : public Renderable {
-protected:
+private:
 	Label* nextTaskToExecute = nullptr;
 	RenderableRect* biggerbox = nullptr;
 	RenderableRect* smallerbox = nullptr;
@@ -133,6 +136,8 @@ protected:
 	TaskObject* selectedTask = nullptr;
 	int selectedTaskPos = 0;
 
+	//updates the label displaying the next 5 tasks that will be executed
+	void updateLabelDisplayingExecutingTasks();
 	Vector2 getTaskPixelPosition(int pos);
 	//convert the pixel position of a task into an array index relating to this->tasks
 	int getNearestIndexFromYPos(int yPos);
@@ -148,6 +153,8 @@ protected:
 	int tasksOnScreen;
 	std::vector<TaskObject*> tasks = {};
 
+	std::vector<Task> tasksToExecute = {}; //relates to executeTasks: the current list of tasks that will be executed
+
 	//move a task into another part of the this->tasks array
 	void moveTask(int first, int second);
 
@@ -162,11 +169,11 @@ protected:
 public:
 	bool raiseErrorOnFail = true; //if true, will raise an error while executeTasks is called if there is a fail
 	/* Executes tasks, should only be called as a seperate thread
-	* \param tasks: A list of the tasks to be executed
+	* \param tasks: A list of the tasks to be executed, the list will be modified as tasks are removed/added
 	* \param raiseErrorOnFail: display a windows error message if the task was unable to execute for whatever reason
 	* \param pathToTaskFile: reads and writes task information to a file (unused)
 	*/
-	static void execTasks(std::vector<Task> tasks, bool raiseErrorOnFail, std::string pathToTaskFile,TaskList* tl=nullptr);
+	static void execTasks(std::vector<Task>* tasks, bool raiseErrorOnFail);
 
 	//if a task is finished write it to the file under CompletedTasks (unused)
 	static bool addCompletedTaskToFile(std::string pathToTaskFile, Task t);
