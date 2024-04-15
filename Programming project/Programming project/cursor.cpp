@@ -29,12 +29,15 @@ bool Cursor::setCursor(SDL_SystemCursor cursorType) {
 }
 
 bool Cursor::isLeftClicked() {
+	if (!Cursor::clicksAllowed) return false;
 	return SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT);
 }
 bool Cursor::isRightClicked() {
+	if (!Cursor::clicksAllowed) return false;
 	return SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT);
 }
 bool Cursor::isMiddleClicked() {
+	if (!Cursor::clicksAllowed) return false;
 	return SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_MIDDLE);
 
 }

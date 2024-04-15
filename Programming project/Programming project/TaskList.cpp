@@ -4,6 +4,7 @@
 #include "Collision.h"
 #include "Utils.h"
 #include "Main_Functions.h"
+#include "Cursor.h"
 
 #include <string>
 #include <fstream>
@@ -121,7 +122,9 @@ void TaskList::update() {
 	this->handleKBInput();
 
 	//update buttons on the top of the screen
-	for (int i = 0; i < 5;i++) buttons[i]->update();
+	for (int i = 0; i < 5; i++) {
+		buttons[i]->update();
+	}
 
 	//update up and down buttons on the right hand side of the task list
 	if (this->posFirstTaskToRender > 0) buttons[5]->update();

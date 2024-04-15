@@ -22,18 +22,21 @@ Contains global variables and utility functions that only work in the context of
 */
 namespace Main {
 
+	
 	inline int WINDOW_WIDTH;
 	inline int WINDOW_HEIGHT;
 
 
+	inline Vector2 posWhereCursorWasDisabled = { 0,0 }; //if cursor is disabled this is to be updated
+	void cursorDisable();
 
 	inline bool tasksExecutingInSeperateThread = false;
-	inline SDL_Color bgColor = { 255,255,255 };
+	inline SDL_Color bgColor = { 255,255,255 }; //background color of the main screen
 	inline bool running = true; //if false close the program
 	inline std::vector<Renderable*> renderables;
 	inline SDL_Window* window;
 	inline SDL_Renderer* renderer;
-	inline std::string textInputThisFrame = "";
+	inline std::string textInputThisFrame = ""; //keyboard presses every frame
 
 	//Get width and height of the screen
 	Vector2 getDisplayDims();

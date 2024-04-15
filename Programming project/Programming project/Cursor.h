@@ -11,6 +11,7 @@ namespace Cursor {
 	inline SDL_Cursor* currentCursor= nullptr;
 	inline bool isFocused = false;
 	inline Renderable* focusedItem = nullptr;
+	inline bool clicksAllowed = true;
 
 	Vector2 getPos();
 	bool isLeftClicked();

@@ -3,6 +3,8 @@
 #include "Main_Functions.h"
 #include "Cursor.h"
 #include <filesystem>
+#include <thread>
+#include <chrono>
 
 
 bool TaskObject::setDims(int x, int y) {

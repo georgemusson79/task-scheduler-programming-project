@@ -21,6 +21,11 @@ Vector2 Main::getDisplayDims() {
 
 
 void Main::updateRenderables() {
+	if (!Cursor::clicksAllowed && Cursor::getPos().distance(Main::posWhereCursorWasDisabled) > 30) {
+		std::cout << Cursor::getPos().distance(Main::posWhereCursorWasDisabled) << "\n";
+		Cursor::clicksAllowed = true;
+	}
+
 
 	Cursor::hasCursorChanged = false;
 	Main::clearScreenDrawBackground();
@@ -44,6 +49,7 @@ void Main::updateRenderables() {
 
 
 std::wstring Main::openFileExplorerLoad(std::vector<std::pair<std::wstring, std::wstring>> allowedFiles, bool multiselect) {
+	
 
 	IFileOpenDialog* fileEx;
 	CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_INPROC, IID_PPV_ARGS(&fileEx));
@@ -76,6 +82,7 @@ std::wstring Main::openFileExplorerLoad(std::vector<std::pair<std::wstring, std:
 	}
 
 	fileEx->Release();
+	Main::cursorDisable();  //disable cursor input to prevent accidental clicks
 	return text;
 
 
@@ -83,6 +90,7 @@ std::wstring Main::openFileExplorerLoad(std::vector<std::pair<std::wstring, std:
 
 
 std::wstring Main::openFileExplorerSave(std::vector<std::pair<std::wstring, std::wstring>> allowedFiles) {
+
 	IFileSaveDialog* fileEx;
 	wchar_t empty[] = L"";
 	CoCreateInstance(CLSID_FileSaveDialog, NULL, CLSCTX_INPROC, IID_PPV_ARGS(&fileEx));
@@ -103,6 +111,7 @@ std::wstring Main::openFileExplorerSave(std::vector<std::pair<std::wstring, std:
 		fileName->Release();
 	}
 	fileEx->Release();
+	Main::cursorDisable(); //disable cursor input to prevent accidental clicks
 	return fileNameBuf;
 }
 
@@ -208,5 +217,11 @@ void Main::handleProgramArgs(std::vector<std::string> args,TaskList* tasklist) {
 	}
 	if (executeImportedTasks) tasklist->executeTasks();
 }
+
+void Main::cursorDisable() {
+	Cursor::clicksAllowed = false;
+	Main::posWhereCursorWasDisabled = Cursor::getPos();
+}
+
 
 
